@@ -1,0 +1,391 @@
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    overflow-x: hidden;
+    /* 🔥 trava o scroll da página */
+    -webkit-font-smoothing: antialiased;
+}
+
+h2 {
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #020617;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    /* detalhe fino */
+    padding: 10px 20px;
+}
+
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.perfil img:hover {
+  transform: scale(1.1);
+  transition: 0.2s;
+}
+
+.perfil img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%; /* 🔥 deixa redonda */
+  object-fit: cover;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.search {
+    width: 40%;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+}
+
+.perfil {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* LAYOUT */
+.layout {
+    display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 200px;
+    background: #111827;
+    height: calc(100vh - 60px);
+    padding: 20px;
+}
+
+.sidebar a {
+    display: block;
+    margin-bottom: 15px;
+    color: white;
+    text-decoration: none;
+    transition: 0.2s;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.sidebar a:hover {
+    background: #1f2937;
+    color: white;
+    padding-left: 5px;
+}
+
+.conteudo {
+    flex: 1;
+    padding: 20px;
+    background-attachment: fixed;
+
+    min-width: 0;
+    /* 🔥 ESSENCIAL para flex não quebrar layout */
+    background: linear-gradient(135deg,
+            #1e3a8a,
+            #4c1d95,
+            #0f172a);
+}
+
+.carrossel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    flex-wrap: nowrap;
+    /* 🔥 garante que não desça */
+    scroll-behavior: smooth;
+
+    max-width: 100%;
+    /* 🔥 evita estourar */
+}
+
+.carrossel::-webkit-scrollbar {
+    display: none;
+}
+
+.carrossel-wrapper {
+    position: relative;
+    overflow: hidden;
+    /* 🔥 importante se usar botões */
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(6px);
+
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+
+  color: white;
+  font-size: 16px;
+
+  cursor: pointer;
+  z-index: 10;
+
+  transition: all 0.2s ease;
+}
+
+.scroll-btn.left {
+  left: 5px;
+}
+
+.scroll-btn.right {
+  right: 5px;
+}
+
+.scroll-btn:hover {
+  background: rgba(30, 41, 59, 0.9);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.scroll-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.card {
+    scroll-snap-align: start;
+    min-width: 200px;
+    min-height: 140px;
+    padding: 15px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background: #1e293b;
+    /* ✅ NOVO */
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    flex-shrink: 0;
+    /* 🔥 MUITO importante */
+}
+
+.card:hover {
+    background: #334155;
+    transform: scale(1.03);
+}
+
+.card button {
+    margin-top: auto;
+    /* empurra o botão pra baixo */
+}
+
+.card-curso {
+    padding: 0;
+    overflow: hidden;
+    width: 200px;
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    /* 🔥 garante imagem em cima */
+    justify-content: flex-start;
+    /* 🔥 evita conflito com .card */
+}
+
+.card-curso::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.7),
+    transparent
+  );
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.card-curso:hover::after {
+  opacity: 1;
+}
+
+.card-curso h3 {
+    padding: 10px;
+    font-size: 14px;
+}
+
+.card-curso:hover .thumb {
+    filter: brightness(0.7);
+}
+
+.thumb {
+    width: 100%;
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
+    /* 🔥 deixa quadrada automaticamente */
+
+    display: block;
+    /* 🔥 evita comportamento estranho */
+}
+
+.info {
+    padding: 10px;
+}
+
+.categoria {
+    min-width: 150px;
+    padding: 25px;
+    background: #1d4ed8;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.categoria:hover {
+    background: #2563eb;
+    transform: scale(1.05);
+}
+
+.continuar {
+    position: sticky;
+    bottom: 0;
+
+    background: #e2e8f0; /* cinza claro */
+  color: #1e293b;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.continuar-card {
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+    padding: 20px;
+
+   background: #1e293b;
+  color: #e2e8f0;
+
+    /* verde escuro */
+}
+
+.link-curso {
+  text-decoration: none;
+  color: inherit;
+}
+
+.continuar-card:hover {
+    background: #334155;
+    transform: scale(1.02);
+}
+
+.continuar-container {
+    display: flex;
+    flex-direction: column;
+    /* 🔥 empilha verticalmente */
+    gap: 20px;
+}
+
+.barra {
+  background: #e2e8f0;
+  height: 8px;
+  border-radius: 5px;
+  margin: 10px 0;
+  overflow: hidden; /* 🔥 evita vazar */
+}
+
+.progresso {
+  background: #f97316;
+  height: 100%;
+  width: 0; /* padrão */
+  border-radius: 5px;
+  transition: width 0.3s ease; /* 🔥 animação */
+}
+
+button {
+    background: #22c55e;
+    border: none;
+    padding: 8px;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.curso-header {
+  margin-bottom: 30px;
+}
+
+.curso-header h1 {
+  font-size: 28px;
+}
+
+.curso-header p {
+  color: #cbd5f5;
+}
+
+/* MÓDULOS */
+.modulos {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modulo {
+  background: rgba(0,0,0,0.3);
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.modulo h3 {
+  margin-bottom: 10px;
+}
+
+/* AULAS */
+.aula {
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.aula:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateX(5px);
+}
+
+.aulas {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
