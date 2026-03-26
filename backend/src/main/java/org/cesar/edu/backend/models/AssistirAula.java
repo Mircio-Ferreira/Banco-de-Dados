@@ -4,14 +4,16 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter  @Setter
+@Getter
+@Setter
 @ToString
-@AllArgsConstructor
 @EqualsAndHashCode
 @NoArgsConstructor
-public class Compra {
+@AllArgsConstructor
+public class AssistirAula {
+    private Long id_aula;
     private Long id_curso;
+    private Long id_modulo;
     private String cpf_aluno;
-    private LocalDate data_compra;
-    private CertificadoCurso certificado;
+    private LocalDate data_assistida;
 }

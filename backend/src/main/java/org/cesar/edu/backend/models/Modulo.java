@@ -4,15 +4,17 @@ import lombok.*;
 
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 @ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-public class Curso{
+public class Modulo {
+    private Long id_modulo;
     private Long id_curso;
-    private String nome_curso;
-    private Double preco;
+    private String titulo;
+    private Integer cargaHoraria;
     private String descricao_curso;
-    private List<Modulo> modulos;
+    private List<Aula> aulas;
 }
