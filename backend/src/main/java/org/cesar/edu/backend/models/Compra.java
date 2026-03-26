@@ -1,4 +1,4 @@
 package org.cesar.edu.backend.models;
 
-public class Curso{
+public class Compra {
 }

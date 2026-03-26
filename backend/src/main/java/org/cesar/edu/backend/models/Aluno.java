@@ -1,4 +1,5 @@
 package org.cesar.edu.backend.models;
 
-public class Curso{
+public class Aluno extends User {
+
 }
