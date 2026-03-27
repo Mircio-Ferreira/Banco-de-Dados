@@ -18,4 +18,14 @@ public class User {
     private Integer numero;
     private String cep;
     private List<Telefone> telefones;
+
+    public User(String cpf, String nome, String email,  String senha, String logradouro, Integer numero, String cep) {
+        this.cpf = cpf;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.logradouro = logradouro;
+        this.numero = numero;
+        this.cep = cep;
+    }
 }

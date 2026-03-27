@@ -1,5 +1,12 @@
 package org.cesar.edu.backend.models;
 
+import lombok.*;
+
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class Aula {
     private Long id_aula;
     private Long id_curso;
