@@ -1,89 +1,138 @@
-CREATE TABLE IF NOT EXISTS Usuario (
-                                       cpf CHAR(11) PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    logradouro VARCHAR(150) NOT NULL,
-    numero INT NOT NULL,
-    cep CHAR(8) NOT NULL
-    );
+CREATE TABLE IF NOT EXISTS usuario(
+                        cpf CHAR(11) PRIMARY KEY,
+                        nome VARCHAR(255) NOT NULL,
+                        email VARCHAR(255) NOT NULL UNIQUE,
+                        senha VARCHAR(255) NOT NULL,
+                        logradouro VARCHAR(255),
+                        numero INT,
+                        cep CHAR(8)
+);
 
-CREATE TABLE IF NOT EXISTS Telefone (
-                                        cpf CHAR(11) NOT NULL,
-    numero VARCHAR(20) NOT NULL,
-    PRIMARY KEY (cpf, numero),
-    CONSTRAINT fk_telefone_usuario
-    FOREIGN KEY (cpf)
-    REFERENCES Usuario(cpf)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-    );
+CREATE TABLE IF NOT EXISTS telefone(
+                         cpf CHAR(11) REFERENCES usuario(cpf) ON DELETE CASCADE,
+                         numero CHAR(11),
+                         PRIMARY KEY (cpf, numero)
+);
 
-CREATE TABLE IF NOT EXISTS Professor (
-                                         cpf_professor CHAR(11) PRIMARY KEY,
-    CONSTRAINT fk_professor_usuario
-    FOREIGN KEY (cpf_professor)
-    REFERENCES Usuario(cpf)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-    );
+CREATE TABLE IF NOT EXISTS professor(
+                          cpf_professor CHAR(11) PRIMARY KEY REFERENCES usuario(cpf) ON DELETE CASCADE
+);
 
-CREATE TABLE IF NOT EXISTS CertificadoProfessor (
-                                                    cpf_professor CHAR(11) NOT NULL,
-    titulo_certificado VARCHAR(150) NOT NULL,
-    PRIMARY KEY (cpf_professor, titulo_certificado),
-    CONSTRAINT fk_certificado_professor
-    FOREIGN KEY (cpf_professor)
-    REFERENCES Professor(cpf_professor)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-    );
+CREATE TABLE IF NOT EXISTS certificacoes(
+                              cpf_professor CHAR(11) REFERENCES professor(cpf_professor) ON DELETE CASCADE,
+                              titulo_certificado VARCHAR(255),
+                              PRIMARY KEY (cpf_professor, titulo_certificado)
+);
 
-CREATE TABLE IF NOT EXISTS Aluno (
-                                     cpf_aluno CHAR(11) PRIMARY KEY,
-    CONSTRAINT fk_aluno_usuario
-    FOREIGN KEY (cpf_aluno)
-    REFERENCES Usuario(cpf)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-    );
+CREATE TABLE IF NOT EXISTS aluno(
+                      cpf_aluno CHAR(11) PRIMARY KEY REFERENCES usuario(cpf) ON DELETE CASCADE
+);
 
-CREATE TABLE IF NOT EXISTS Curso (
-                                     id_curso BIGSERIAL PRIMARY KEY,
-                                     nome VARCHAR(100) NOT NULL,
-    preco NUMERIC(10,2) NOT NULL,
-    descricao TEXT
-    );
+CREATE TABLE IF NOT EXISTS curso(
+                      id_curso BIGINT PRIMARY KEY,
+                      nome VARCHAR(255) NOT NULL,
+                      preco DECIMAL(10, 2) NOT NULL CHECK(preco >= 0),
+                      descricao TEXT
+);
 
-CREATE TABLE IF NOT EXISTS Compra (
-                                      cpf_aluno CHAR(11) NOT NULL,
-    id_curso BIGINT NOT NULL,
-    data_matricula DATE NOT NULL DEFAULT CURRENT_DATE,
-    PRIMARY KEY (cpf_aluno, id_curso),
-    CONSTRAINT fk_compra_aluno
-    FOREIGN KEY (cpf_aluno)
-    REFERENCES Aluno(cpf_aluno)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-    CONSTRAINT fk_compra_curso
-    FOREIGN KEY (id_curso)
-    REFERENCES Curso(id_curso)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-    );
+CREATE TABLE IF NOT EXISTS leciona(
+                        cpf_professor CHAR(11) REFERENCES professor(cpf_professor) ON DELETE CASCADE,
+                        id_curso BIGINT REFERENCES curso(id_curso) ON DELETE CASCADE,
+                        PRIMARY KEY (cpf_professor, id_curso)
+);
 
-CREATE TABLE IF NOT EXISTS Leciona (
-                                       cpf_professor CHAR(11) NOT NULL,
-    id_curso BIGINT NOT NULL,
-    PRIMARY KEY (cpf_professor, id_curso),
-    CONSTRAINT fk_leciona_professor
-    FOREIGN KEY (cpf_professor)
-    REFERENCES Professor(cpf_professor)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-    CONSTRAINT fk_leciona_curso
-    FOREIGN KEY (id_curso)
-    REFERENCES Curso(id_curso)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-    );
+CREATE TABLE IF NOT EXISTS categoria(
+                          id_categoria BIGINT PRIMARY KEY,
+                          nome_da_categoria VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS possui(
+                       id_categoria BIGINT REFERENCES categoria(id_categoria) ON DELETE CASCADE,
+                       id_curso BIGINT REFERENCES curso(id_curso) ON DELETE CASCADE,
+                       PRIMARY KEY (id_categoria, id_curso)
+);
+
+CREATE TABLE IF NOT EXISTS compra(
+                       id_curso BIGINT REFERENCES curso(id_curso) ON DELETE CASCADE,
+                       cpf_aluno CHAR(11) REFERENCES aluno(cpf_aluno) ON DELETE CASCADE,
+                       data_compra DATE NOT NULL DEFAULT now(),
+                       PRIMARY KEY (id_curso, cpf_aluno)
+);
+
+CREATE TABLE IF NOT EXISTS certificado_curso(
+                                  id_certificado BIGINT,
+                                  id_curso_concluido BIGINT,
+                                  cpf_aluno_graduado CHAR(11),
+                                  data_certificado DATE NOT NULL DEFAULT now(),
+                                  PRIMARY KEY (id_certificado, id_curso_concluido, cpf_aluno_graduado),
+                                  FOREIGN KEY (id_curso_concluido, cpf_aluno_graduado)
+                                      REFERENCES compra(id_curso, cpf_aluno)
+                                      ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS modulo(
+                       id_curso BIGINT REFERENCES curso(id_curso) ON DELETE CASCADE,
+                       id_modulo BIGINT,
+                       titulo VARCHAR(255) NOT NULL,
+                       carga_horaria INT NOT NULL CHECK(carga_horaria > 0),
+                       descricao TEXT,
+                       PRIMARY KEY(id_curso, id_modulo)
+);
+
+CREATE TABLE IF NOT EXISTS aula(
+                     id_aula BIGINT,
+                     id_curso BIGINT,
+                     id_modulo BIGINT,
+                     descricao TEXT,
+                     link_do_video VARCHAR(255) NOT NULL,
+                     titulo VARCHAR(255) NOT NULL,
+                     PRIMARY KEY(id_aula, id_curso, id_modulo),
+                     UNIQUE (id_aula),
+                     FOREIGN KEY (id_curso, id_modulo)
+                         REFERENCES modulo(id_curso, id_modulo)
+                         ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS material(
+                         id_material BIGINT,
+                         id_aula BIGINT,
+                         id_curso BIGINT,
+                         id_modulo BIGINT,
+                         link_material VARCHAR(255) NOT NULL,
+                         nome VARCHAR(255) NOT NULL,
+                         PRIMARY KEY(id_material, id_aula, id_curso, id_modulo),
+                         FOREIGN KEY (id_aula, id_curso, id_modulo)
+                             REFERENCES aula(id_aula, id_curso, id_modulo)
+                             ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS assistir(
+                         id_aula BIGINT,
+                         id_curso BIGINT,
+                         id_modulo BIGINT,
+                         cpf_aluno CHAR(11) REFERENCES aluno(cpf_aluno) ON DELETE CASCADE,
+                         data_assistida DATE NOT NULL DEFAULT now(),
+                         PRIMARY KEY(cpf_aluno, id_aula, id_curso, id_modulo),
+                         FOREIGN KEY (id_aula, id_curso, id_modulo)
+                             REFERENCES aula(id_aula, id_curso, id_modulo)
+                             ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS comentario(
+                           id_comentario BIGINT PRIMARY KEY,
+                           id_aula BIGINT NOT NULL REFERENCES aula(id_aula) ON DELETE CASCADE,
+                           id_curso BIGINT NOT NULL,
+                           cpf_aluno CHAR(11),
+                           cpf_professor CHAR(11) REFERENCES professor(cpf_professor),
+                           data_criacao DATE NOT NULL DEFAULT now(),
+                           conteudo TEXT,
+                           comentario_pai BIGINT REFERENCES comentario(id_comentario) ON DELETE SET NULL,
+                           CHECK (
+                               (cpf_aluno IS NOT NULL AND cpf_professor IS NULL) OR
+                               (cpf_aluno IS NULL AND cpf_professor IS NOT NULL)
+                               ),
+                           FOREIGN KEY (id_curso, cpf_aluno)
+                               REFERENCES compra(id_curso, cpf_aluno),
+                           FOREIGN KEY (cpf_professor, id_curso)
+                               REFERENCES leciona(cpf_professor, id_curso)
+);
