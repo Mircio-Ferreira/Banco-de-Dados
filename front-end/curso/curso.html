@@ -3,85 +3,70 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Curso - CesarEdu</title>
+    <title>Assistir Aula - CesarEdu</title>
     <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+
+    </style>
 </head>
 
 <body>
 
-    <!-- 🔝 NAVBAR (igual) -->
     <header class="navbar">
-        <div class="logo">CesarEdu</div>
-
-        <input class="search" type="text" placeholder="O que você quer aprender?" />
+        <div class="logo">
+            <a href="../home/home.html">CesarEdu</a>
+        </div>
 
         <div class="perfil">
-            <img src="https://via.placeholder.com/40" />
+            <img
+                src="https://s2-techtudo.glbimg.com/PubgcFXGejS1Z3icyJyUibMpU7s=/0x0:300x304/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/j/W/QU9NeQT5yDTg5VqykCuQ/2012-04-20-linus-torvalds.jpg" />
             <span>Eric</span>
         </div>
     </header>
 
     <div class="layout">
 
-        <!-- 📌 SIDEBAR (igual) -->
-        <aside class="sidebar">
-            <a href="../home/home.html">🏠 Home</a>
-            <a href="#">📚 Meus cursos</a>
-            <a href="#">🏆 Certificados</a>
-            <a href="#">⚙️ Configurações</a>
-        </aside>
+        <!-- Sidebar -->
+        <aside class="aulas-sidebar" id="sidebar"></aside>
 
-        <!-- 📊 CONTEÚDO DO CURSO -->
+        <!-- Conteúdo principal -->
         <main class="conteudo">
+            <div class="player-content">
 
-            <!-- 📚 HEADER DO CURSO -->
-            <section class="curso-header">
-                <h1>JavaScript Completo</h1>
-                <p>Aprenda JavaScript do básico ao avançado com projetos reais.</p>
-            </section>
+                <div class="video" id="video"></div>
 
-            <!-- 📦 MÓDULOS -->
-            <section class="modulos">
-
-                <!-- MÓDULO 1 -->
-                <div class="modulo">
-                    <h3>📦 Módulo 1: Introdução</h3>
-
-                    <div class="aulas">
-                        <div class="aula">▶️ O que é JavaScript</div>
-                        <div class="aula">▶️ Variáveis</div>
-                        <div class="aula">▶️ Tipos de dados</div>
-                    </div>
+                <div class="info-box">
+                    <h2 id="tituloAula"></h2>
+                    <p id="descricaoAula"></p>
                 </div>
 
-                <!-- MÓDULO 2 -->
-                <div class="modulo">
-                    <h3>📦 Módulo 2: Funções</h3>
-
-                    <div class="aulas">
-                        <div class="aula">▶️ Funções básicas</div>
-                        <div class="aula">▶️ Arrow functions</div>
-                        <div class="aula">▶️ Callbacks</div>
-                    </div>
+                <div class="materiais-box">
+                    <h3>Materiais</h3>
+                    <div class="materiais" id="materiais"></div>
                 </div>
 
-                <!-- MÓDULO 3 -->
-                <div class="modulo">
-                    <h3>📦 Módulo 3: DOM</h3>
+                <div class="comentarios-box">
+                    <h3>Comentários</h3>
 
-                    <div class="aulas">
-                        <div class="aula">▶️ Manipulação do DOM</div>
-                        <div class="aula">▶️ Eventos</div>
-                        <div class="aula">▶️ Projetos práticos</div>
+                    <!-- Novo comentário -->
+                    <div class="novo-comentario">
+                        <textarea id="comentarioInput" placeholder="Escreva um comentário..."></textarea>
+                        <button onclick="addComentario()">Comentar</button>
                     </div>
+
+                    <!-- Lista -->
+                    <div id="comentariosList"></div>
                 </div>
 
-            </section>
-
+            </div>
         </main>
+
     </div>
 
-    <script src="modulo.js"></script>
+    <script src="curso.js"></script>
+    <script src="comentario.js"></script>
+
 </body>
 
 </html>
