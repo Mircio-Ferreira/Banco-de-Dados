@@ -8,8 +8,7 @@ async function buscarCEP(cep) {
         const data = await res.json();
 
         if (data.erro) {
-            alert("CEP não encontrado");
-            return;
+            throw Error("CEP não encontrado")
         }
 
         // Exemplo de preenchimento automático
