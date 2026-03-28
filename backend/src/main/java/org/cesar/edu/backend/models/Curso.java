@@ -14,5 +14,4 @@ public class Curso{
     private String nome_curso;
     private Double preco;
     private String descricao_curso;
-    private List<Modulo> modulos;
 }
