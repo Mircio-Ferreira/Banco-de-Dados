@@ -1,5 +1,8 @@
 package org.cesar.edu.backend.utils;
 
+import lombok.Getter;
+
+@Getter
 public class ResultService {
     private boolean valid;
     private boolean realized;

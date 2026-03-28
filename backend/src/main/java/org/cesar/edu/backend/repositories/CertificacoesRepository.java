@@ -46,4 +46,9 @@ public class CertificacoesRepository {
     public boolean delete(CertificadoProfessor certificado){
         return jdbcTemplate.update("DELETE FROM certificacoes WHERE cpf_professor = ? AND titulo_certificado = ?",certificado.getCpf_professor(), certificado.getTitulo_certificado()) > 0;
     }
+    public boolean deleteByCpf(String cpf) {
+        int linhasAlteradas = jdbcTemplate.update("DELETE FROM certificacoes WHERE cpf_professor = ?", cpf);
+
+        return linhasAlteradas >= 0;
+    }
 }

@@ -33,7 +33,19 @@ public class UserRepository {
         return template.query("SELECT * FROM usuario",usuarioRowMapper);
     }
     public User findByCpf(String cpf) {
-        return template.queryForObject("SELECT * FROM usuario WHERE cpf = ?",usuarioRowMapper,cpf);
+        try {
+            return template.queryForObject("SELECT * FROM usuario WHERE cpf = ?", usuarioRowMapper, cpf);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public User findByEmail(String email) {
+        try {
+            return template.queryForObject("SELECT * FROM usuario WHERE email = ?", usuarioRowMapper, email);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
+        }
     }
     public boolean save(User user) {
         int linhasAlteradas = template.update("INSERT INTO usuario VALUES (?,?,?,?,?,?,?)",
