@@ -2,6 +2,7 @@ package org.cesar.edu.backend.services;
 
 import org.cesar.edu.backend.dtos.requests.UserCreateRequest;
 import org.cesar.edu.backend.dtos.requests.UserLoginRequest;
+import org.cesar.edu.backend.dtos.responses.UserResponse;
 import org.cesar.edu.backend.models.*;
 import org.cesar.edu.backend.repositories.*;
 import org.cesar.edu.backend.utils.ListaString;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -32,6 +34,26 @@ public class UserService {
         this.telefoneRepository = telefoneRepository;
         this.certificacoesRepository = certificacoesRepository;
         this.cursoRepository = cursoRepository;
+    }
+    @Transactional(readOnly = true)
+    public UserResponse realizarLogin(UserLoginRequest dto) {
+        User user = userRepository.findByEmail(dto.email());
+
+        if (user == null || !dto.senha().equals(user.getSenha())) {
+            return null;
+        }
+
+        Aluno aluno = alunoRepository.findByCpf(user.getCpf());
+        if (aluno != null) {
+            return UserResponse.fromAluno(aluno);
+        }
+
+        Professor professor = professorRepository.findByCpf(user.getCpf());
+        if (professor != null) {
+            return UserResponse.fromProfessor(professor);
+        }
+
+        return null;
     }
     @Transactional
     public ResultService criarProfessor(UserCreateRequest dto){
