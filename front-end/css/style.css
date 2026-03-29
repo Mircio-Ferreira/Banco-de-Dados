@@ -1,11 +1,11 @@
 body {
-    margin: 0;
-    font-family: Arial;
-    background: #0f172a;
-    color: white;
-    overflow-x: hidden;
-    /* 🔥 trava o scroll da página */
-    -webkit-font-smoothing: antialiased;
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  overflow-x: hidden;
+  /* 🔥 trava o scroll da página */
+  -webkit-font-smoothing: antialiased;
 }
 
 h2 {
@@ -15,13 +15,13 @@ h2 {
 
 /* NAVBAR */
 .navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #020617;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    /* detalhe fino */
-    padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #020617;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  /* detalhe fino */
+  padding: 10px 20px;
 }
 
 .perfil {
@@ -39,7 +39,8 @@ h2 {
 .perfil img {
   width: 35px;
   height: 35px;
-  border-radius: 50%; /* 🔥 deixa redonda */
+  border-radius: 50%;
+  /* 🔥 deixa redonda */
   object-fit: cover;
 }
 
@@ -53,82 +54,77 @@ h2 {
 }
 
 .search {
-    width: 40%;
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
+  width: 40%;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
 }
 
 .perfil {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* LAYOUT */
-.layout {
-    display: flex;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* SIDEBAR */
 .sidebar {
-    width: 200px;
-    background: #111827;
-    height: calc(100vh - 60px);
-    padding: 20px;
+  width: 200px;
+  background: #111827;
+  height: calc(100vh - 60px);
+  padding: 20px;
 }
 
 .sidebar a {
-    display: block;
-    margin-bottom: 15px;
-    color: white;
-    text-decoration: none;
-    transition: 0.2s;
-    padding: 8px;
-    border-radius: 6px;
+  display: block;
+  margin-bottom: 15px;
+  color: white;
+  text-decoration: none;
+  transition: 0.2s;
+  padding: 8px;
+  border-radius: 6px;
 }
 
 .sidebar a:hover {
-    background: #1f2937;
-    color: white;
-    padding-left: 5px;
+  background: #1f2937;
+  color: white;
+  padding-left: 5px;
 }
 
 .conteudo {
     flex: 1;
     padding: 20px;
-    background-attachment: fixed;
 
     min-width: 0;
-    /* 🔥 ESSENCIAL para flex não quebrar layout */
+    min-height: 100vh;
+
     background: linear-gradient(135deg,
-            #1e3a8a,
-            #4c1d95,
-            #0f172a);
+        #1e3a8a,
+        #4c1d95,
+        #0f172a);
 }
 
 .carrossel {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    flex-wrap: nowrap;
-    /* 🔥 garante que não desça */
-    scroll-behavior: smooth;
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  flex-wrap: nowrap;
+  /* 🔥 garante que não desça */
+  scroll-behavior: smooth;
 
-    max-width: 100%;
-    /* 🔥 evita estourar */
+  max-width: 100%;
+  /* 🔥 evita estourar */
 }
 
 .carrossel::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .carrossel-wrapper {
-    position: relative;
-    overflow: hidden;
-    /* 🔥 importante se usar botões */
+  position: relative;
+  overflow: hidden;
+  /* 🔥 importante se usar botões */
 }
 
 .scroll-btn {
@@ -146,7 +142,7 @@ h2 {
   background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(6px);
 
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
 
   color: white;
@@ -169,7 +165,7 @@ h2 {
 .scroll-btn:hover {
   background: rgba(30, 41, 59, 0.9);
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 .scroll-btn:active {
@@ -177,58 +173,56 @@ h2 {
 }
 
 .card {
-    scroll-snap-align: start;
-    min-width: 200px;
-    min-height: 140px;
-    padding: 15px;
+  scroll-snap-align: start;
+  min-width: 200px;
+  min-height: 140px;
+  padding: 15px;
 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
-    background: #1e293b;
-    /* ✅ NOVO */
-    border-radius: 12px;
-    transition: transform 0.2s, box-shadow 0.2s;
+  background: #1e293b;
+  /* ✅ NOVO */
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
 
-    flex-shrink: 0;
-    /* 🔥 MUITO importante */
+  flex-shrink: 0;
+  /* 🔥 MUITO importante */
 }
 
 .card:hover {
-    background: #334155;
-    transform: scale(1.03);
+  background: #334155;
+  transform: scale(1.03);
 }
 
 .card button {
-    margin-top: auto;
-    /* empurra o botão pra baixo */
+  margin-top: auto;
+  /* empurra o botão pra baixo */
 }
 
 .card-curso {
-    padding: 0;
-    overflow: hidden;
-    width: 200px;
-    position: relative;
+  padding: 0;
+  overflow: hidden;
+  width: 200px;
+  position: relative;
 
-    display: flex;
-    flex-direction: column;
-    /* 🔥 garante imagem em cima */
-    justify-content: flex-start;
-    /* 🔥 evita conflito com .card */
+  display: flex;
+  flex-direction: column;
+  /* 🔥 garante imagem em cima */
+  justify-content: flex-start;
+  /* 🔥 evita conflito com .card */
 }
 
 .card-curso::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.7),
-    transparent
-  );
+  background: linear-gradient(to top,
+      rgba(0, 0, 0, 0.7),
+      transparent);
   opacity: 0;
   transition: 0.2s;
 }
@@ -238,64 +232,65 @@ h2 {
 }
 
 .card-curso h3 {
-    padding: 10px;
-    font-size: 14px;
+  padding: 10px;
+  font-size: 14px;
 }
 
 .card-curso:hover .thumb {
-    filter: brightness(0.7);
+  filter: brightness(0.7);
 }
 
 .thumb {
-    width: 100%;
-    object-fit: cover;
-    aspect-ratio: 1 / 1;
-    /* 🔥 deixa quadrada automaticamente */
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+  /* 🔥 deixa quadrada automaticamente */
 
-    display: block;
-    /* 🔥 evita comportamento estranho */
+  display: block;
+  /* 🔥 evita comportamento estranho */
 }
 
 .info {
-    padding: 10px;
+  padding: 10px;
 }
 
 .categoria {
-    min-width: 150px;
-    padding: 25px;
-    background: #1d4ed8;
-    border-radius: 12px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.2s;
+  min-width: 150px;
+  padding: 25px;
+  background: #1d4ed8;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .categoria:hover {
-    background: #2563eb;
-    transform: scale(1.05);
+  background: #2563eb;
+  transform: scale(1.05);
 }
 
 .continuar {
-    position: sticky;
-    bottom: 0;
+  position: sticky;
+  bottom: 0;
 
-    background: #e2e8f0; /* cinza claro */
+  background: #e2e8f0;
+  /* cinza claro */
   color: #1e293b;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .continuar-card {
-    width: 100%;
-    max-width: 600px;
-    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
-    padding: 20px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+  padding: 20px;
 
-   background: #1e293b;
+  background: #1e293b;
   color: #e2e8f0;
 
-    /* verde escuro */
+  /* verde escuro */
 }
 
 .link-curso {
@@ -304,15 +299,15 @@ h2 {
 }
 
 .continuar-card:hover {
-    background: #334155;
-    transform: scale(1.02);
+  background: #334155;
+  transform: scale(1.02);
 }
 
 .continuar-container {
-    display: flex;
-    flex-direction: column;
-    /* 🔥 empilha verticalmente */
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  /* 🔥 empilha verticalmente */
+  gap: 20px;
 }
 
 .barra {
@@ -320,24 +315,27 @@ h2 {
   height: 8px;
   border-radius: 5px;
   margin: 10px 0;
-  overflow: hidden; /* 🔥 evita vazar */
+  overflow: hidden;
+  /* 🔥 evita vazar */
 }
 
 .progresso {
   background: #f97316;
   height: 100%;
-  width: 0; /* padrão */
+  width: 0;
+  /* padrão */
   border-radius: 5px;
-  transition: width 0.3s ease; /* 🔥 animação */
+  transition: width 0.3s ease;
+  /* 🔥 animação */
 }
 
 button {
-    background: #22c55e;
-    border: none;
-    padding: 8px;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
+  background: #22c55e;
+  border: none;
+  padding: 8px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .curso-header {
@@ -360,7 +358,7 @@ button {
 }
 
 .modulo {
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   padding: 15px;
   border-radius: 10px;
 }
@@ -374,13 +372,13 @@ button {
   padding: 10px;
   margin-bottom: 8px;
   border-radius: 6px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
   transition: 0.2s;
 }
 
 .aula:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   transform: translateX(5px);
 }
 
@@ -388,4 +386,361 @@ button {
   height: 0;
   overflow: hidden;
   transition: height 0.3s ease;
+}
+
+.form-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 25px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group small {
+  color: #666;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.telefone-list,
+.cert-list {
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 10px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-secondary {
+  background: #2196F3;
+}
+
+.hidden {
+  display: none;
+}
+
+.telefone-list div,
+.cert-list div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: rgba(255, 255, 255, 0.08);
+  /* 🔥 efeito glass */
+  color: white;
+
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-top: 5px;
+
+  backdrop-filter: blur(5px);
+  /* opcional (fica lindo) */
+}
+
+.telefone-list button,
+.cert-list button {
+  border: none;
+  background: #ef4444;
+  /* vermelho mais moderno */
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.telefone-list div:hover,
+.cert-list div:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+#erroMsg {
+  margin: 15px 0;
+  padding: 16px 18px;
+
+  border-radius: 10px;
+
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(127, 29, 29, 0.4));
+  color: #fff;
+
+  border: 1px solid rgba(239, 68, 68, 0.8);
+
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+
+  display: none;
+
+  animation: shake 0.3s ease, fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  50% {
+    transform: translateX(4px);
+  }
+
+  75% {
+    transform: translateX(-4px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.logo a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* 🔥 Layout geral */
+.player-layout {
+    display: flex;
+    height: calc(100vh - 70px); /* desconta navbar */
+}
+
+
+/* Módulos */
+.modulo {
+    margin-bottom: 15px;
+}
+
+.modulo h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #93c5fd;
+}
+
+/* 🎬 Conteúdo principal */
+.player-content {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+
+    max-width: 900px;
+    margin: auto;
+}
+
+/* 🔥 Layout principal */
+.layout {
+    display: flex;
+    min-height: calc(100vh - 70px);
+}
+
+/* 📚 Sidebar */
+.aulas-sidebar {
+    width: 300px;
+    background: #0f172a;
+    padding: 15px;
+    overflow-y: auto;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 🎥 Vídeo */
+.video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: black;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.video iframe {
+    width: 100%;
+    height: 100%;
+}
+
+/* 📄 Texto */
+#tituloAula {
+    margin-bottom: 10px;
+}
+
+#descricaoAula {
+    color: #cbd5f5;
+    margin-bottom: 20px;
+}
+
+.aula.ativa {
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    font-weight: bold;
+}
+
+/* 📦 Caixa da descrição */
+.info-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Título mais forte */
+#tituloAula {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+/* Descrição mais legível */
+#descricaoAula {
+    color: #e2e8f0;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+/* 📎 Caixa de materiais */
+.materiais-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Links mais bonitos */
+.materiais a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 10px;
+    border-radius: 6px;
+
+    background: rgba(255,255,255,0.05);
+    color: white;
+    transition: 0.2s;
+}
+
+/* Hover mais chamativo */
+.materiais a:hover {
+    background: rgba(96, 165, 250, 0.2);
+    transform: translateX(4px);
+}
+
+.comentarios-box {
+    margin-top: 30px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.novo-comentario textarea {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 10px;
+}
+
+.novo-comentario button {
+    padding: 8px 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Comentário */
+.comentario {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+}
+
+.comentario-header {
+    font-size: 12px;
+    color: #93c5fd;
+    margin-bottom: 5px;
+}
+
+.comentario-conteudo {
+    margin-bottom: 5px;
+}
+
+/* Respostas */
+.respostas {
+    margin-left: 20px;
+    margin-top: 10px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    padding-left: 10px;
+}
+
+.responder {
+    font-size: 12px;
+    color: #60a5fa;
+    cursor: pointer;
+}
+
+.resposta-box {
+    margin-top: 10px;
+}
+
+.resposta-box textarea {
+    width: 100%;
+    height: 60px;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    margin-bottom: 5px;
+}
+
+.resposta-box button {
+    padding: 6px 10px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
 }

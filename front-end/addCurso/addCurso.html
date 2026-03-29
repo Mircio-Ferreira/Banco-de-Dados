@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Curso - CesarEdu</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .box {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .box h3 {
+        margin-bottom: 10px;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        border: none;
+    }
+
+    button {
+        margin-top: 5px;
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+
+    .nested {
+        margin-left: 20px;
+        border-left: 2px solid rgba(255, 255, 255, 0.2);
+        padding-left: 10px;
+    }
+</style>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">CesarEdu</div>
+
+        <input class="search" type="text" placeholder="O que você quer aprender?" />
+
+        <div class="perfil">
+            <img
+                src="https://s2-techtudo.glbimg.com/PubgcFXGejS1Z3icyJyUibMpU7s=/0x0:300x304/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/j/W/QU9NeQT5yDTg5VqykCuQ/2012-04-20-linus-torvalds.jpg" />
+            <span>Eric</span>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+            <a href="#">🏠 Home</a>
+            <a href="#">📚 Meus cursos</a>
+            <a href="#">🏆 Certificados</a>
+            <a href="#">⚙️ Configurações</a>
+        </aside>
+
+        <main class="conteudo">
+            <div class="form-container">
+
+                <h2>Criar Curso</h2>
+
+                <!-- 📚 CURSO -->
+                <div class="box">
+                    <h3>Curso</h3>
+                    <input id="nomeCurso" placeholder="Nome do curso">
+                    <input id="precoCurso" placeholder="Preço">
+                    <textarea id="descricaoCurso" placeholder="Descrição"></textarea>
+                </div>
+
+                <!-- 🏷️ CATEGORIAS -->
+                <div class="form-group">
+                    <label>Categorias</label>
+                    <input type="text" id="categoriaInput" placeholder="Ex: Programação, IA">
+                    <small>Adicione uma ou mais categorias para o curso.</small>
+
+                    <button type="button" onclick="addCategoria()">Adicionar categoria</button>
+
+                    <div class="cert-list" id="categoriaList"></div>
+                </div>
+
+                <!-- 📦 MÓDULOS -->
+                <div class="box">
+                    <h3>Módulos</h3>
+                    <button onclick="addModulo()">Adicionar módulo</button>
+                    <div id="modulos"></div>
+                </div>
+
+                <button onclick="criarCurso()">Salvar Curso</button>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="addCurso.js"></script>
+
+</body>
+
+</html>
