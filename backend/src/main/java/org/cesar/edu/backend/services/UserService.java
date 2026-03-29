@@ -24,7 +24,7 @@ public class UserService {
     private final CursoRepository cursoRepository;
 
     @Autowired
-    private UserService(UserRepository userRepository, AlunoRepository alunoRepository, ProfessorRepository professorRepository,
+    public UserService(UserRepository userRepository, AlunoRepository alunoRepository, ProfessorRepository professorRepository,
                         TelefoneRepository telefoneRepository, CertificacoesRepository certificacoesRepository,  CursoRepository cursoRepository) {
         this.userRepository = userRepository;
         this.alunoRepository = alunoRepository;

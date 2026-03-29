@@ -45,15 +45,11 @@ public class StringUtils {
         return true;
     }
     public static boolean telefoneValido(String tel) {
-        if(tel == null) return false;
-        if(tel.indexOf('(') < 0 || tel.indexOf(')') < 0) {
-            return false;
-        }
-        String numeroPuro = tel.substring(tel.indexOf(')') + 1, tel.length());
-        if(numeroPuro.length() > 9 || numeroPuro.length() < 8) {
-            return false;
-        }
-        return true;
+        if (tel == null) return false;
+
+        String numeroPuro = tel.replaceAll("\\D", "");
+
+        return numeroPuro.length() >= 9 && numeroPuro.length() <= 11;
     }
     public static boolean cpfValido(String cpf) {
         if (cpf == null) return false;
