@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login - CesarEdu</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-container .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-container input {
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background: #2563eb;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .login-container button:hover {
+            background: #1d4ed8;
+        }
+
+        #erroLogin {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fecaca;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 🔝 NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="../home/home.html">CesarEdu</a>
+        </div>
+    </header>
+
+    <!-- 📦 CONTEÚDO -->
+    <main class="conteudo">
+
+        <div class="login-container">
+            <h2>Entrar</h2>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="seu@email.com">
+            </div>
+
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="senha" placeholder="••••••">
+            </div>
+
+            <button onclick="login()">Entrar</button>
+
+            <div style="text-align: center; margin-top: 15px;">
+                <span style="color: #cbd5f5;">Não tem conta?</span>
+                <a href="../cadastro/cadastro.html" class="link-cadastro">Cadastre-se</a>
+            </div>
+
+            <div id="erroLogin"></div>
+        </div>
+
+    </main>
+
+    <script src="login.js"></script>
+
+</body>
+
+</html>

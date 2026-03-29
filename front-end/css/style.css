@@ -744,3 +744,69 @@ button {
 .hidden {
     display: none;
 }
+
+.config-box {
+    max-width: 700px;
+    margin: auto;
+}
+
+.config-item {
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.config-item h3 {
+    margin-bottom: 8px;
+}
+
+.config-item p {
+    color: #cbd5f5;
+    margin-bottom: 10px;
+}
+
+.btn-danger {
+    background: #dc2626;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+/* destaque zona de perigo */
+.config-item.danger {
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+#erroConfig {
+    margin-top: 15px;
+    color: #fecaca;
+}
+
+.link-cadastro {
+    margin-left: 5px;
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.link-cadastro:hover {
+    text-decoration: underline;
+    color: #93c5fd;
+}
+
+.link-login {
+    margin-left: 5px;
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.link-login:hover {
+    text-decoration: underline;
+    color: #93c5fd;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Configurações - CesarEdu</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <!-- 🔝 NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="../home/home.html">CesarEdu</a>
+        </div>
+
+        <div class="perfil">
+            <img src="https://via.placeholder.com/40" />
+            <span>Eric</span>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <!-- 📌 SIDEBAR -->
+        <aside class="sidebar">
+            <a href="../home/home.html">🏠 Home</a>
+            <a href="#">📚 Meus cursos</a>
+            <a href="#">🏆 Certificados</a>
+            <a href="./config.html">⚙️ Configurações</a>
+        </aside>
+
+        <!-- 📊 CONTEÚDO -->
+        <main class="conteudo">
+
+            <section class="config-box">
+                <h2>⚙️ Configurações da Conta</h2>
+
+                <!-- INFO -->
+                <div class="config-item">
+                    <h3>👤 Dados da conta</h3>
+                    <p>Atualize suas informações pessoais.</p>
+                    <button class="btn btn-secondary">
+                        Editar perfil
+                    </button>
+                </div>
+
+                <!-- SEGURANÇA -->
+                <div class="config-item">
+                    <h3>🔒 Segurança</h3>
+                    <p>Altere sua senha ou dados de login.</p>
+                    <button class="btn btn-secondary">
+                        Alterar senha
+                    </button>
+                </div>
+
+                <!-- EXCLUIR -->
+                <div class="config-item danger">
+                    <h3>⚠️ Zona de perigo</h3>
+                    <p>Excluir sua conta é uma ação permanente.</p>
+
+                    <button class="btn btn-danger" onclick="deletarConta()">
+                        Excluir conta
+                    </button>
+                </div>
+
+                <div id="erroConfig"></div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+</body>
+
+</html>

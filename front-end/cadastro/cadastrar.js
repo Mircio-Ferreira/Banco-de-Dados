@@ -49,21 +49,16 @@ function cadastrar() {
 
     // Se passou tudo
     const usuario = {
-        cpf: document.getElementById("cpf").value,
+        cpf: document.getElementById("cpf").value.replace(/\D/g, ""),
         nome: document.getElementById("nome").value,
         email: document.getElementById("email").value,
         senha: document.getElementById("password").value,
 
-        endereco: {
-            cep: document.getElementById("cep").value,
-            logradouro: document.getElementById("logradouro").value,
-            numero: document.getElementById("numero").value
-        },
-
-        isProfessor: document.getElementById("isProfessor").checked,
+        logradouro: document.getElementById("logradouro").value,
+        numero: document.getElementById("numero").value,
+        cep: document.getElementById("cep").value.replace(/\D/g, ""),
 
         telefones: [],
-
         certificacoes: []
     };
 
@@ -73,7 +68,7 @@ function cadastrar() {
         usuario.telefones.push(item.firstChild.textContent);
     }
 
-    if (usuario.isProfessor) {
+    if (isProfessor) {
         const certItems = document.getElementById("certList").children;
 
         for (let item of certItems) {
@@ -82,5 +77,66 @@ function cadastrar() {
     }
 
     console.log(usuario)
-    // falta mandar pro back
+
+    //http://localhost:8080/api/v1/users/aluno/create
+
+    const userType = isProfessor ? "professor" : "aluno"
+
+    fetch(`http://localhost:8080/api/v1/users/${userType}/create`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(usuario)
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(err => { throw new Error(err); });
+            }
+            return response.text();
+        })
+        .then(msg => {
+            console.log("Cadastro OK:", msg);
+
+            // 👉 AGORA FAZ LOGIN
+            return fetch("http://localhost:8080/api/v1/users/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: usuario.email,
+                    senha: usuario.senha
+                })
+            });
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(err => { throw new Error(err); });
+            }
+            return res.json();
+        })
+        .then(data => {
+            console.log("Login sucesso:", data);
+
+            // salva "token" (cpf no seu caso)
+            localStorage.setItem("token", data.cpf);
+
+            // redireciona
+            window.location.href = "../home/home.html";
+        })
+        .catch(error => {
+            console.error("Erro:", error);
+
+            let msg;
+
+            try {
+                msg = JSON.parse(error.message);
+                erroDiv.innerText = msg.join("\n");
+            } catch {
+                erroDiv.innerText = error.message;
+            }
+
+            erroDiv.style.display = "block";
+        });
 }
