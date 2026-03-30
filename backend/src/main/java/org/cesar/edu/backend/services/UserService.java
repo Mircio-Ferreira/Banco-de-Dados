@@ -231,26 +231,24 @@ public class UserService {
             return new ResultService(true, false, erros);
         }
     }
-    public List<Professor> listarProfessores() {
+    public List<UserResponse> listarProfessores() {
         List<Professor> listaSimples = professorRepository.findAll();
 
         if (listaSimples == null || listaSimples.isEmpty()) {
             return new java.util.ArrayList<>();
         }
 
-        for (Professor p : listaSimples) {
-            User base = userRepository.findByCpf(p.getCpf());
+        List<UserResponse> listaCompleta = new java.util.ArrayList<>();
 
-            if (base != null) {
-                p.setNome(base.getNome());
-                p.setEmail(base.getEmail());
-                p.setLogradouro(base.getLogradouro());
-                p.setNumero(base.getNumero());
-                p.setCep(base.getCep());
+        for (Professor p : listaSimples) {
+            UserResponse professorCompleto = pegarPorCpfProfessor(p.getCpf());
+
+            if (professorCompleto != null) {
+                listaCompleta.add(professorCompleto);
             }
         }
 
-        return listaSimples;
+        return listaCompleta;
     }
     public UserResponse pegarPorCpfProfessor(String cpf) {
         try {
@@ -422,17 +420,24 @@ public class UserService {
             return null;
         }
     }
-    public List<Aluno> listarAlunos() {
+    public List<UserResponse> listarAlunos() {
         List<Aluno> listaSimples = alunoRepository.findAll();
 
+        if (listaSimples == null || listaSimples.isEmpty()) {
+            return new java.util.ArrayList<>();
+        }
+
+        List<UserResponse> listaCompleta = new java.util.ArrayList<>();
+
         for (Aluno a : listaSimples) {
-            User base = userRepository.findByCpf(a.getCpf());
-            if (base != null) {
-                a.setNome(base.getNome());
-                a.setEmail(base.getEmail());
+            UserResponse alunoCompleto = pegarPorCpfAluno(a.getCpf());
+
+            if (alunoCompleto != null) {
+                listaCompleta.add(alunoCompleto);
             }
         }
-        return listaSimples;
+
+        return listaCompleta;
     }
 
 

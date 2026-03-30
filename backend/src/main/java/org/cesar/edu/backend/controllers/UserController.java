@@ -62,14 +62,12 @@ public class UserController implements UserControllerDoc {
 
     @GetMapping("/professor")
     public ResponseEntity<?> listarProfessor() {
-        List<Professor> professores = userService.listarProfessores();
-        if (professores.isEmpty()) {
+        List<UserResponse> dtos = userService.listarProfessores();
+
+        if (dtos.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        List<UserResponse> dtos = new ArrayList<>();
-        for(Professor p : professores) {
-            dtos.add(UserResponse.fromProfessor(p,null));
-        }
+
         return ResponseEntity.ok(dtos);
     }
 
@@ -142,14 +140,12 @@ public class UserController implements UserControllerDoc {
 
     @GetMapping("/aluno")
     public ResponseEntity<?> listarAlunos() {
-        List<Aluno> alunos = userService.listarAlunos();
-        if (alunos.isEmpty()) {
+        List<UserResponse> dtos = userService.listarAlunos();
+
+        if (dtos.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        List<UserResponse> dtos = new ArrayList<>();
-        for(Aluno a : alunos) {
-            dtos.add(UserResponse.fromAluno(a,null));
-        }
+
         return ResponseEntity.ok(dtos);
     }
 

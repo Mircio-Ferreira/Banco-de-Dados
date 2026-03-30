@@ -43,10 +43,13 @@ public interface UserControllerDoc {
     })
     ResponseEntity<?> createProfessor(@RequestBody UserCreateRequest dto);
 
-    @Operation(summary = "Listar Professores", description = "Retorna uma lista contendo as informações básicas de todos os professores cadastrados.")
+    @Operation(
+            summary = "Listar Professores",
+            description = "Retorna uma lista contendo as informações completas de todos os professores cadastrados, incluindo telefones, certificados e a lista de cursos que lecionam."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de professores recuperada com sucesso."),
-            @ApiResponse(responseCode = "204", description = "Nenhum professor encontrado.")
+            @ApiResponse(responseCode = "200", description = "Lista completa de professores recuperada com sucesso."),
+            @ApiResponse(responseCode = "204", description = "Nenhum professor encontrado na base de dados.")
     })
     ResponseEntity<?> listarProfessor();
 
@@ -92,13 +95,15 @@ public interface UserControllerDoc {
     })
     ResponseEntity<?> criarAluno(@RequestBody UserCreateRequest dto);
 
-    @Operation(summary = "Listar Alunos", description = "Retorna uma lista contendo as informações básicas de todos os alunos cadastrados.")
+    @Operation(
+            summary = "Listar Alunos",
+            description = "Retorna uma lista contendo as informações completas de todos os alunos cadastrados, incluindo telefones e o histórico de cursos comprados."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de alunos recuperada com sucesso."),
-            @ApiResponse(responseCode = "204", description = "Nenhum aluno encontrado.")
+            @ApiResponse(responseCode = "200", description = "Lista completa de alunos recuperada com sucesso."),
+            @ApiResponse(responseCode = "204", description = "Nenhum aluno encontrado na base de dados.")
     })
     ResponseEntity<?> listarAlunos();
-
     @Operation(summary = "Buscar Aluno por CPF", description = "Busca o perfil completo de um aluno específico, incluindo seus cursos comprados.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Aluno encontrado com sucesso."),
