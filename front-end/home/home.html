@@ -9,11 +9,11 @@
 
 <body>
     <script>
-        const user = localStorage.getItem("user")
+        const user = JSON.parse(localStorage.getItem("user"))
 
         if (!user) {
             window.location.href = "../login/login.html";
-        } else if (user.tipoUsuario == "ALUNO") {
+        } else if (user.tipoUsuario === "ALUNO") {
             window.location.href = "../home/home-aluno.html";
         } else {
             window.location.href = "../home/home-professor.html";

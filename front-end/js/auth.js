@@ -1,4 +1,4 @@
-const currentUser = localStorage.getItem("user")
+const currentUser = JSON.parse(localStorage.getItem("user"))
 
 if (!currentUser){
     window.location.href = "../login/login.html";
@@ -6,6 +6,5 @@ if (!currentUser){
 
 document.addEventListener("DOMContentLoaded", function () {
     const userNameElement = this.getElementById("userName")
-
-    userNameElement.innerHTML = currentUser.name
+    userNameElement.innerHTML = currentUser.nome
 });

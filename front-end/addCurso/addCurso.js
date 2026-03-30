@@ -117,19 +117,41 @@ function renderModulos() {
 function criarCurso() {
     const items = document.getElementById("categoriaList").children;
 
+    categorias = []
+
     for (let item of items) {
         categorias.push(item.querySelector("span").textContent);
     }
 
     const curso = {
-        nome: document.getElementById("nomeCurso").value,
+        nomeCurso: document.getElementById("nomeCurso").value,
         preco: document.getElementById("precoCurso").value,
-        descricao: document.getElementById("descricaoCurso").value,
+        descricaoCurso: document.getElementById("descricaoCurso").value,
+        cpfProfessor: currentUser.cpf,
         categorias: categorias,
-        modulos: modulos
+        //modulos: modulos
     };
 
     console.log(curso);
-    // Enviar para o back end
-    //alert("Curso criado!");
+
+    fetch("http://localhost:8080/api/v1/curso", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-User-CPF": currentUser.cpf
+        },
+        body: JSON.stringify(curso)
+    })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(err => { throw new Error(err); });
+            }
+            return res.text();
+        })
+        .then(data => {
+            console.log(data)
+        })
+        .catch(err => {
+            console.error(err)
+        });
 }

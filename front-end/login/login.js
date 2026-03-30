@@ -1,3 +1,4 @@
+
 function login() {
     const email = document.getElementById("email").value.trim();
     const senha = document.getElementById("senha").value.trim();
@@ -27,12 +28,22 @@ function login() {
         .then(data => {
             console.log("Login sucesso:", data);
 
-            // exemplo: salvar token
-            localStorage.setItem("user", JSON.stringify(data));
-
+            const cpf = data.cpf
             const userType = data.tipoUsuario.toLowerCase()
 
-            window.location.href = `../home/home-${userType}.html`;
+            fetch(`http://localhost:8080/api/v1/users/${userType}/${cpf}`)
+                .then(res => {
+                    if (!res.ok) {
+                        return res.text().then(err => { throw new Error(err); });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log(data)
+                    localStorage.setItem("user", JSON.stringify(data));
+
+                    window.location.href = `../home/home.html`;
+                })
         })
         .catch(err => {
             console.error(err)

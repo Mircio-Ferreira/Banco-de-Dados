@@ -58,8 +58,7 @@ function cadastrar() {
         numero: document.getElementById("numero").value,
         cep: document.getElementById("cep").value.replace(/\D/g, ""),
 
-        telefones: [],
-        certificados: []
+        telefones: []
     };
 
     const telefoneItems = document.getElementById("telefoneList").children;
@@ -70,13 +69,12 @@ function cadastrar() {
 
     if (isProfessor) {
         const certItems = document.getElementById("certList").children;
+        usuario.certificados = []
 
         for (let item of certItems) {
             usuario.certificados.push(item.firstChild.textContent);
         }
     }
-
-    console.log(usuario)
 
     //http://localhost:8080/api/v1/users/aluno/create
 
@@ -119,12 +117,22 @@ function cadastrar() {
         .then(data => {
             console.log("Login sucesso:", data);
 
-            // salva "token" (cpf no seu caso)
-            localStorage.setItem("token", data.cpf);
-            localStorage.setItem("user", JSON.stringify(data));
+            const cpf = data.cpf
+            const userType = data.tipoUsuario.toLowerCase()
 
-            // redireciona
-            window.location.href = `../home/home-${userType}.html`;
+            return fetch(`http://localhost:8080/api/v1/users/${userType}/${cpf}`)
+                .then(res => {
+                    if (!res.ok) {
+                        return res.text().then(err => { throw new Error(err); });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log(data)
+                    localStorage.setItem("user", JSON.stringify(data));
+
+                    window.location.href = `../home/home.html`;
+                })
         })
         .catch(error => {
             console.error("Erro:", error);

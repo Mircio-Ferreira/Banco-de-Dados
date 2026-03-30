@@ -64,21 +64,16 @@
     <!-- 📜 SCRIPT -->
     <script>
         function carregarCursosProfessor() {
-            // 🔥 depois troca por fetch no backend
-            const cursos = [
-                {
-                    nome: "Python Básico",
-                    imagem: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg"
-                },
-                {
-                    nome: "JavaScript Avançado",
-                    imagem: "https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg"
-                },
-                {
-                    nome: "Estruturas em C",
-                    imagem: "https://e7.pngegg.com/pngimages/465/779/png-clipart-blue-and-white-c-logo.png"
-                }
-            ];
+            const cursos = []
+
+            const cursosLecionados = currentUser.cursosLecionados
+
+            for (const c of cursosLecionados) {
+                cursos.push({
+                    nome: c.nome_curso,
+                    id: c.id_curso
+                })
+            }
 
             const container = document.getElementById("carrosselCursosProfessor");
 
@@ -90,6 +85,10 @@
                     <img src="${curso.imagem}" class="thumb"/>
                     <h3>${curso.nome}</h3>
                 `;
+
+                div.addEventListener("click", () => {
+                    window.location.href = `../editarCurso/editarCurso.html?id=${curso.id}`;
+                });
 
                 container.appendChild(div);
             });

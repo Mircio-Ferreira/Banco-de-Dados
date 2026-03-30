@@ -1,47 +1,90 @@
 let user;
 
-        document.addEventListener("DOMContentLoaded", () => {
-            user = JSON.parse(localStorage.getItem("user"));
+document.addEventListener("DOMContentLoaded", () => {
+    user = JSON.parse(localStorage.getItem("user"));
 
-            if (!user) {
-                window.location.href = "../login/login.html";
-                return;
-            }
+    if (!user) {
+        window.location.href = "../login/login.html";
+        return;
+    }
 
-            preencherFormulario();
-        });
+    preencherFormulario();
+});
 
-        function preencherFormulario() {
-            document.getElementById("cpf").value = user.cpf || "";
-            document.getElementById("nome").value = user.nome || "";
-            document.getElementById("email").value = user.email || "";
-            document.getElementById("cep").value = user.cep || "";
-            document.getElementById("logradouro").value = user.logradouro || "";
-            document.getElementById("numero").value = user.numero || "";
+function preencherFormulario() {
+    document.getElementById("cpf").value = user.cpf || "";
+    document.getElementById("nome").value = user.nome || "";
+    document.getElementById("email").value = user.email || "";
+    document.getElementById("cep").value = user.cep || "";
+    document.getElementById("logradouro").value = user.logradouro || "";
+    document.getElementById("numero").value = user.numero || "";
 
-            // Mostrar certificações se for professor
-            if (user.tipoUsuario !== "ALUNO") {
-                document.getElementById("certificacoesContainer").classList.remove("hidden");
-            }
-        }
+    // Mostrar certificações se for professor
+    if (user.tipoUsuario !== "ALUNO") {
+        document.getElementById("certificacoesContainer").classList.remove("hidden");
+    }
 
-        async function atualizarUsuario() {
-            const updatedUser = {
-                ...user,
-                nome: document.getElementById("nome").value,
-                email: document.getElementById("email").value,
-                cep: document.getElementById("cep").value,
-                logradouro: document.getElementById("logradouro").value,
-                numero: document.getElementById("numero").value
-            };
+    const list = document.getElementById("telefoneList");
+    const listC = document.getElementById("certList");
 
-            const novaSenha = document.getElementById("password").value;
+    for (const t of currentUser.telefones) {
+        const item = document.createElement("div");
 
-            if (novaSenha) {
-                updatedUser.senha = novaSenha;
-            }
+        const text = document.createElement("span");
+        text.textContent = t;
 
-            // 🔥 Define endpoint baseado no tipo
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "X";
+        removeBtn.style.marginLeft = "10px";
+
+        removeBtn.onclick = () => {
+            item.remove();
+        };
+
+        item.appendChild(text);
+        item.appendChild(removeBtn);
+
+        list.appendChild(item);
+    }
+
+    for (const c of currentUser.certificados) {
+        const item = document.createElement("div");
+
+        const text = document.createElement("span");
+        text.textContent = c;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "X";
+        removeBtn.style.marginLeft = "10px";
+
+        removeBtn.onclick = () => {
+            item.remove();
+        };
+
+        item.appendChild(text);
+        item.appendChild(removeBtn);
+
+        listC.appendChild(item);
+    }
+}
+
+async function atualizarUsuario() {
+    const updatedUser = {
+        ...user,
+        nome: document.getElementById("nome").value,
+        email: document.getElementById("email").value,
+        cep: document.getElementById("cep").value,
+        logradouro: document.getElementById("logradouro").value,
+        numero: document.getElementById("numero").value
+    };
+
+    const novaSenha = document.getElementById("password").value;
+
+    if (novaSenha) {
+        updatedUser.senha = novaSenha;
+    }
+
+    // 🔥 Define endpoint baseado no tipo
     let url;
 
     if (user.tipoUsuario === "ALUNO") {
@@ -76,4 +119,4 @@ let user;
         console.error(error);
         alert("Erro ao conectar com o servidor.");
     }
-        }
+}

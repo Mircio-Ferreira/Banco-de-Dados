@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Curso - CesarEdu</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .box {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        border: none;
+    }
+
+    button {
+        margin-top: 5px;
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+
+    .nested {
+        margin-left: 20px;
+        border-left: 2px solid rgba(255, 255, 255, 0.2);
+        padding-left: 10px;
+    }
+</style>
+
+<body>
+
+    <!-- 🔝 NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <img src="../img/cesar_edu.png" />
+            <a href="../home/home-professor.html">CesarEdu</a>
+        </div>
+
+        <input class="search" type="text" placeholder="Buscar..." />
+
+        <div class="perfil">
+            <span id="userName">Usuário</span>
+            <button onclick="logout()" class="logout-btn">Sair</button>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <!-- 📌 SIDEBAR -->
+        <aside class="sidebar">
+            <a href="../home/home-professor.html">🏠 Home</a>
+            <a href="#">🏆 Certificados</a>
+            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
+        </aside>
+
+        <!-- 📄 CONTEÚDO -->
+        <main class="conteudo">
+            <div class="form-container">
+
+                <h2>Editar Curso</h2>
+
+                <!-- 📚 CURSO -->
+                <div class="box">
+                    <h3>Curso</h3>
+                    <input id="nomeCurso" placeholder="Nome do curso">
+                    <input id="precoCurso" placeholder="Preço">
+                    <textarea id="descricaoCurso" placeholder="Descrição"></textarea>
+                </div>
+
+                <!-- 🏷️ CATEGORIAS -->
+                <div class="form-group">
+                    <label>Categorias</label>
+                    <input type="text" id="categoriaInput" placeholder="Ex: Programação, IA">
+                    <button type="button" onclick="addCategoria()">Adicionar categoria</button>
+                    <div id="categoriaList"></div>
+                </div>
+
+                <!-- 📦 MÓDULOS -->
+                <div class="box">
+                    <h3>Módulos</h3>
+                    <button onclick="addModulo()">Adicionar módulo</button>
+                    <div id="modulos"></div>
+                </div>
+
+                <!-- 💾 BOTÃO -->
+                <button onclick="atualizarCurso()">Salvar Alterações</button>
+
+                <button onclick="deletarCurso()" style="background-color:#e74c3c; color:white;">
+                    🗑️ Deletar Curso
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- 📜 SCRIPT -->
+    <script src="editar.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/logout.js"></script>
+    <script src="../js/reloadStorage.js"></script>
+</body>
+
+</html>
