@@ -14,3 +14,33 @@ O objetivo principal é aplicar, na prática, os conceitos de banco de dados em 
 - [**João Passos**](https://github.com/iampassos)
 - [**Mircio Ferreira**](https://github.com/Mircio-Ferreira)
 - [**Gabriel Aniceto**](https://github.com/gabrielaniceto1)
+
+## Orientadora
+
+* Natacha Targino
+
+---
+## Banco de Dados
+<details>
+<summary><strong>Modelo Conceitual</strong></summary>
+<br>
+
+<div align="center">
+  
+  <img src="resourse\modelo_conceitual.png" width="700" alt="Modelo Conceitual">
+  <br>
+  
+  <br> 
+  </div>
+</details>
+
+<details>
+<summary><strong>Modelo Lógico</strong></summary> 
+<br>
+  
+
+
+## Esquema Relacional
+
+🔗   - [Documento Esquema Relacional - Cesar Edu](https://docs.google.com/document/d/1NKjeO3JPzk_YI0Vg5SAW6i60NHyMUUELvO5VN3UEHv8/edit?usp=sharing)
+
