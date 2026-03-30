@@ -12,9 +12,11 @@ public record UserResponse(
         Integer numero,
         String cep,
         List<String> telefones,
-        List<String> certificados
+        List<String> certificados,
+        List<CompraResponse> compras,            // Nova lista para Alunos
+        List<CursoResponse> cursosLecionados     // Nova lista para Professores
 ) {
-    public static UserResponse fromProfessor(Professor p) {
+    public static UserResponse fromProfessor(Professor p, List<CursoResponse> cursosLecionados) {
         return new UserResponse(
                 p.getCpf(),
                 p.getNome(),
@@ -25,11 +27,13 @@ public record UserResponse(
                 p.getTelefones() != null ?
                         p.getTelefones().stream().map(Telefone::getNumero).collect(Collectors.toList()) : null,
                 p.getCertificados() != null ?
-                        p.getCertificados().stream().map(CertificadoProfessor::getTitulo_certificado).collect(Collectors.toList()) : null
+                        p.getCertificados().stream().map(CertificadoProfessor::getTitulo_certificado).collect(Collectors.toList()) : null,
+                null,
+                cursosLecionados
         );
     }
 
-    public static UserResponse fromAluno(Aluno a) {
+    public static UserResponse fromAluno(Aluno a, List<CompraResponse> compras) {
         return new UserResponse(
                 a.getCpf(),
                 a.getNome(),
@@ -39,6 +43,8 @@ public record UserResponse(
                 a.getCep(),
                 a.getTelefones() != null ?
                         a.getTelefones().stream().map(Telefone::getNumero).collect(Collectors.toList()) : null,
+                null,
+                compras,
                 null
         );
     }

@@ -1,5 +1,6 @@
 package org.cesar.edu.backend.controllers;
 
+import org.cesar.edu.backend.doc.UserControllerDoc;
 import org.cesar.edu.backend.dtos.requests.UserCreateRequest;
 import org.cesar.edu.backend.dtos.requests.UserLoginRequest;
 import org.cesar.edu.backend.dtos.responses.UserResponse;
@@ -16,7 +17,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/users")
-public class UserController {
+public class UserController implements UserControllerDoc {
 
     private final UserService userService;
 
@@ -53,7 +54,7 @@ public class UserController {
         }
         List<UserResponse> dtos = new ArrayList<>();
         for(Professor p : professores) {
-            dtos.add(UserResponse.fromProfessor(p));
+            dtos.add(UserResponse.fromProfessor(p,null));
         }
         return ResponseEntity.ok(dtos);
     }
@@ -61,11 +62,14 @@ public class UserController {
     @GetMapping("/professor/{cpf}")
     public ResponseEntity<?> pegarProfessor(@PathVariable String cpf) {
         try {
-            Professor professor = userService.pegarPorCpfProfessor(cpf);
-            if (professor == null) {
+            UserResponse response = userService.pegarPorCpfProfessor(cpf);
+
+            if (response == null) {
                 return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.ok(UserResponse.fromProfessor(professor));
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Erro interno: " + e.getMessage());
         }
@@ -130,18 +134,20 @@ public class UserController {
         }
         List<UserResponse> dtos = new ArrayList<>();
         for(Aluno a : alunos) {
-            dtos.add(UserResponse.fromAluno(a));
+            dtos.add(UserResponse.fromAluno(a,null));
         }
         return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/aluno/{cpf}")
     public ResponseEntity<?> pegarAluno(@PathVariable String cpf) {
-        Aluno aluno = userService.pegarPorCpfAluno(cpf);
-        if (aluno == null) {
+        UserResponse response = userService.pegarPorCpfAluno(cpf);
+
+        if (response == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(UserResponse.fromAluno(aluno));
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/aluno/{cpf}")

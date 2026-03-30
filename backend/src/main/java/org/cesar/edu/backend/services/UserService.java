@@ -2,6 +2,8 @@ package org.cesar.edu.backend.services;
 
 import org.cesar.edu.backend.dtos.requests.UserCreateRequest;
 import org.cesar.edu.backend.dtos.requests.UserLoginRequest;
+import org.cesar.edu.backend.dtos.responses.CompraResponse;
+import org.cesar.edu.backend.dtos.responses.CursoResponse;
 import org.cesar.edu.backend.dtos.responses.UserResponse;
 import org.cesar.edu.backend.models.*;
 import org.cesar.edu.backend.repositories.*;
@@ -24,16 +26,23 @@ public class UserService {
     private final TelefoneRepository telefoneRepository;
     private final CertificacoesRepository certificacoesRepository;
     private final CursoRepository cursoRepository;
+    private final CompraService compraService;
+    private final CursoService cursoService;
+    private final LecionaRepository lecionaRepository;
 
     @Autowired
     public UserService(UserRepository userRepository, AlunoRepository alunoRepository, ProfessorRepository professorRepository,
-                        TelefoneRepository telefoneRepository, CertificacoesRepository certificacoesRepository,  CursoRepository cursoRepository) {
+                        TelefoneRepository telefoneRepository, CertificacoesRepository certificacoesRepository,  CursoRepository cursoRepository,
+                            CompraService compraService, CursoService cursoService, LecionaRepository lecionaRepository) {
         this.userRepository = userRepository;
         this.alunoRepository = alunoRepository;
         this.professorRepository = professorRepository;
         this.telefoneRepository = telefoneRepository;
         this.certificacoesRepository = certificacoesRepository;
         this.cursoRepository = cursoRepository;
+        this.compraService = compraService;
+        this.cursoService = cursoService;
+        this.lecionaRepository = lecionaRepository;
     }
     @Transactional(readOnly = true)
     public UserResponse realizarLogin(UserLoginRequest dto) {
@@ -45,12 +54,12 @@ public class UserService {
 
         Aluno aluno = alunoRepository.findByCpf(user.getCpf());
         if (aluno != null) {
-            return UserResponse.fromAluno(aluno);
+            return UserResponse.fromAluno(aluno,null);
         }
 
         Professor professor = professorRepository.findByCpf(user.getCpf());
         if (professor != null) {
-            return UserResponse.fromProfessor(professor);
+            return UserResponse.fromProfessor(professor,null);
         }
 
         return null;
@@ -230,7 +239,7 @@ public class UserService {
 
         return listaSimples;
     }
-    public Professor pegarPorCpfProfessor(String cpf) {
+    public UserResponse pegarPorCpfProfessor(String cpf) {
         try {
             User userBase = userRepository.findByCpf(cpf);
             if (userBase == null) return null;
@@ -251,7 +260,14 @@ public class UserService {
             List<CertificadoProfessor> certificados = certificacoesRepository.findByCpf(cpf);
             professor.setCertificados(certificados);
 
-            return professor;
+            List<Leciona> lecionas = lecionaRepository.findByCpf(cpf);
+
+            List<CursoResponse> cursos = lecionas.stream()
+                    .map(leciona -> cursoService.findResponseById(leciona.getId_curso()))
+                    .toList();
+
+            return UserResponse.fromProfessor(professor, cursos);
+
         } catch (Exception e) {
             return null;
         }
@@ -367,7 +383,7 @@ public class UserService {
             return new ResultService(true, false, erros);
         }
     }
-    public Aluno pegarPorCpfAluno(String cpf) {
+    public UserResponse pegarPorCpfAluno(String cpf) {
         try {
             User userBase = userRepository.findByCpf(cpf);
             if (userBase == null) return null;
@@ -385,7 +401,10 @@ public class UserService {
             List<Telefone> telefones = telefoneRepository.findByCpf(cpf);
             aluno.setTelefones(telefones);
 
-            return aluno;
+            List<CompraResponse> compras = compraService.findResponsesByAluno(cpf);
+
+            return UserResponse.fromAluno(aluno, compras);
+
         } catch (DataAccessException e) {
             return null;
         }
