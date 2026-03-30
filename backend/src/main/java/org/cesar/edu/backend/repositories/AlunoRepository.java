@@ -2,6 +2,7 @@ package org.cesar.edu.backend.repositories;
 
 import org.cesar.edu.backend.models.Aluno;
 import org.cesar.edu.backend.models.User;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -29,7 +30,12 @@ public class AlunoRepository {
         return jdbcTemplate.query("SELECT * FROM aluno", rowMapper);
     }
     public Aluno findByCpf(String cpf) {
-        return jdbcTemplate.queryForObject("SELECT * FROM aluno WHERE cpf_aluno = ?", rowMapper, cpf);
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM aluno WHERE cpf_aluno = ?", rowMapper, cpf);
+        }
+        catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
     public boolean save(Aluno aluno) {
         boolean salvo = userRepository.save((User) aluno);

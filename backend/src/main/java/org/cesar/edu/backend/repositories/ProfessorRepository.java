@@ -2,6 +2,7 @@ package org.cesar.edu.backend.repositories;
 
 import org.cesar.edu.backend.models.Professor;
 import org.cesar.edu.backend.models.User;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -31,7 +32,12 @@ public class ProfessorRepository {
         return jdbcTemplate.query("select * from professor", rowMapper);
     }
     public Professor findByCpf(String cpf_professor) {
-        return jdbcTemplate.queryForObject("SELECT * FROM professor WHERE cpf_professor = ?", rowMapper, cpf_professor);
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM professor WHERE cpf_professor = ?", rowMapper, cpf_professor);
+        }
+        catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
     public boolean save(Professor professor) {
         boolean sucesso = userRepository.save((User) professor);
