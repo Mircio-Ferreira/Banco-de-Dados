@@ -64,15 +64,14 @@ public class UserService {
         if (user == null || !dto.senha().equals(user.getSenha())) {
             return null;
         }
+        Professor professor = professorRepository.findByCpf(user.getCpf());
+        if (professor != null) {
+            return UserResponse.fromProfessor(professor,null);
+        }
 
         Aluno aluno = alunoRepository.findByCpf(user.getCpf());
         if (aluno != null) {
             return UserResponse.fromAluno(aluno,null);
-        }
-
-        Professor professor = professorRepository.findByCpf(user.getCpf());
-        if (professor != null) {
-            return UserResponse.fromProfessor(professor,null);
         }
 
         return null;
