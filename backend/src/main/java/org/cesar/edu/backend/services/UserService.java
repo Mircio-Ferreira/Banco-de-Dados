@@ -280,6 +280,9 @@ public class UserService {
             return UserResponse.fromProfessor(professor, cursos);
 
         } catch (Exception e) {
+            System.err.println("🚨 ATENÇÃO: ERRO AO BUSCAR PROFESSOR NO BANCO! 🚨");
+            System.err.println("CPF Buscado: " + cpf);
+            e.printStackTrace(); // ISSO AQUI VAI CUSPIR O ERRO REAL NO CONSOLE DO INTELLIJ
             return null;
         }
     }

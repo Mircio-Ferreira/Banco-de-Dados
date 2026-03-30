@@ -18,7 +18,7 @@ public class TelefoneRepository {
     private final RowMapper<Telefone> telefoneRowMapper = new RowMapper<Telefone>() {
         public Telefone mapRow(ResultSet rs, int rowNum) throws SQLException {
             Telefone telefone = new Telefone();
-            telefone.setCpf_usuario(rs.getString("cpf_usuario"));
+            telefone.setCpf_usuario(rs.getString("cpf"));
             telefone.setNumero(rs.getString("numero"));
             return telefone;
         }
@@ -27,7 +27,7 @@ public class TelefoneRepository {
         return jdbcTemplate.query("SELECT * FROM telefone", telefoneRowMapper);
     }
     public List<Telefone> findByCpf(String cpf_usuario) {
-        return jdbcTemplate.query("SELECT * FROM telefone WHERE cpf_usuario = ?", telefoneRowMapper, cpf_usuario);
+        return jdbcTemplate.query("SELECT * FROM telefone WHERE cpf = ?", telefoneRowMapper, cpf_usuario);
     }
     public boolean save(Telefone telefone) {
         int linhasAfetadas = jdbcTemplate.update("INSERT INTO telefone VALUES (?, ?)",telefone.getCpf_usuario(),telefone.getNumero());
@@ -38,7 +38,7 @@ public class TelefoneRepository {
         return linhasAfetadas > 0? true:false;
     }
     public boolean delete(String cpf_usuario) {
-        int linhasAfetadas = jdbcTemplate.update("DELETE FROM telefone WHERE cpf_usuario = ?",cpf_usuario);
+        int linhasAfetadas = jdbcTemplate.update("DELETE FROM telefone WHERE cpf = ?",cpf_usuario);
         return linhasAfetadas > 0? true:false;
     }
 }

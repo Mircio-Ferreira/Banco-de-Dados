@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -209,8 +210,15 @@ public class CursoService {
         if (curso == null) {
             return null;
         }
+        List<CursoCategoria> relacoes = categoriaCursoRepository.findByCurso(id_curso);
 
-        List<Categoria> categorias = categoriaRepository.findCategoriasByCursoId(id_curso);
+        List<Categoria> categorias = new ArrayList<>();
+        for (CursoCategoria relacao : relacoes) {
+            Categoria cat = categoriaRepository.findById(relacao.getId_categoria());
+            if (cat != null) {
+                categorias.add(cat);
+            }
+        }
         List<Leciona> lecionas = lecionaRepository.findAllByIdCurso(id_curso);
 
         return CursoResponse.fromEntity(curso, categorias, lecionas);
@@ -220,10 +228,20 @@ public class CursoService {
         List<Curso> cursos = cursoRepository.findAll();
 
         return cursos.stream().map(curso -> {
-            List<Categoria> categorias = categoriaRepository.findCategoriasByCursoId(curso.getId_curso());
+            List<CursoCategoria> relacoes = categoriaCursoRepository.findByCurso(curso.getId_curso());
+
+            List<Categoria> categorias = new ArrayList<>();
+            for (CursoCategoria relacao : relacoes) {
+                Categoria cat = categoriaRepository.findById(relacao.getId_categoria());
+                if (cat != null) {
+                    categorias.add(cat);
+                }
+            }
+
             List<Leciona> lecionas = lecionaRepository.findAllByIdCurso(curso.getId_curso());
 
             return CursoResponse.fromEntity(curso, categorias, lecionas);
+
         }).toList();
     }
     private ResultService validateCurso(CursoRequest cursoDto){
