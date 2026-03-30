@@ -48,37 +48,46 @@ O objetivo principal é aplicar, na prática, os conceitos de banco de dados em 
 
 ## ⚙️ Como executar o projeto
 
-### 🗄️ Banco de Dados (PostgreSQL)
+### Como executar o backend com Docker
 
-Crie um banco no PostgreSQL:
+### Pré-requisitos
 
-```sql
-CREATE DATABASE cesar_edu;
+Antes de começar, certifique-se de ter instalado em sua máquina:
+
+- [Docker](https://www.docker.com/)
+- Docker Compose
+
+Para verificar se está tudo certo, rode no terminal ou CMD:
+
+```bash
+docker --version
+docker compose version
 ```
-
-Configure as credenciais no backend (`application.properties` ou `application.yml`):
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/cesar_edu
-spring.datasource.username=SEU_USUARIO
-spring.datasource.password=SUA_SENHA
-spring.datasource.driver-class-name=org.postgresql.Driver
-```
-
----
-
-### ⚙️ Backend (Spring Boot)
-
-1. Abra a pasta **backend** no IntelliJ  
-2. Aguarde o Maven/Gradle baixar as dependências  
-3. Execute a aplicação (classe principal)
-
-O servidor irá subir em:
+Ápos a instalação, clone o repositório na pasta de sua preferência:
+``` bash
+git clone https://github.com/Mircio-Ferreira/Banco-de-Dados
 
 ```
+Entre na pasta "backend"
+```bash
+cd backend
+```
+Execute o comando para subir a aplicação via docker
+```bash
+docker compose up --build
+```
+Após esse comando, o docker vai executar e subir a aplicação automaticamente. A porta em que a aplicação vai subir no browser será a:
+```bash
 http://localhost:8080
 ```
-
+Para a melhor visualização e entendimento dos endpoints, entre na url:
+```bash
+http://localhost:8080/swagger-ui/index.html
+```
+Se quiser parar a aplicação, basta executar o comando no terminal ou CMD:
+```bash
+docker compose stop
+```
 ---
 
 ### 🌐 Frontend
