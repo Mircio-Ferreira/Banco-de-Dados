@@ -37,10 +37,138 @@ O objetivo principal é aplicar, na prática, os conceitos de banco de dados em 
 <details>
 <summary><strong>Modelo Lógico</strong></summary> 
 <br>
-  
+
 
 
 ## Esquema Relacional
 
 🔗   - [Documento Esquema Relacional - Cesar Edu](https://docs.google.com/document/d/1NKjeO3JPzk_YI0Vg5SAW6i60NHyMUUELvO5VN3UEHv8/edit?usp=sharing)
 
+  </details>
+
+## ⚙️ Como executar o projeto
+
+### 🗄️ Banco de Dados (PostgreSQL)
+
+Crie um banco no PostgreSQL:
+
+```sql
+CREATE DATABASE cesar_edu;
+```
+
+Configure as credenciais no backend (`application.properties` ou `application.yml`):
+
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/cesar_edu
+spring.datasource.username=SEU_USUARIO
+spring.datasource.password=SUA_SENHA
+spring.datasource.driver-class-name=org.postgresql.Driver
+```
+
+---
+
+### ⚙️ Backend (Spring Boot)
+
+1. Abra a pasta **backend** no IntelliJ  
+2. Aguarde o Maven/Gradle baixar as dependências  
+3. Execute a aplicação (classe principal)
+
+O servidor irá subir em:
+
+```
+http://localhost:8080
+```
+
+---
+
+### 🌐 Frontend
+
+#### Opção 1: Live Server (VS Code)
+
+1. Abra o projeto no VS Code  
+2. Clique com o botão direito em:
+
+```
+front-end/login/login.html
+```
+
+3. Clique em **"Open with Live Server"**
+
+Acesse no navegador:
+
+```
+http://localhost:51220/front-end/login/login.html
+```
+
+⚠️ **Observação:**  
+A porta pode variar dependendo da sua máquina.
+
+---
+
+#### ✅ Opção 2: Sem extensão (recomendado)
+
+Você pode rodar um servidor simples com Python ou Node:
+
+##### 🔹 Python (mais fácil)
+
+```bash
+cd front-end
+python -m http.server 5500
+```
+
+Acesse:
+
+```
+http://localhost:5500/login/login.html
+```
+
+---
+
+##### 🔹 Node.js (http-server)
+
+Instale:
+
+```bash
+npm install -g http-server
+```
+
+Execute:
+
+```bash
+cd front-end
+http-server
+```
+
+---
+
+### 🔄 Fluxo da Aplicação
+
+Após abrir o login:
+
+- ✅ Cadastro de usuário  
+- ✅ Login automático  
+- ✅ Navegação entre telas  
+- ✅ Consumo do backend via API  
+
+👉 Todo o fluxo da aplicação já está integrado entre as telas.
+
+---
+
+### 🧠 Observações Importantes
+
+- O "token" atualmente é o **CPF do usuário armazenado no localStorage**
+- O backend utiliza validações completas de:
+  - CPF
+  - Email
+  - Senha
+  - Telefones
+
+---
+
+### 🏗️ Arquitetura
+
+O sistema segue uma arquitetura baseada em:
+
+- Controllers  
+- Services  
+- Repositories  
