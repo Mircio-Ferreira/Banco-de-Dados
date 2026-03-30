@@ -26,13 +26,15 @@ services:
     ports:
       - "8080:8080"
     environment:
+      APP_DATABASE_HOST: db
+      APP_DATABASE_PORT: 5432
+      APP_DATABASE_NAME: cesaredu
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/cesaredu
       SPRING_DATASOURCE_USERNAME: cesaredu_user
       SPRING_DATASOURCE_PASSWORD: cesaredu_pass
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_SQL_INIT_MODE: always
       SPRING_PROFILES_ACTIVE: docker
-    restart: unless-stopped
 
 volumes:
   postgres_data:
