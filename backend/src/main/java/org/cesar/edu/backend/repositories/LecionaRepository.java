@@ -32,6 +32,10 @@ public class LecionaRepository {
     public List<Leciona> findByCpf(String cpf) {
         return jdbcTemplate.query("SELECT * FROM leciona WHERE cpf_professor = ?", lecionaRowMapper, cpf);
     }
+    public List<Leciona> findAllByIdCurso(Long idCurso) {
+        String sql = "SELECT * FROM Leciona WHERE id_curso = ?";
+        return jdbcTemplate.query(sql, lecionaRowMapper, idCurso);
+    }
     public boolean save(Leciona leciona) {
         int linhasAlteradas = jdbcTemplate.update("INSERT INTO leciona (cpf_professor, id_curso) VALUES (?, ?)", leciona.getCpf_professor(), leciona.getId_curso());
         return linhasAlteradas > 0;

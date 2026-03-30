@@ -32,6 +32,10 @@ public class CategoriaRepository {
         String sql = "SELECT * FROM categoria WHERE id_categoria = ?";;
         return jdbcTemplate.queryForObject(sql, categoriaRowMapper, id);
     }
+    public List<Categoria> findCategoriasByCursoId(Long cursoId) {
+        String sql = "SELECT * FROM categoria WHERE curso_id = ?";
+        return jdbcTemplate.query(sql, categoriaRowMapper, cursoId);
+    }
     public Categoria findByNome(String nome) {
         String sql = "SELECT * FROM categoria WHERE nome_da_categoria = ?";
         return jdbcTemplate.queryForObject(sql, categoriaRowMapper, nome);

@@ -1,6 +1,7 @@
 package org.cesar.edu.backend.services;
 
 import org.cesar.edu.backend.dtos.requests.CursoRequest;
+import org.cesar.edu.backend.dtos.responses.CursoResponse;
 import org.cesar.edu.backend.models.*;
 import org.cesar.edu.backend.repositories.*;
 import org.cesar.edu.backend.utils.ListaString;
@@ -203,11 +204,28 @@ public class CursoService {
             return new ResultService(valido, realizado, erros);
         }
     }
-    public Curso findById(Long id_curso){
-        return cursoRepository.findById(id_curso);
-    }
-    public List<Curso> findAll(){return cursoRepository.findAll();}
+    public CursoResponse findResponseById(Long id_curso) {
+        Curso curso = cursoRepository.findById(id_curso);
+        if (curso == null) {
+            return null;
+        }
 
+        List<Categoria> categorias = categoriaRepository.findCategoriasByCursoId(id_curso);
+        List<Leciona> lecionas = lecionaRepository.findAllByIdCurso(id_curso);
+
+        return CursoResponse.fromEntity(curso, categorias, lecionas);
+    }
+
+    public List<CursoResponse> findAllResponses() {
+        List<Curso> cursos = cursoRepository.findAll();
+
+        return cursos.stream().map(curso -> {
+            List<Categoria> categorias = categoriaRepository.findCategoriasByCursoId(curso.getId_curso());
+            List<Leciona> lecionas = lecionaRepository.findAllByIdCurso(curso.getId_curso());
+
+            return CursoResponse.fromEntity(curso, categorias, lecionas);
+        }).toList();
+    }
     private ResultService validateCurso(CursoRequest cursoDto){
         ListaString erros = new ListaString();
         boolean valido = true;
