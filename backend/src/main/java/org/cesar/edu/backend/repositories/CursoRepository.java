@@ -31,8 +31,16 @@ public class CursoRepository {
     public Curso findById(Long id_curso) {
         return jdbcTemplate.queryForObject("SELECT * FROM curso WHERE id_curso = ?", cursoRowMapper, id_curso);
     }
-    public Curso findByNome(String nome_curso) {
-        return jdbcTemplate.queryForObject("SELECT * FROM curso WHERE nome = ?", cursoRowMapper, nome_curso);
+    public Curso findByNome(String nome) {
+        String sql = "SELECT * FROM curso WHERE nome = ?";
+
+        List<Curso> resultados = jdbcTemplate.query(sql, cursoRowMapper, nome);
+
+        if (resultados.isEmpty()) {
+            return null;
+        }
+
+        return resultados.get(0);
     }
     public boolean save(Curso curso) {
         int linhasAlteradas = jdbcTemplate.update("INSERT INTO curso(nome, preco, descricao) VALUES (?, ?, ?)", curso.getNome_curso(), curso.getPreco(), curso.getDescricao_curso());

@@ -28,17 +28,21 @@ public class CategoriaRepository {
         return jdbcTemplate.query(sql, categoriaRowMapper);
     }
 
-    public Categoria findById(Long id) {
-        String sql = "SELECT * FROM categoria WHERE id_categoria = ?";;
-        return jdbcTemplate.queryForObject(sql, categoriaRowMapper, id);
-    }
+
     public List<Categoria> findCategoriasByCursoId(Long cursoId) {
         String sql = "SELECT * FROM categoria WHERE curso_id = ?";
         return jdbcTemplate.query(sql, categoriaRowMapper, cursoId);
     }
+    public Categoria findById(Long id) {
+        String sql = "SELECT * FROM categoria WHERE id_categoria = ?";
+        List<Categoria> resultados = jdbcTemplate.query(sql, categoriaRowMapper, id);
+        return resultados.isEmpty() ? null : resultados.get(0);
+    }
+
     public Categoria findByNome(String nome) {
         String sql = "SELECT * FROM categoria WHERE nome_da_categoria = ?";
-        return jdbcTemplate.queryForObject(sql, categoriaRowMapper, nome);
+        List<Categoria> resultados = jdbcTemplate.query(sql, categoriaRowMapper, nome);
+        return resultados.isEmpty() ? null : resultados.get(0);
     }
 
     public boolean save(String categoria) {
