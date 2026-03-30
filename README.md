@@ -128,7 +128,7 @@ python -m http.server 5500
 Acesse:
 
 ```
-http://localhost:5500/login/login.html
+http://localhost:5500/front-end/login/login.html
 ```
 
 ---
