@@ -29,7 +29,21 @@ function preencherFormulario(curso) {
     const catList = document.getElementById("categoriaList");
     curso.categorias?.forEach(cat => {
         const div = document.createElement("div");
-        div.textContent = cat.nome;
+
+        const text = document.createElement("span");
+        text.textContent = cat.nome;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "X";
+        removeBtn.style.marginLeft = "10px";
+
+        removeBtn.onclick = () => {
+            div.remove();
+        };
+
+        div.appendChild(text);
+        div.appendChild(removeBtn);
+
         catList.appendChild(div);
     });
 
@@ -92,7 +106,7 @@ function pegarCategorias() {
     const categorias = [];
 
     for (let item of lista) {
-        categorias.push(item.textContent);
+        categorias.push(item.querySelector("span").textContent);
     }
 
     return categorias;
@@ -143,4 +157,30 @@ async function deletarCurso() {
         console.error(error);
         alert("Erro ao deletar curso");
     }
+}
+
+function addCategoria() {
+    const input = document.getElementById("categoriaInput");
+    const list = document.getElementById("categoriaList");
+
+    if (input.value.trim() === "") return;
+
+    const item = document.createElement("div");
+
+    const text = document.createElement("span");
+    text.textContent = input.value;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "X";
+    removeBtn.style.marginLeft = "10px";
+
+    removeBtn.onclick = () => {
+        item.remove();
+    };
+
+    item.appendChild(text);
+    item.appendChild(removeBtn);
+
+    list.appendChild(item);
+    input.value = "";
 }

@@ -150,6 +150,10 @@ function criarCurso() {
         })
         .then(data => {
             console.log(data)
+            reloadUser()
+            .then(_ => {
+                alert("Curso criado com sucesso!")
+            })
         })
         .catch(err => {
             console.error(err)
