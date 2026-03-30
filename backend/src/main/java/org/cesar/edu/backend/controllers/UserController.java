@@ -24,6 +24,20 @@ public class UserController implements UserControllerDoc {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+    @GetMapping("/{cpf}")
+    public ResponseEntity<?> buscarUsuarioGenerico(@PathVariable String cpf) {
+        try {
+            UserResponse response = userService.buscarUsuarioGenericoPorCpf(cpf);
+
+            if (response == null) {
+                return ResponseEntity.status(404).body("Usuário não encontrado.");
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro interno: " + e.getMessage());
+        }
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> efetuarLogin(@RequestBody UserLoginRequest dto) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record UserResponse(
+        String tipoUsuario,
         String cpf,
         String nome,
         String email,
@@ -13,11 +14,12 @@ public record UserResponse(
         String cep,
         List<String> telefones,
         List<String> certificados,
-        List<CompraResponse> compras,            // Nova lista para Alunos
-        List<CursoResponse> cursosLecionados     // Nova lista para Professores
+        List<CompraResponse> compras,
+        List<CursoResponse> cursosLecionados
 ) {
     public static UserResponse fromProfessor(Professor p, List<CursoResponse> cursosLecionados) {
         return new UserResponse(
+                "PROFESSOR",
                 p.getCpf(),
                 p.getNome(),
                 p.getEmail(),
@@ -35,6 +37,7 @@ public record UserResponse(
 
     public static UserResponse fromAluno(Aluno a, List<CompraResponse> compras) {
         return new UserResponse(
+                "ALUNO",
                 a.getCpf(),
                 a.getNome(),
                 a.getEmail(),

@@ -13,6 +13,19 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários (Alunos e Professores) e Autenticação.")
 public interface UserControllerDoc {
 
+
+    @Operation(
+            summary = "Buscar Usuário Genérico por CPF",
+            description = "Busca um usuário pelo CPF, identifica automaticamente se é Aluno ou Professor, e retorna o perfil completo. O DTO de resposta inclui o campo 'tipoUsuario' ('ALUNO' ou 'PROFESSOR') para facilitar a renderização no Front-end."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado com sucesso. Retorna o perfil completo e seu tipo."),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado na base de dados."),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor ao buscar o usuário.")
+    })
+
+    ResponseEntity<?> buscarUsuarioGenerico(
+            @Parameter(description = "CPF do usuário (Aluno ou Professor)") @PathVariable String cpf);
     @Operation(summary = "Efetuar Login", description = "Autentica um usuário (Aluno ou Professor) retornando seus dados correspondentes.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Login efetuado com sucesso."),

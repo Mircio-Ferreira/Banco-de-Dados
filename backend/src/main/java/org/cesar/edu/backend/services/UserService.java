@@ -44,6 +44,19 @@ public class UserService {
         this.cursoService = cursoService;
         this.lecionaRepository = lecionaRepository;
     }
+    public UserResponse buscarUsuarioGenericoPorCpf(String cpf) {
+        UserResponse alunoResponse = pegarPorCpfAluno(cpf);
+        if (alunoResponse != null) {
+            return alunoResponse;
+        }
+
+        UserResponse professorResponse = pegarPorCpfProfessor(cpf);
+        if (professorResponse != null) {
+            return professorResponse;
+        }
+
+        return null;
+    }
     @Transactional(readOnly = true)
     public UserResponse realizarLogin(UserLoginRequest dto) {
         User user = userRepository.findByEmail(dto.email());
