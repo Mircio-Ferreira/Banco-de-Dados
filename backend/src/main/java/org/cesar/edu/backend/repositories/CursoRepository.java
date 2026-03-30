@@ -31,6 +31,9 @@ public class CursoRepository {
     public Curso findById(Long id_curso) {
         return jdbcTemplate.queryForObject("SELECT * FROM curso WHERE id_curso = ?", cursoRowMapper, id_curso);
     }
+    public Curso findByNome(String nome_curso) {
+        return jdbcTemplate.queryForObject("SELECT * FROM curso WHERE nome = ?", cursoRowMapper, nome_curso);
+    }
     public boolean save(Curso curso) {
         int linhasAlteradas = jdbcTemplate.update("INSERT INTO curso(nome, preco, descricao) VALUES (?, ?, ?)", curso.getNome_curso(), curso.getPreco(), curso.getDescricao_curso());
         return linhasAlteradas > 0;
@@ -38,7 +41,7 @@ public class CursoRepository {
     public boolean delete(Long id_curso) {
         return jdbcTemplate.update("DELETE FROM curso WHERE id_curso = ?", id_curso) > 0;
     }
-    public boolean update(Curso curso, long id_cursoAntigo) {
+    public boolean update(Curso curso, Long id_cursoAntigo) {
         int linhasAlteradas = jdbcTemplate.update("UPDATE curso SET nome = ?, preco = ?, descricao = ? WHERE id_curso = ?", curso.getNome_curso(),curso.getPreco(), curso.getDescricao_curso(), id_cursoAntigo);
         return linhasAlteradas > 0;
     }

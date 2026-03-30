@@ -39,4 +39,17 @@ public class LecionaRepository {
     public boolean delete(Leciona leciona) {
         return jdbcTemplate.update("DELETE FROM leciona WHERE cpf_professor = ? AND id_curso = ?", leciona.getCpf_professor(), leciona.getId_curso()) > 0;
     }
+    public boolean deleteByIdCurso(Long id_curso) {
+        String sql = "DELETE FROM leciona WHERE id_curso = ?";
+
+        try {
+            jdbcTemplate.update(sql, id_curso);
+
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("Erro ao deletar vínculo Leciona para o curso " + id_curso + ": " + e.getMessage());
+            return false;
+        }
+    }
 }

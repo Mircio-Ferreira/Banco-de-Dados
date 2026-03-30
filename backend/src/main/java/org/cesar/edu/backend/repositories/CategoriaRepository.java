@@ -32,10 +32,14 @@ public class CategoriaRepository {
         String sql = "SELECT * FROM categoria WHERE id_categoria = ?";;
         return jdbcTemplate.queryForObject(sql, categoriaRowMapper, id);
     }
+    public Categoria findByNome(String nome) {
+        String sql = "SELECT * FROM categoria WHERE nome_da_categoria = ?";
+        return jdbcTemplate.queryForObject(sql, categoriaRowMapper, nome);
+    }
 
-    public boolean save(Categoria categoria) {
+    public boolean save(String categoria) {
         String sql = "INSERT INTO categoria (nome_da_categoria) VALUES (?)";
-        return jdbcTemplate.update(sql, categoria.getNome()) > 0;
+        return jdbcTemplate.update(sql, categoria) > 0;
     }
 
     public boolean update(Categoria categoria, Long idAntigo) {

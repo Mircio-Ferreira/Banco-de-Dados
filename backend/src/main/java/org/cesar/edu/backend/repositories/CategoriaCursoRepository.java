@@ -46,4 +46,15 @@ public class CategoriaCursoRepository {
         String sql = "DELETE FROM possui WHERE id_curso = ? AND id_categoria = ?";
         return jdbcTemplate.update(sql, cursoCategoria.getId_curso(), cursoCategoria.getId_categoria()) > 0;
     }
+    public boolean deleteByIdCurso(Long id_curso) {
+        String sql = "DELETE FROM possui WHERE id_curso = ?";
+        try {
+            jdbcTemplate.update(sql, id_curso);
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("Erro ao deletar vínculos do curso " + id_curso + ": " + e.getMessage());
+            return false;
+        }
+    }
 }
