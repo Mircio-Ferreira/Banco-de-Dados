@@ -28,9 +28,11 @@ function login() {
             console.log("Login sucesso:", data);
 
             // exemplo: salvar token
-            localStorage.setItem("token", data.cpf);
+            localStorage.setItem("user", JSON.stringify(data));
 
-            window.location.href = "../home/home.html";
+            const userType = data.tipoUsuario.toLowerCase()
+
+            window.location.href = `../home/home-${userType}.html`;
         })
         .catch(err => {
             console.error(err)

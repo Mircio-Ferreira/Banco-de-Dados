@@ -50,24 +50,26 @@
 <body>
 
     <header class="navbar">
-        <div class="logo">CesarEdu</div>
+        <div class="logo">
+            <img src="../img/cesar_edu.png" />
+            <a href="../home/home-professor.html">CesarEdu</a>
+        </div>
 
         <input class="search" type="text" placeholder="O que você quer aprender?" />
 
         <div class="perfil">
-            <img
-                src="https://s2-techtudo.glbimg.com/PubgcFXGejS1Z3icyJyUibMpU7s=/0x0:300x304/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/j/W/QU9NeQT5yDTg5VqykCuQ/2012-04-20-linus-torvalds.jpg" />
-            <span>Eric</span>
+            <span id="userName">Usuário</span>
+
+            <button onclick="logout()" class="logout-btn">Sair</button>
         </div>
     </header>
 
     <div class="layout">
 
         <aside class="sidebar">
-            <a href="#">🏠 Home</a>
-            <a href="#">📚 Meus cursos</a>
+            <a href="../home/home.html">🏠 Home</a>
             <a href="#">🏆 Certificados</a>
-            <a href="#">⚙️ Configurações</a>
+            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
         </aside>
 
         <main class="conteudo">
@@ -108,7 +110,8 @@
     </div>
 
     <script src="addCurso.js"></script>
-
+    <script src="../js/auth.js"></script>
+    <script src="../js/logout.js"></script>
 </body>
 
 </html>

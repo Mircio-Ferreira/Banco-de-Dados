@@ -1,5 +1,6 @@
 function deletarConta() {
-    const cpf = localStorage.getItem("token"); // você salvou o CPF como token
+    const user = JSON.parse(localStorage.getItem("user")); // você salvou o CPF como token
+    const cpf = user.cpf
     const erroDiv = document.getElementById("erroConfig");
 
     if (!cpf) {
@@ -36,4 +37,8 @@ function deletarConta() {
         .catch(err => {
             erroDiv.innerText = err.message;
         });
+}
+
+function alterarPage(){
+    window.location.href = "../configuracoes/alterar-usuario.html";
 }

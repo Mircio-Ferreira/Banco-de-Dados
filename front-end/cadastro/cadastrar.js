@@ -59,7 +59,7 @@ function cadastrar() {
         cep: document.getElementById("cep").value.replace(/\D/g, ""),
 
         telefones: [],
-        certificacoes: []
+        certificados: []
     };
 
     const telefoneItems = document.getElementById("telefoneList").children;
@@ -72,7 +72,7 @@ function cadastrar() {
         const certItems = document.getElementById("certList").children;
 
         for (let item of certItems) {
-            usuario.certificacoes.push(item.firstChild.textContent);
+            usuario.certificados.push(item.firstChild.textContent);
         }
     }
 
@@ -121,9 +121,10 @@ function cadastrar() {
 
             // salva "token" (cpf no seu caso)
             localStorage.setItem("token", data.cpf);
+            localStorage.setItem("user", JSON.stringify(data));
 
             // redireciona
-            window.location.href = "../home/home.html";
+            window.location.href = `../home/home-${userType}.html`;
         })
         .catch(error => {
             console.error("Erro:", error);

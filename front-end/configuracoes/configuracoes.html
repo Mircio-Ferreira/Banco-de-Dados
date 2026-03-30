@@ -12,12 +12,16 @@
     <!-- 🔝 NAVBAR -->
     <header class="navbar">
         <div class="logo">
+            <img src="../img/cesar_edu.png" />
             <a href="../home/home.html">CesarEdu</a>
         </div>
 
+        <input class="search" type="text" placeholder="O que você quer aprender?" />
+
         <div class="perfil">
-            <img src="https://via.placeholder.com/40" />
-            <span>Eric</span>
+            <span id="userName">Usuário</span>
+
+            <button onclick="logout()" class="logout-btn">Sair</button>
         </div>
     </header>
 
@@ -26,9 +30,8 @@
         <!-- 📌 SIDEBAR -->
         <aside class="sidebar">
             <a href="../home/home.html">🏠 Home</a>
-            <a href="#">📚 Meus cursos</a>
+            <a href="../home/home.html">📚 Meus cursos</a>
             <a href="#">🏆 Certificados</a>
-            <a href="./config.html">⚙️ Configurações</a>
         </aside>
 
         <!-- 📊 CONTEÚDO -->
@@ -41,9 +44,9 @@
                 <div class="config-item">
                     <h3>👤 Dados da conta</h3>
                     <p>Atualize suas informações pessoais.</p>
-                    <button class="btn btn-secondary">
+                    <button class="btn btn-secondary" onclick="alterarPage()">
                         Editar perfil
-                    </button>
+                    </button >
                 </div>
 
                 <!-- SEGURANÇA -->
@@ -73,6 +76,8 @@
     </div>
 
     <script src="config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/logout.js"></script>
 </body>
 
 </html>

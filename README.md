@@ -6,7 +6,7 @@ O sistema foi pensado para simular um ambiente real de ensino digital, permitind
 
 O objetivo principal é aplicar, na prática, os conceitos de banco de dados em uma solução estruturada.
 
-<img src="resourse\cesar_edu.png" alt="Logo do projeto" width="350"/>
+<img src="resource\cesar_edu.png" alt="Logo do projeto" width="350"/>
 
 ## 👥 Equipe de Desenvolvimento
 

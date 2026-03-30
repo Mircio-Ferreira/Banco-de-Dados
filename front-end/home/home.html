@@ -1,152 +1,24 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>CesarEdu</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
 
 <body>
+    <script>
+        const user = localStorage.getItem("user")
 
-    <!-- 🔝 NAVBAR -->
-    <header class="navbar">
-        <div class="logo">CesarEdu</div>
-
-        <input class="search" type="text" placeholder="O que você quer aprender?" />
-
-        <div class="perfil">
-            <img
-                src="https://s2-techtudo.glbimg.com/PubgcFXGejS1Z3icyJyUibMpU7s=/0x0:300x304/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/j/W/QU9NeQT5yDTg5VqykCuQ/2012-04-20-linus-torvalds.jpg" />
-            <span>Eric</span>
-        </div>
-    </header>
-
-    <div class="layout">
-
-        <!-- 📌 SIDEBAR -->
-        <aside class="sidebar">
-            <a href="../home/home.html">🏠 Home</a>
-            <a href="#">📚 Meus cursos</a>
-            <a href="#">🏆 Certificados</a>
-            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
-        </aside>
-
-        <!-- 📊 CONTEÚDO -->
-        <main class="conteudo">
-
-            <!-- 🎬 CARROSSEL POPULARES -->
-            <section>
-                <h2>Mais assistidos</h2>
-
-                <div class="carrossel-wrapper">
-                    <button class="scroll-btn left" onclick="scrollCarrossel(this, -1)">❮</button>
-
-                    <div class="carrossel">
-                        <div class="card card-curso" data-curso="js">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Unofficial_JavaScript_logo_2.svg/1280px-Unofficial_JavaScript_logo_2.svg.png"
-                                class="thumb" />
-                            <h3>JavaScript Completo</h3>
-                        </div>
-
-                        <div class="card card-curso" data-curso="python">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1280px-Python-logo-notext.svg.png"
-                                class="thumb" />
-                            <h3>Python</h3>
-                        </div>
-
-                        <div class="card card-curso" data-curso="react">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSg1MndL-Xp1JcnqaB0YOqTp6zDjrwYyGKsPA&s"
-                                class="thumb" />
-                            <h3>React</h3>
-                        </div>
-
-                        <div class="card card-curso" data-curso="c">
-                            <img src="https://e7.pngegg.com/pngimages/465/779/png-clipart-blue-and-white-c-logo-the-c-programming-language-computer-programming-computer-icons-programmer-blue-angle.png"
-                                class="thumb" />
-                            <h3>C</h3>
-                        </div>
-
-                        <div class="card card-curso" data-curso="swift">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5GIgqBO31G0Exx_R6l7miCVx_Q-ubWzqaEg&s"
-                                class="thumb" />
-                            <h3>Swift</h3>
-                        </div>
-
-                        <div class="card card-curso" data-curso="go">
-                            <img src="https://cdn.britannica.com/44/260944-050-7653AA68/go-gopher-go-programming-language-by-google.jpg"
-                                class="thumb" />
-                            <h3>Go</h3>
-                        </div>
-
-                        <div class="card card-curso" data-curso="java">
-                            <img src="https://www.infoescola.com/wp-content/uploads/2011/03/java.jpg" class="thumb" />
-                            <h3>Java</h3>
-                        </div>
-
-                        <div class="card card-curso" data-curso="c#">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Csharp_Logo.png"
-                                class="thumb" />
-                            <h3>C#</h3>
-                        </div>
-
-                        <div class="card card-curso" data-curso="php">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/PHP-logo.svg" class="thumb" />
-                            <h3>PHP</h3>
-                        </div>
-
-                        <div class="card card-curso" data-curso="kotlin">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png"
-                                class="thumb" />
-                            <h3>Kotlin</h3>
-                        </div>
-                    </div>
-
-                    <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
-                </div>
-            </section>
-
-            <!-- 🏷️ CARROSSEL CATEGORIAS -->
-            <section>
-                <h2>Categorias</h2>
-
-                <div class="carrossel-wrapper">
-                    <button class="scroll-btn left" onclick="scrollCarrossel(this, -1)">❮</button>
-
-                    <div class="carrossel">
-                        <div class="categoria">Programação</div>
-                        <div class="categoria">Design</div>
-                        <div class="categoria">Data Science</div>
-                        <div class="categoria">Mobile</div>
-                        <div class="categoria">DevOps</div>
-                        <div class="categoria">IA</div>
-                    </div>
-
-                    <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
-                </div>
-            </section>
-
-            <!-- ▶️ CONTINUAR ASSISTINDO -->
-            <section>
-                <h2>Continue assistindo</h2>
-
-                <div class="continuar-container">
-                    <div class="card continuar-card">
-                        <h3>JavaScript Completo</h3>
-                        <p>Aula: Funções</p>
-
-                        <div class="barra">
-                            <div class="progresso" style="width: 60%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-    </div>
-    <script src="scrollCarrossel.js"></script>
-    <script src="cursoDirect.js"></script>
-    <script src="auth.js"></script>
+        if (!user) {
+            window.location.href = "../login/login.html";
+        } else if (user.tipoUsuario == "ALUNO") {
+            window.location.href = "../home/home-aluno.html";
+        } else {
+            window.location.href = "../home/home-professor.html";
+        }
+    </script>
 </body>
 
 </html>

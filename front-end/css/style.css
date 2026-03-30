@@ -31,15 +31,14 @@ h2 {
   cursor: pointer;
 }
 
-.perfil img:hover {
+.logo img:hover {
   transform: scale(1.1);
   transition: 0.2s;
 }
 
-.perfil img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
+.logo img {
+  width: 70px;
+  height: 40px;
   /* 🔥 deixa redonda */
   object-fit: cover;
 }
@@ -809,4 +808,18 @@ button {
 .link-login:hover {
     text-decoration: underline;
     color: #93c5fd;
+}
+
+.logout-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #e74c3c;
+    color: white;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b;
 }
