@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/v1/curso")
-public class CursoController implements org.cesar.edu.backend.controllers.CursoControllerDoc {
+public class CursoController implements org.cesar.edu.backend.doc.CursoControllerDoc {
     private CursoService cursoService;
     @Autowired
     public CursoController(CursoService cursoService) {
