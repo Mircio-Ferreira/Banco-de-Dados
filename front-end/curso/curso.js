@@ -130,6 +130,11 @@ const curso = {
     ]
 };
 
+function getCursoId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("id");
+}
+
 let aulaAtual = null;
 
 /* 🎬 Carregar aula */

@@ -27,7 +27,7 @@ O objetivo principal é aplicar, na prática, os conceitos de banco de dados em 
 
 <div align="center">
   
-  <img src="resourse\modelo_conceitual.png" width="700" alt="Modelo Conceitual">
+  <img src="resource\modelo_conceitual.png" width="700" alt="Modelo Conceitual">
   <br>
   
   <br> 
@@ -121,7 +121,6 @@ Você pode rodar um servidor simples com Python ou Node:
 ##### 🔹 Python (mais fácil)
 
 ```bash
-cd front-end
 python -m http.server 5500
 ```
 
