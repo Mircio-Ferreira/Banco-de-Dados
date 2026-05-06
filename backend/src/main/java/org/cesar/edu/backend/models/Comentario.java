@@ -12,10 +12,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Comentario {
     private Long id_comentario;
+    private Long id_aula;
     private Long id_curso;
-    private Long id_compra;
-    private Long id_comentário_pai;
-    private String cpf;
+    private String cpf_aluno;
+    private String cpf_professor;
     private LocalDate data_criacao;
     private String conteudo;
+    private Long comentario_pai;
 }
