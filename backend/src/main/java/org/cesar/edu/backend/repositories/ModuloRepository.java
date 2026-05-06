@@ -32,10 +32,10 @@ public class ModuloRepository {
     public List<Modulo> findAll() {
         return jdbcTemplate.query("select * from modulo", moduloRowMapper);
     }
-    public Modulo findById(Long id) {
+    public Modulo findById(Long id, Long id_curso) {
         Modulo modulo;
         try {
-            modulo = jdbcTemplate.queryForObject("select * from modulo where id_modulo = ?", moduloRowMapper, id);
+            modulo = jdbcTemplate.queryForObject("select * from modulo where id_modulo = ? AND id_curso = ?", moduloRowMapper, id, id_curso);
         } catch (DataAccessException e) {
             return null;
         }
@@ -45,12 +45,12 @@ public class ModuloRepository {
         String sql = "INSERT INTO modulo(id_curso,titulo,carga_horaria,descricao) VALUES(?,?,?,?,?)";
         return jdbcTemplate.update(sql,modulo.getId_curso(),modulo.getTitulo(),modulo.getCargaHoraria(),modulo.getDescricao_curso()) > 0;
     }
-    public boolean delete(Long id) {
-        String sql = "delete from modulo where id_modulo = ?";
-        return jdbcTemplate.update(sql, id) > 0;
+    public boolean delete(Long id_curso, Long id_modulo) {
+        String sql = "delete from modulo where id_modulo = ? and id_curso = ?";
+        return jdbcTemplate.update(sql, id_modulo, id_curso) > 0;
     }
-    public boolean update(Modulo modulo, Long id) {
-        String sql = "UPDATE modulo SET titulo = ? ,carga_horaria = ? ,descricao = ? WHERE id_modulo = ?";
-        return jdbcTemplate.update(sql,modulo.getTitulo(),modulo.getCargaHoraria(),modulo.getDescricao_curso(),id) > 0;
+    public boolean update(Modulo modulo, Long id, Long id_curso) {
+        String sql = "UPDATE modulo SET titulo = ? ,carga_horaria = ? ,descricao = ? WHERE id_modulo = ? AND id_curso = ?";
+        return jdbcTemplate.update(sql,modulo.getTitulo(),modulo.getCargaHoraria(),modulo.getDescricao_curso(),id, id_curso) > 0;
     }
 }
