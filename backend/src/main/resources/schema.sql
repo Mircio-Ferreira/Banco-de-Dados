@@ -136,3 +136,72 @@ CREATE TABLE IF NOT EXISTS comentario(
                            FOREIGN KEY (cpf_professor, id_curso)
                                REFERENCES leciona(cpf_professor, id_curso)
 );
+
+CREATE OR REPLACE VIEW vw_progresso_aluno_curso AS
+SELECT
+    a.cpf_aluno,
+    c.id_curso,
+    c.nome AS nome_curso,
+    COUNT(DISTINCT au.id_aula) AS total_aulas,
+    COUNT(DISTINCT ass.id_aula) AS aulas_assistidas,
+    ROUND(
+            (COUNT(DISTINCT ass.id_aula)::numeric /
+        NULLIF(COUNT(DISTINCT au.id_aula), 0)) * 100,
+            2
+    ) AS percentual_conclusao
+FROM aluno a
+         JOIN compra co
+              ON co.cpf_aluno = a.cpf_aluno
+         JOIN curso c
+              ON c.id_curso = co.id_curso
+         JOIN modulo m
+              ON m.id_curso = c.id_curso
+         JOIN aula au
+              ON au.id_curso = m.id_curso
+                  AND au.id_modulo = m.id_modulo
+         LEFT JOIN assistir ass
+                   ON ass.cpf_aluno = a.cpf_aluno
+                       AND ass.id_curso = c.id_curso
+                       AND ass.id_modulo = au.id_modulo
+                       AND ass.id_aula = au.id_aula
+WHERE c.preco > 0
+GROUP BY
+    a.cpf_aluno,
+    c.id_curso,
+    c.nome;
+
+CREATE OR REPLACE VIEW vw_resumo_geral_cursos AS
+SELECT
+    c.id_curso,
+    c.nome AS nome_curso,
+    c.preco,
+    COUNT(co.cpf_aluno) AS total_compras,
+    COUNT(co.cpf_aluno) * c.preco AS receita_estimada,
+    (
+        SELECT AVG(c2.preco)
+        FROM curso c2
+    ) AS media_preco_geral,
+    CASE
+        WHEN c.preco > (
+            SELECT AVG(c2.preco)
+            FROM curso c2
+        ) THEN 'ACIMA_DA_MEDIA'
+        WHEN c.preco = (
+            SELECT AVG(c2.preco)
+            FROM curso c2
+        ) THEN 'NA_MEDIA'
+        ELSE 'ABAIXO_DA_MEDIA'
+        END AS classificacao_preco
+FROM curso c
+         LEFT JOIN compra co
+                   ON co.id_curso = c.id_curso
+GROUP BY
+    c.id_curso,
+    c.nome,
+    c.preco;
+
+CREATE INDEX IF NOT EXISTS idx_aula_id_curso_id_modulo
+    ON aula (id_curso, id_modulo);
+
+CREATE INDEX IF NOT EXISTS idx_assistir_id_curso_cpf_aluno
+    ON assistir (id_curso, cpf_aluno);
