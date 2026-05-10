@@ -71,6 +71,15 @@ public class CursoRepository {
         return new ArrayList<>(modulos.values());
     };
 
+    private final RowMapper<ConsultaCursoPremium> pegarCursosPremiumRowMapper = new RowMapper<ConsultaCursoPremium>() {
+        public ConsultaCursoPremium mapRow(ResultSet rs, int rowNum) throws SQLException {
+            ConsultaCursoPremium cursoPremium = new ConsultaCursoPremium();
+            cursoPremium.setId_curso(rs.getLong("id_curso"));
+            cursoPremium.setNome_curso(rs.getString("nome_curso"));
+            cursoPremium.setPreco(rs.getBigDecimal("preco"));
+            return cursoPremium;
+        }
+    };
     public List<Curso> findAll() {
         return jdbcTemplate.query("select * from curso", cursoRowMapper);
     }
@@ -131,4 +140,19 @@ public class CursoRepository {
         return jdbcTemplate.query(sql, pegarModulosEAulasExtractor, id_curso);
     }
 
+    public List<ConsultaCursoPremium> pegarCursosPremium() {
+        String sql = """
+                SELECT
+                c.nome AS nome_curso,
+                c.id_curso,
+                c.preco
+                FROM curso c
+                WHERE c.preco > (
+                    SELECT 
+                    AVG(c.preco) * 1.5 
+                    FROM curso c
+                )
+                """;
+        return jdbcTemplate.query(sql, pegarCursosPremiumRowMapper);
+    }
 }
