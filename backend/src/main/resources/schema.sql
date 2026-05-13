@@ -142,8 +142,8 @@ SELECT
     a.cpf_aluno,
     c.id_curso,
     c.nome AS nome_curso,
-    COUNT(DISTINCT au.id_aula) AS total_aulas,
-    COUNT(DISTINCT ass.id_aula) AS aulas_assistidas,
+    COUNT(DISTINCT (au.id_curso, au.id_modulo, au.id_aula)) AS total_aulas,
+    COUNT(DISTINCT (ass.id_curso, ass.id_modulo, ass.id_aula)) AS aulas_assistidas,
     ROUND(
             (COUNT(DISTINCT ass.id_aula)::numeric /
         NULLIF(COUNT(DISTINCT au.id_aula), 0)) * 100,
@@ -204,4 +204,5 @@ CREATE INDEX IF NOT EXISTS idx_aula_id_curso_id_modulo
     ON aula (id_curso, id_modulo);
 
 CREATE INDEX IF NOT EXISTS idx_assistir_id_curso_cpf_aluno
-    ON assistir (id_curso, cpf_aluno);
+    ON assistir (id_curso, cpf_aluno,id_modulo,
+    id_aula);

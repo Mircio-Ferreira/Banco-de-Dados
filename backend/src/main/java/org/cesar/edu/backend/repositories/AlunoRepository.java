@@ -77,9 +77,12 @@ public class AlunoRepository {
     }
 
     //retorna cursos que foram comprados mas que não tiveram nenhuma aula visualizada pelo aluno
+//    Curso com maior abandono inicial
+//    Total de alunos que compraram mas nunca começaram
+//    Ranking de cursos com baixa ativação
     public List<ConsultaPegarAlunoComAulasNaoAssistidas> pegarAlunoComAulasNaoAssistidas() {
         String sql = """
-                SELECT a.cpf_aluno, c.nome AS nome_curso
+                SELECT a.cpf_aluno, c.nome AS nome_curso, c.id_curso
                 FROM aluno a
                 JOIN compra co
                 ON a.cpf_aluno = co.cpf_aluno

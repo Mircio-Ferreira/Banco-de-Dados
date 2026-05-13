@@ -140,16 +140,16 @@ public class CursoRepository {
         return jdbcTemplate.query(sql, pegarModulosEAulasExtractor, id_curso);
     }
 
-    public List<ConsultaCursoPremium> pegarCursosPremium() {
+    public List<ConsultaCursoPremium> pegarCursosBaratos() {
         String sql = """
                 SELECT
                 c.nome AS nome_curso,
                 c.id_curso,
                 c.preco
                 FROM curso c
-                WHERE c.preco > (
+                WHERE c.preco < (
                     SELECT 
-                    AVG(c.preco) * 1.5 
+                    AVG(c.preco) * 0.7 
                     FROM curso c
                 )
                 """;
