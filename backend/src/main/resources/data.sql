@@ -1,5 +1,5 @@
 BEGIN;
-
+@@
 INSERT INTO usuario (cpf, nome, email, senha, logradouro, numero, cep) VALUES
                                                                            ('00000000001', 'Usuario 1', 'usuario1@example.com', 'senha1', 'Rua 1', 1, '00000001'),
                                                                            ('00000000002', 'Usuario 2', 'usuario2@example.com', 'senha2', 'Rua 2', 2, '00000002'),
@@ -65,7 +65,7 @@ INSERT INTO telefone (cpf, numero) VALUES
                                        ('00000000029', '90000000029'),
                                        ('00000000030', '90000000030')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO professor (cpf_professor) VALUES
                                           ('00000000001'),
                                           ('00000000002'),
@@ -98,7 +98,7 @@ INSERT INTO professor (cpf_professor) VALUES
                                           ('00000000029'),
                                           ('00000000030')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO certificacoes (cpf_professor, titulo_certificado) VALUES
                                                                   ('00000000001', 'Certificacao 1'),
                                                                   ('00000000002', 'Certificacao 2'),
@@ -131,7 +131,7 @@ INSERT INTO certificacoes (cpf_professor, titulo_certificado) VALUES
                                                                   ('00000000029', 'Certificacao 29'),
                                                                   ('00000000030', 'Certificacao 30')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO aluno (cpf_aluno) VALUES
                                   ('00000000001'),
                                   ('00000000002'),
@@ -164,7 +164,7 @@ INSERT INTO aluno (cpf_aluno) VALUES
                                   ('00000000029'),
                                   ('00000000030')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO curso (nome, preco, descricao) VALUES
                                                ('Curso 1',100.00,'Descricao do curso 1'),
                                                ('Curso 2',110.00,'Descricao do curso 2'),
@@ -197,7 +197,7 @@ INSERT INTO curso (nome, preco, descricao) VALUES
                                                ('Curso 29',380.00,'Descricao do curso 29'),
                                                ('Curso 30',390.00,'Descricao do curso 30')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO leciona (cpf_professor, id_curso) VALUES
                                                   ('00000000001', 1),
                                                   ('00000000002', 2),
@@ -230,7 +230,7 @@ INSERT INTO leciona (cpf_professor, id_curso) VALUES
                                                   ('00000000029', 29),
                                                   ('00000000030', 30)
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO categoria (nome_da_categoria) VALUES
                                               ('Programacao'),
                                               ('Banco de Dados'),
@@ -263,7 +263,7 @@ INSERT INTO categoria (nome_da_categoria) VALUES
                                               ('PostgreSQL'),
                                               ('Redes')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO possui (id_categoria, id_curso) VALUES
                                                 (1, 1),
                                                 (2, 2),
@@ -296,7 +296,7 @@ INSERT INTO possui (id_categoria, id_curso) VALUES
                                                 (29, 29),
                                                 (30, 30)
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO compra (id_curso, cpf_aluno, data_compra) VALUES
                                                           (1, '00000000001', DATE '2026-01-01'),
                                                           (2, '00000000002', DATE '2026-01-02'),
@@ -329,7 +329,7 @@ INSERT INTO compra (id_curso, cpf_aluno, data_compra) VALUES
                                                           (29, '00000000029', DATE '2026-01-29'),
                                                           (30, '00000000030', DATE '2026-01-30')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO certificado_curso (id_certificado, id_curso_concluido, cpf_aluno_graduado, data_certificado) VALUES
                                                                                                              (1, 1, '00000000001', DATE '2026-02-01'),
                                                                                                              (2, 2, '00000000002', DATE '2026-02-02'),
@@ -362,7 +362,7 @@ INSERT INTO certificado_curso (id_certificado, id_curso_concluido, cpf_aluno_gra
                                                                                                              (29, 29, '00000000029', DATE '2026-03-01'),
                                                                                                              (30, 30, '00000000030', DATE '2026-03-02')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO modulo (id_curso, id_modulo, titulo, carga_horaria, descricao) VALUES
                                                                                (1, 1, 'Modulo 1', 11, 'Descricao do modulo 1'),
                                                                                (2, 2, 'Modulo 2', 12, 'Descricao do modulo 2'),
@@ -395,7 +395,7 @@ INSERT INTO modulo (id_curso, id_modulo, titulo, carga_horaria, descricao) VALUE
                                                                                (29, 29, 'Modulo 29', 39, 'Descricao do modulo 29'),
                                                                                (30, 30, 'Modulo 30', 40, 'Descricao do modulo 30')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO aula (id_aula, id_curso, id_modulo, descricao, link_do_video, titulo) VALUES
                                                                                       (1, 1, 1, 'Descricao da aula 1', 'https://example.com/video/1', 'Aula 1'),
                                                                                       (2, 2, 2, 'Descricao da aula 2', 'https://example.com/video/2', 'Aula 2'),
@@ -428,7 +428,7 @@ INSERT INTO aula (id_aula, id_curso, id_modulo, descricao, link_do_video, titulo
                                                                                       (29, 29, 29, 'Descricao da aula 29', 'https://example.com/video/29', 'Aula 29'),
                                                                                       (30, 30, 30, 'Descricao da aula 30', 'https://example.com/video/30', 'Aula 30')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO material (id_material, id_aula, id_curso, id_modulo, link_material, nome) VALUES
                                                                                           (1, 1, 1, 1, 'https://example.com/material/1', 'Material 1'),
                                                                                           (2, 2, 2, 2, 'https://example.com/material/2', 'Material 2'),
@@ -461,7 +461,7 @@ INSERT INTO material (id_material, id_aula, id_curso, id_modulo, link_material, 
                                                                                           (29, 29, 29, 29, 'https://example.com/material/29', 'Material 29'),
                                                                                           (30, 30, 30, 30, 'https://example.com/material/30', 'Material 30')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO assistir (id_aula, id_curso, id_modulo, cpf_aluno, data_assistida) VALUES
                                                                                    (1, 1, 1, '00000000001', DATE '2026-03-01'),
                                                                                    (2, 2, 2, '00000000002', DATE '2026-03-02'),
@@ -494,7 +494,7 @@ INSERT INTO assistir (id_aula, id_curso, id_modulo, cpf_aluno, data_assistida) V
                                                                                    (29, 29, 29, '00000000029', DATE '2026-04-01'),
                                                                                    (30, 30, 30, '00000000030', DATE '2026-04-02')
     ON CONFLICT DO NOTHING;
-
+@@
 INSERT INTO comentario (id_comentario, id_aula, id_curso, cpf_aluno, cpf_professor, data_criacao, conteudo, comentario_pai) VALUES
                                                                                                                                 (1, 1, 1, '00000000001', NULL, DATE '2026-05-01', 'Comentario 1', NULL),
                                                                                                                                 (2, 2, 2, '00000000002', NULL, DATE '2026-05-02', 'Comentario 2', NULL),
@@ -527,5 +527,6 @@ INSERT INTO comentario (id_comentario, id_aula, id_curso, cpf_aluno, cpf_profess
                                                                                                                                 (29, 29, 29, NULL, '00000000029', DATE '2026-05-14', 'Comentario 29', 14),
                                                                                                                                 (30, 30, 30, NULL, '00000000030', DATE '2026-05-15', 'Comentario 30', 15)
     ON CONFLICT DO NOTHING;
-
+@@
 COMMIT;
+@@

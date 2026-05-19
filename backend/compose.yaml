@@ -35,6 +35,7 @@ services:
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_SQL_INIT_MODE: always
       SPRING_PROFILES_ACTIVE: docker
+      SPRING_SQL_INIT_SEPARATOR: "@@"
 
 volumes:
   postgres_data:
