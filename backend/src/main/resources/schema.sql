@@ -206,3 +206,42 @@ CREATE INDEX IF NOT EXISTS idx_aula_id_curso_id_modulo
 CREATE INDEX IF NOT EXISTS idx_assistir_id_curso_cpf_aluno
     ON assistir (id_curso, cpf_aluno,id_modulo,
     id_aula);
+
+CREATE OR REPLACE FUNCTION calcular_desconto(
+    IN preco NUMERIC,
+    IN desconto NUMERIC
+)
+RETURNS NUMERIC
+LANGUAGE plpgsql
+AS $$
+DECLARE
+preco_com_desconto NUMERIC;
+BEGIN
+    IF desconto > 100 OR desconto < 0 THEN
+        RAISE EXCEPTION 'O desconto deve estar entre 0 e 100%%';
+END IF;
+
+    preco_com_desconto := preco - (preco * (desconto / 100));
+
+RETURN ROUND(preco_com_desconto, 2);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION calcular_carga_horaria_total(
+       IN v_id_curso BIGINT
+)
+       RETURNS INT
+       LANGUAGE plpgsql
+       AS $$
+
+       DECLARE horas_totais INT;
+
+       BEGIN
+       SELECT SUM(carga_horaria)
+       INTO horas_totais
+       FROM modulo
+       WHERE id_curso = v_id_curso;
+
+       RETURN COALESCE(horas_totais,0);
+       END;
+       $$;
