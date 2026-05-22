@@ -3,6 +3,8 @@ package org.cesar.edu.backend.repositories;
 import org.cesar.edu.backend.models.Aluno;
 import org.cesar.edu.backend.models.ConsultaPegarAlunoComAulasNaoAssistidas;
 import org.cesar.edu.backend.models.User;
+import org.cesar.edu.backend.models.ViewProgressoAlunoCurso;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -40,6 +42,20 @@ public class AlunoRepository {
             return consultaPegarAlunoComAulasNaoAssistidas;
         }
     };
+    private final RowMapper<ViewProgressoAlunoCurso> viewProgressoAlunoCursoRowMapper =
+            (ResultSet rs, int rowNum) -> {
+                ViewProgressoAlunoCurso progresso = new ViewProgressoAlunoCurso();
+
+                progresso.setCpfAluno(rs.getString("cpf_aluno"));
+                progresso.setIdCurso(rs.getLong("id_curso"));
+                progresso.setNomeCurso(rs.getString("nome_curso"));
+                progresso.setTotalAulas(rs.getLong("total_aulas"));
+                progresso.setAulasAssistidas(rs.getLong("aulas_assistidas"));
+                progresso.setPercentualConclusao(rs.getBigDecimal("percentual_conclusao"));
+
+                return progresso;
+            };
+
     public List<Aluno> findAll() {
         return jdbcTemplate.query("SELECT * FROM aluno", rowMapper);
     }
@@ -76,6 +92,7 @@ public class AlunoRepository {
         return userRepository.delete(cpfAluno);
     }
 
+    //consulta 4
     //retorna cursos que foram comprados mas que não tiveram nenhuma aula visualizada pelo aluno
 //    Curso com maior abandono inicial
 //    Total de alunos que compraram mas nunca começaram
@@ -93,5 +110,41 @@ public class AlunoRepository {
                 WHERE ass.id_aula IS NULL;
                 """;
         return jdbcTemplate.query(sql, pegarAlunoComAulasNaoAssistidas);
+    }
+
+    //procedure 2
+    public void atualizarAlunosInativos() {
+        String sql = """
+                        CALL atualizar_alunos_inativos();
+                """;
+        try {
+            jdbcTemplate.update(sql);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Erro ao atualizar alunos inativos", e);
+        }
+    }
+
+    //view 1
+    public List<ViewProgressoAlunoCurso> pegarTodosProgressosAlunosCurso() {
+        String sql = """
+                SELECT *
+                FROM vw_progresso_aluno_curso;
+                """;
+        return jdbcTemplate.query(sql, viewProgressoAlunoCursoRowMapper);
+    }
+
+    public List<ViewProgressoAlunoCurso> pegarProgressoAlunoCurso(String cpfAluno) {
+        String sql = """
+                        SELECT *
+                        FROM vw_progresso_aluno_curso
+                        WHERE cpf_aluno = ? ;
+                """;
+        List<ViewProgressoAlunoCurso> progresso;
+        try {
+            progresso = jdbcTemplate.query(sql, viewProgressoAlunoCursoRowMapper, cpfAluno);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        return progresso;
     }
 }

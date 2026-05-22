@@ -1,6 +1,7 @@
 package org.cesar.edu.backend.repositories;
 
 import org.cesar.edu.backend.models.*;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -80,6 +81,35 @@ public class CursoRepository {
             return cursoPremium;
         }
     };
+    private final RowMapper<ViewResumoGeralCurso> viewResumoGeralCursoRowMapper =
+            (ResultSet rs, int rowNum) -> {
+                ViewResumoGeralCurso resumo = new ViewResumoGeralCurso();
+
+                resumo.setIdCurso(rs.getLong("id_curso"));
+                resumo.setNomeCurso(rs.getString("nome_curso"));
+                resumo.setPreco(rs.getBigDecimal("preco"));
+                resumo.setTotalCompras(rs.getLong("total_compras"));
+                resumo.setReceitaEstimada(rs.getBigDecimal("receita_estimada"));
+                resumo.setMediaPrecoGeral(rs.getBigDecimal("media_preco_geral"));
+                resumo.setClassificacaoPreco(rs.getString("classificacao_preco"));
+
+                return resumo;
+            };
+
+    private final RowMapper<LogPrecoCurso> logPrecoCursoRowMapper =
+            (ResultSet rs, int rowNum) -> {
+                LogPrecoCurso log = new LogPrecoCurso();
+
+                log.setIdLog(rs.getLong("id_log"));
+                log.setIdCurso(rs.getLong("id_curso"));
+                log.setPrecoAntigo(rs.getBigDecimal("preco_antigo"));
+                log.setPrecoNovo(rs.getBigDecimal("preco_novo"));
+                log.setDataAlteracao(rs.getTimestamp("data_alteracao").toLocalDateTime());
+                log.setUsuarioBanco(rs.getString("usuario_banco"));
+
+                return log;
+            };
+
     public List<Curso> findAll() {
         return jdbcTemplate.query("select * from curso", cursoRowMapper);
     }
@@ -114,12 +144,14 @@ public class CursoRepository {
         return linhasAlteradas > 0;
     }
 
+    //consulta 1
     public List<ConsultaCursoComCompras> cursosComCompras() {
         String sql = "SELECT c.id_curso, c.nome, c.preco, COUNT(co.cpf_aluno) AS total_compras, COUNT(co.cpf_aluno) * c.preco AS receita_estimada FROM curso c JOIN compra co ON co.id_curso = c.id_curso GROUP BY c.id_curso, c.nome, c.preco HAVING COUNT(co.cpf_aluno) >= 1;";
         List<ConsultaCursoComCompras> resultados = jdbcTemplate.query(sql, cursoComComprasRowMapper);
         return resultados;
     }
 
+    //consulta 2
     public List<ConsultaPegarModulosEAulas> pegarModulosEAulas(Long id_curso) {
         String sql = """
                     SELECT 
@@ -140,6 +172,7 @@ public class CursoRepository {
         return jdbcTemplate.query(sql, pegarModulosEAulasExtractor, id_curso);
     }
 
+    //consulta 3
     public List<ConsultaCursoPremium> pegarCursosBaratos() {
         String sql = """
                 SELECT
@@ -155,4 +188,62 @@ public class CursoRepository {
                 """;
         return jdbcTemplate.query(sql, pegarCursosPremiumRowMapper);
     }
+
+    //function 1
+    public Integer pegarHorasTotais(Long id_curso) {
+        String sql = """
+                        SELECT calcular_carga_horaria_total(?);
+                """;
+        Integer carga_horaria;
+
+        try {
+            carga_horaria = jdbcTemplate.queryForObject(sql, Integer.class, id_curso);
+
+        } catch (Exception e) {
+            return 0;
+        }
+        return carga_horaria;
+    }
+
+    //procedure 1
+    public boolean aplicarDescontoEmCategoria(String categoria, Double desconto) {
+        String sql = """
+                        CALL aplicar_desconto_em_categoria(?,?);
+                """;
+        try {
+            jdbcTemplate.update(sql, categoria, desconto);
+        } catch (DataAccessException e) {
+            return false;
+        }
+        return true;
+    }
+
+    //view 2
+    public List<ViewResumoGeralCurso> viewResumoGeralCurso() {
+        String sql = """
+                        SELECT *
+                        FROM vw_resumo_geral_cursos;
+                """;
+        return jdbcTemplate.query(sql, viewResumoGeralCursoRowMapper);
+    }
+
+    public List<ViewResumoGeralCurso> viewResumoGeralCursos(Long id_curso) {
+        String sql = """
+                        SELECT *
+                        FROM vw_resumo_geral_cursos c
+                        WHERE c.id_curso = ?;
+                """;
+        return jdbcTemplate.query(sql, viewResumoGeralCursoRowMapper, id_curso);
+    }
+
+    //Trigger 1
+    public List<LogPrecoCurso> pegarHistoricoPrecoCurso(Long id_curso) {
+        String sql = """
+                        SELECT *
+                        FROM log_preco_cursos p
+                        WHERE p.id_curso = ?;
+                """;
+        return jdbcTemplate.query(sql, logPrecoCursoRowMapper, id_curso);
+    }
+
 }
