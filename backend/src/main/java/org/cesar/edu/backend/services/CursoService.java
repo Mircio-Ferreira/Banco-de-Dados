@@ -566,6 +566,7 @@ public class CursoService {
 
         return cursos;
     }
+
     //mesma coisa da view anterior mas com o curso especificado
     public List<ViewResumoGeralCurso> viewResumoGeralCursos(Long id_curso) {
         if (id_curso == null || id_curso <= 0) {

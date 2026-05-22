@@ -2,11 +2,17 @@ package org.cesar.edu.backend.doc;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cesar.edu.backend.dtos.requests.UserCreateRequest;
 import org.cesar.edu.backend.dtos.requests.UserLoginRequest;
+import org.cesar.edu.backend.models.AlunoInativo;
+import org.cesar.edu.backend.models.ConsultaPegarAlunoComAulasNaoAssistidas;
+import org.cesar.edu.backend.models.ViewProgressoAlunoCurso;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -134,4 +140,163 @@ public interface UserControllerDoc {
     ResponseEntity<?> deletarAluno(
             @Parameter(description = "CPF do aluno a ser deletado") @PathVariable String cpf,
             @Parameter(description = "CPF do usuário logado", required = false) @RequestHeader(value = "X-User-CPF", required = false) String cpfLogado);
+// ======================== CONSULTAS / RELATÓRIOS DE ALUNOS ========================
+
+    @Operation(
+            summary = "Listar Alunos com Aulas Não Assistidas",
+            description = """
+                Retorna os alunos que compraram cursos, mas não assistiram nenhuma aula daquele curso.
+
+                Cada item da resposta contém:
+                - CPF do aluno;
+                - nome do curso;
+                - ID do curso.
+
+                Esse endpoint é útil para identificar alunos que compraram cursos, mas ainda não iniciaram o consumo das aulas.
+                """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de alunos com aulas não assistidas retornada com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = ConsultaPegarAlunoComAulasNaoAssistidas.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno no servidor ao buscar alunos com aulas não assistidas.",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(implementation = String.class)
+                    )
+            )
+    })
+    ResponseEntity<?> listarAlunosNaoAssistidas();
+
+
+    @Operation(
+            summary = "Listar Alunos Inativos",
+            description = """
+                Retorna a lista de alunos considerados inativos.
+
+                Um aluno é considerado inativo quando ultrapassa o limite mínimo de dias sem atividade,
+                considerando como referência:
+                - a última aula assistida, caso exista;
+                - ou a data da compra, caso o aluno nunca tenha assistido aula.
+
+                O motivo da inatividade pode ser:
+                - NUNCA_ASSISTIU;
+                - SEM_ACESSO_RECENTE.
+                """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de alunos inativos retornada com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = AlunoInativo.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno no servidor ao buscar alunos inativos.",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(implementation = String.class)
+                    )
+            )
+    })
+    ResponseEntity<?> listarAlunosInativos();
+
+
+    @Operation(
+            summary = "Listar Progresso de Todos os Alunos",
+            description = """
+                Retorna o progresso de todos os alunos nos cursos comprados.
+
+                Cada item da resposta contém:
+                - CPF do aluno;
+                - ID do curso;
+                - nome do curso;
+                - total de aulas do curso;
+                - quantidade de aulas assistidas;
+                - percentual de conclusão.
+
+                O percentual de conclusão deve estar entre 0 e 100.
+                """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de progresso dos alunos retornada com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = ViewProgressoAlunoCurso.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno no servidor ao buscar o progresso dos alunos.",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(implementation = String.class)
+                    )
+            )
+    })
+    ResponseEntity<?> listarAlunosProgresso();
+
+
+    @Operation(
+            summary = "Listar Progresso de um Aluno por CPF",
+            description = """
+                Retorna o progresso de um aluno específico em todos os cursos comprados por ele.
+
+                O CPF informado deve conter exatamente 11 caracteres.
+
+                Cada item da resposta contém:
+                - CPF do aluno;
+                - ID do curso;
+                - nome do curso;
+                - total de aulas;
+                - aulas assistidas;
+                - percentual de conclusão.
+                """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Progresso do aluno retornado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = ViewProgressoAlunoCurso.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno no servidor ao buscar o progresso do aluno.",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(implementation = String.class)
+                    )
+            )
+    })
+    ResponseEntity<?> listarAlunosProgressos(
+            @Parameter(
+                    description = "CPF do aluno que terá o progresso consultado. Deve conter exatamente 11 caracteres.",
+                    example = "12345678901",
+                    required = true
+            )
+            @PathVariable("cpf_aluno") String cpf_aluno
+    );
 }

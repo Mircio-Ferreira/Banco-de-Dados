@@ -4,12 +4,12 @@ import org.cesar.edu.backend.doc.UserControllerDoc;
 import org.cesar.edu.backend.dtos.requests.UserCreateRequest;
 import org.cesar.edu.backend.dtos.requests.UserLoginRequest;
 import org.cesar.edu.backend.dtos.responses.UserResponse;
-import org.cesar.edu.backend.models.Aluno;
-import org.cesar.edu.backend.models.Professor;
+import org.cesar.edu.backend.models.*;
 import org.cesar.edu.backend.services.UserService;
 import org.cesar.edu.backend.utils.ResultService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -201,5 +201,50 @@ public class UserController implements UserControllerDoc {
 
     private boolean isAcessoNegado(String cpfAlvo, String cpfLogado) {
         return cpfLogado == null || !cpfLogado.equals(cpfAlvo);
+    }
+
+    @GetMapping("/aluno/aulas-nao-assistidas")
+    public ResponseEntity<?> listarAlunosNaoAssistidas() {
+        try {
+            List<ConsultaPegarAlunoComAulasNaoAssistidas> alunos =
+                    userService.pegarAlunoComAulasNaoAssistidas();
+
+            return ResponseEntity.ok(alunos);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+    @GetMapping("/alunos/alunos-inativos")
+    public ResponseEntity<?> listarAlunosInativos() {
+        try {
+            List<AlunoInativo> listarAlunosInativos = userService.listarAlunosInativos();
+            return ResponseEntity.ok(listarAlunosInativos);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+    @GetMapping("/alunos/progresso-alunos")
+    public ResponseEntity<?> listarAlunosProgresso() {
+        try{
+            List<ViewProgressoAlunoCurso> pegarTodosProgressosAlunosCurso = userService.pegarTodosProgressosAlunosCurso();
+            return ResponseEntity.ok(pegarTodosProgressosAlunosCurso);
+        }
+        catch(Exception e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+    @GetMapping("/alunos/progresso-alunos/{cpf_aluno}")
+    public ResponseEntity<?> listarAlunosProgressos(@PathVariable String cpf_aluno) {
+         try{
+             List<ViewProgressoAlunoCurso> pegarProgressoAlunoCurso = userService.pegarProgressoAlunoCurso(cpf_aluno);
+             return ResponseEntity.ok(pegarProgressoAlunoCurso);
+         }
+         catch (IllegalArgumentException e) {
+             return ResponseEntity.badRequest().body(e.getMessage());
+         }
+         catch(Exception e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+         }
     }
 }
