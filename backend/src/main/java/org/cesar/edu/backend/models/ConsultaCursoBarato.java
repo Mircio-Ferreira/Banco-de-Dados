@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsultaCursoPremium {
+public class ConsultaCursoBarato {
     String nome_curso;
     Long id_curso;
     BigDecimal preco;

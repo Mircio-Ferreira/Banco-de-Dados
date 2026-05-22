@@ -72,9 +72,9 @@ public class CursoRepository {
         return new ArrayList<>(modulos.values());
     };
 
-    private final RowMapper<ConsultaCursoPremium> pegarCursosPremiumRowMapper = new RowMapper<ConsultaCursoPremium>() {
-        public ConsultaCursoPremium mapRow(ResultSet rs, int rowNum) throws SQLException {
-            ConsultaCursoPremium cursoPremium = new ConsultaCursoPremium();
+    private final RowMapper<ConsultaCursoBarato> pegarCursosBaratosRowMapper = new RowMapper<ConsultaCursoBarato>() {
+        public ConsultaCursoBarato mapRow(ResultSet rs, int rowNum) throws SQLException {
+            ConsultaCursoBarato cursoPremium = new ConsultaCursoBarato();
             cursoPremium.setId_curso(rs.getLong("id_curso"));
             cursoPremium.setNome_curso(rs.getString("nome_curso"));
             cursoPremium.setPreco(rs.getBigDecimal("preco"));
@@ -173,7 +173,7 @@ public class CursoRepository {
     }
 
     //consulta 3
-    public List<ConsultaCursoPremium> pegarCursosBaratos() {
+    public List<ConsultaCursoBarato> pegarCursosBaratos() {
         String sql = """
                 SELECT
                 c.nome AS nome_curso,
@@ -186,7 +186,7 @@ public class CursoRepository {
                     FROM curso c
                 )
                 """;
-        return jdbcTemplate.query(sql, pegarCursosPremiumRowMapper);
+        return jdbcTemplate.query(sql, pegarCursosBaratosRowMapper);
     }
 
     //function 1
@@ -240,7 +240,7 @@ public class CursoRepository {
     public List<LogPrecoCurso> pegarHistoricoPrecoCurso(Long id_curso) {
         String sql = """
                         SELECT *
-                        FROM log_preco_cursos p
+                        FROM log_preco_curso p
                         WHERE p.id_curso = ?;
                 """;
         return jdbcTemplate.query(sql, logPrecoCursoRowMapper, id_curso);

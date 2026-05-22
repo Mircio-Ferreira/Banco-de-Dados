@@ -10,4 +10,5 @@ import lombok.*;
 public class ConsultaPegarAlunoComAulasNaoAssistidas {
     private String cpf;
     private String nome_curso;
+    private Long idCurso;
 }

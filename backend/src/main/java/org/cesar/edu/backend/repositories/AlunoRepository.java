@@ -1,9 +1,6 @@
 package org.cesar.edu.backend.repositories;
 
-import org.cesar.edu.backend.models.Aluno;
-import org.cesar.edu.backend.models.ConsultaPegarAlunoComAulasNaoAssistidas;
-import org.cesar.edu.backend.models.User;
-import org.cesar.edu.backend.models.ViewProgressoAlunoCurso;
+import org.cesar.edu.backend.models.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.List;
 
 @Repository
@@ -55,6 +53,36 @@ public class AlunoRepository {
 
                 return progresso;
             };
+
+    private final RowMapper<AlunoInativo> alunoInativoRowMapper = (rs, rowNum) -> {
+        AlunoInativo alunoInativo = new AlunoInativo();
+
+        alunoInativo.setCpfAluno(rs.getString("cpf_aluno"));
+        alunoInativo.setNomeAluno(rs.getString("nome_aluno"));
+
+        alunoInativo.setIdCurso(rs.getLong("id_curso"));
+        alunoInativo.setNomeCurso(rs.getString("nome_curso"));
+
+        alunoInativo.setDataCompra(rs.getDate("data_compra").toLocalDate());
+
+        Date ultimaAulaAssistida = rs.getDate("ultima_aula_assistida");
+        if (ultimaAulaAssistida != null) {
+            alunoInativo.setUltimaAulaAssistida(ultimaAulaAssistida.toLocalDate());
+        }
+
+        alunoInativo.setDataReferenciaInatividade(
+                rs.getDate("data_referencia_inatividade").toLocalDate()
+        );
+
+        alunoInativo.setDiasInativo(rs.getInt("dias_inativo"));
+        alunoInativo.setMotivo(rs.getString("motivo"));
+
+        alunoInativo.setDataAtualizacao(
+                rs.getTimestamp("data_atualizacao").toLocalDateTime()
+        );
+
+        return alunoInativo;
+    };
 
     public List<Aluno> findAll() {
         return jdbcTemplate.query("SELECT * FROM aluno", rowMapper);
@@ -122,6 +150,14 @@ public class AlunoRepository {
         } catch (DataAccessException e) {
             throw new RuntimeException("Erro ao atualizar alunos inativos", e);
         }
+    }
+
+    public List<AlunoInativo> alunosInativos(){
+        String sql = """
+                SELECT *
+                FROM alunos_inativos;
+                """;
+        return jdbcTemplate.query(sql,alunoInativoRowMapper);
     }
 
     //view 1
