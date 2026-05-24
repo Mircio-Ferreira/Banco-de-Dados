@@ -1,135 +1,6 @@
-/* 📦 Simulação do backend */
-const curso = {
-    nome: "JavaScript Completo",
-    modulos: [
-        {
-            titulo: "Introdução",
-            aulas: [
-                {
-                    titulo: "O que é JavaScript",
-                    descricao: "Entenda a origem do JavaScript, onde ele é utilizado e por que é uma das linguagens mais populares do mundo.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: [
-                        { nome: "Slides da aula", link: "#" },
-                        { nome: "Artigo MDN", link: "https://developer.mozilla.org/pt-BR/docs/Web/JavaScript" }
-                    ]
-                },
-                {
-                    titulo: "Ambiente de desenvolvimento",
-                    descricao: "Aprenda a configurar seu ambiente com VSCode e Node.js.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: [
-                        { nome: "Download Node.js", link: "https://nodejs.org" }
-                    ]
-                }
-            ]
-        },
-        {
-            titulo: "Fundamentos",
-            aulas: [
-                {
-                    titulo: "Variáveis",
-                    descricao: "Conheça var, let e const e quando usar cada uma.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: [
-                        { nome: "Exercícios", link: "#" }
-                    ]
-                },
-                {
-                    titulo: "Tipos de dados",
-                    descricao: "String, Number, Boolean, Null, Undefined e Object.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: []
-                },
-                {
-                    titulo: "Operadores",
-                    descricao: "Operadores aritméticos, lógicos e de comparação.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: [
-                        { nome: "Lista de exercícios", link: "#" }
-                    ]
-                }
-            ]
-        },
-        {
-            titulo: "Funções",
-            aulas: [
-                {
-                    titulo: "Funções básicas",
-                    descricao: "Como declarar e utilizar funções.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: []
-                },
-                {
-                    titulo: "Arrow Functions",
-                    descricao: "Sintaxe moderna para funções.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: [
-                        { nome: "Comparação com funções tradicionais", link: "#" }
-                    ]
-                },
-                {
-                    titulo: "Callbacks",
-                    descricao: "Entenda funções como argumentos.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: []
-                }
-            ]
-        },
-        {
-            titulo: "DOM",
-            aulas: [
-                {
-                    titulo: "Selecionando elementos",
-                    descricao: "getElementById, querySelector e outros.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: []
-                },
-                {
-                    titulo: "Eventos",
-                    descricao: "Click, input, submit e mais.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: [
-                        { nome: "Exemplo prático", link: "#" }
-                    ]
-                },
-                {
-                    titulo: "Manipulação de elementos",
-                    descricao: "Alterando conteúdo e estilos via JS.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: []
-                }
-            ]
-        },
-        {
-            titulo: "Projeto Final",
-            aulas: [
-                {
-                    titulo: "Planejamento do projeto",
-                    descricao: "Definindo escopo e funcionalidades.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: []
-                },
-                {
-                    titulo: "Implementação",
-                    descricao: "Construindo o projeto passo a passo.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: [
-                        { nome: "Código base", link: "#" },
-                        { nome: "Repositório GitHub", link: "#" }
-                    ]
-                },
-                {
-                    titulo: "Deploy",
-                    descricao: "Publicando seu projeto online.",
-                    video: "https://www.youtube.com/embed/W6NZfCO5SIk",
-                    materiais: []
-                }
-            ]
-        }
-    ]
-};
-
+/**
+ * 🔗 Captura o ID do curso a partir dos parâmetros da URL (ex: assistir.html?id=2)
+ */
 function getCursoId() {
     const params = new URLSearchParams(window.location.search);
     return params.get("id");
@@ -137,54 +8,158 @@ function getCursoId() {
 
 let aulaAtual = null;
 
-/* 🎬 Carregar aula */
+/**
+ * 🎬 Carrega a aula selecionada no player principal da tela
+ * @param {Object} aula - Objeto contendo os dados da aula
+ */
 function carregarAula(aula) {
     aulaAtual = aula;
 
+    // Injeta o iframe do vídeo (utiliza a propriedade 'link' do novo modelo)
     document.getElementById("video").innerHTML =
-        `<iframe width="100%" height="100%" src="${aula.video}" frameborder="0" allowfullscreen></iframe>`;
+        `<iframe width="100%" height="100%" src="${aula.link}" frameborder="0" allowfullscreen></iframe>`;
 
+    // Atualiza os textos da aula
     document.getElementById("tituloAula").innerText = aula.titulo;
-    document.getElementById("descricaoAula").innerText = aula.descricao;
+    document.getElementById("descricaoAula").innerText = aula.descricao_aula;
 
+    // Gerencia o bloco de materiais de apoio
     const matDiv = document.getElementById("materiais");
     matDiv.innerHTML = "";
 
-    aula.materiais.forEach(m => {
-        const a = document.createElement("a");
-        a.href = m.link;
-        a.innerText = m.nome;
-        matDiv.appendChild(a);
-    });
+    if (aula.materiais && aula.materiais.length > 0) {
+        aula.materiais.forEach(m => {
+            const a = document.createElement("a");
+            a.href = m.link;
+            a.innerText = m.nome;
+            matDiv.appendChild(a);
+        });
+    } else {
+        matDiv.innerHTML = "<p style='color: #64748b; font-size: 0.9em;'>Nenhum material de apoio para esta aula.</p>";
+    }
 }
 
-function renderSidebar() {
-    const sidebar = document.getElementById("sidebar");
+/**
+ * 🕒 Busca a Carga Horária Total do Curso no Backend e injeta no topo da Sidebar
+ * @param {string} idCurso - ID do curso capturado da URL
+ */
+async function carregarCargaHoraria(idCurso) {
+    const urlHoras = `http://localhost:8080/api/v1/curso/curso-horas-totais/${idCurso}`;
+    
+    try {
+        const response = await fetch(urlHoras);
+        if (!response.ok) throw new Error("Erro ao buscar carga horária");
+        
+        const horasTotais = await response.text(); 
 
-    curso.modulos.forEach(mod => {
+        const horasBadge = document.getElementById("cursoCargaHoraria");
+        if (horasBadge) {
+            horasBadge.innerHTML = `🕒 Carga Horária Total: <span style="background: #1e293b; color: #38bdf8; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">${horasTotais}h</span>`;
+        }
+    } catch (error) {
+        console.error("Não foi possível carregar a carga horária:", error);
+        const horasBadge = document.getElementById("cursoCargaHoraria");
+        if (horasBadge) {
+            horasBadge.style.display = "none"; // Esconde o bloco em caso de falha
+        }
+    }
+}
+
+/**
+ * 📦 Renderiza a árvore de Módulos e Aulas no container dedicado da Sidebar
+ * @param {Array} modulos - Lista de módulos e aulas retornada da API
+ */
+function renderSidebar(modulos) {
+    const container = document.getElementById("modulosContainer");
+    if (!container) return;
+    
+    // Limpa apenas o conteúdo do container de aulas, preservando o topo da sidebar
+    container.innerHTML = ""; 
+
+    modulos.forEach(item => {
         const modDiv = document.createElement("div");
         modDiv.className = "modulo";
 
-        modDiv.innerHTML = `<h3>📦 ${mod.titulo}</h3>`;
+        // Título extraído do objeto interno 'modulo'
+        modDiv.innerHTML = `<h3>📦 ${item.modulo.titulo}</h3>`;
 
-        mod.aulas.forEach(aula => {
-            const aulaDiv = document.createElement("div");
-            aulaDiv.className = "aula";
-            aulaDiv.innerText = aula.titulo;
+        // Varre e renderiza as aulas do módulo correspondente
+        if (item.aulas && item.aulas.length > 0) {
+            item.aulas.forEach(aula => {
+                const aulaDiv = document.createElement("div");
+                aulaDiv.className = "aula";
+                aulaDiv.innerText = aula.titulo;
 
-            aulaDiv.onclick = () => {
-                carregarAula(aula);
-                document.querySelectorAll(".aula").forEach(a => a.classList.remove("ativa"));
-                aulaDiv.classList.add("ativa");
-            };
+                // Evento de clique para alternar o player de vídeo
+                aulaDiv.onclick = () => {
+                    carregarAula(aula);
+                    document.querySelectorAll(".aula").forEach(a => a.classList.remove("ativa"));
+                    aulaDiv.classList.add("ativa");
+                };
 
-            modDiv.appendChild(aulaDiv);
-        });
+                modDiv.appendChild(aulaDiv);
+            });
+        }
 
-        sidebar.appendChild(modDiv);
+        container.appendChild(modDiv);
     });
 }
 
-/* 🚀 Init */
-renderSidebar();
-carregarAula(curso.modulos[0].aulas[0]);
+/**
+ * 🔄 Função Orquestradora: Executada ao carregar a página.
+ * Controla o fluxo de chamadas e evita concorrência assíncrona.
+ */
+async function inicializarCurso() {
+    const idCurso = getCursoId();
+    
+    if (!idCurso) {
+        console.error("ID do curso não foi encontrado nos parâmetros da URL (ex: ?id=1)");
+        const container = document.getElementById("modulosContainer");
+        if (container) {
+            container.innerHTML = "<p style='padding:15px; color: #ef4444;'>Erro: Nenhum ID de curso foi especificado na URL.</p>";
+        }
+        return;
+    }
+
+    // 1. Aguarda obrigatoriamente a carga horária ser injetada
+    await carregarCargaHoraria(idCurso);
+
+    // 2. Monta a URL e busca a estrutura de módulos do backend
+    const urlModulos = `http://localhost:8080/api/v1/curso/curso/${idCurso}/modulos-aulas`;
+
+    try {
+        const response = await fetch(urlModulos);
+        if (!response.ok) throw new Error(`Erro HTTP! Status: ${response.status}`);
+
+        const modulos = await response.json();
+        
+        // 3. Renderiza a lista estruturada na barra lateral
+        renderSidebar(modulos);
+
+        // 4. Se houver dados, inicializa o player com a primeira aula do primeiro módulo
+        if (modulos.length > 0 && modulos[0].aulas && modulos[0].aulas.length > 0) {
+            carregarAula(modulos[0].aulas[0]);
+            
+            // Ativa visualmente a primeira aula após renderização no DOM
+            setTimeout(() => {
+                const primeiraAula = document.querySelector(".aula");
+                if (primeiraAula) primeiraAula.classList.add("ativa");
+            }, 50);
+        } else {
+            const container = document.getElementById("modulosContainer");
+            if (container) {
+                container.innerHTML = "<p style='padding:15px; color: #94a3b8;'>Nenhuma aula disponível para este curso.</p>";
+            }
+        }
+
+    } catch (error) {
+        console.error("Não foi possível carregar os módulos do backend:", error);
+        const container = document.getElementById("modulosContainer");
+        if (container) {
+            container.innerHTML = "<p style='padding:15px; color: #ef4444;'>Erro ao carregar os módulos. Verifique o servidor.</p>";
+        }
+    }
+}
+
+/* 🚀 Inicialização automática */
+inicializarCurso();
