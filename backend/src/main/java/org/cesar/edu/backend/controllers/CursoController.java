@@ -94,7 +94,7 @@ public class CursoController implements org.cesar.edu.backend.doc.CursoControlle
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
-    @GetMapping("/curso/{id_curso}/modulos-aulas")
+    @GetMapping("/{id_curso}/modulos-aulas")
     public  ResponseEntity<?> cursosModulosAulas(@PathVariable Long id_curso) {
         try{
             List<ConsultaPegarModulosEAulas> pegarModulosEAulas = cursoService.pegarModulosEAulas(id_curso);
