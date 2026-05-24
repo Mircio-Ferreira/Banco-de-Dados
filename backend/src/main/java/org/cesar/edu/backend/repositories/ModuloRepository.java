@@ -42,7 +42,7 @@ public class ModuloRepository {
         return modulo;
     }
     public boolean save(Modulo modulo) {
-        String sql = "INSERT INTO modulo(id_curso,titulo,carga_horaria,descricao) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO modulo(id_curso,titulo,carga_horaria,descricao) VALUES(?,?,?,?)";
         return jdbcTemplate.update(sql,modulo.getId_curso(),modulo.getTitulo(),modulo.getCargaHoraria(),modulo.getDescricao_curso()) > 0;
     }
     public boolean delete(Long id_curso, Long id_modulo) {

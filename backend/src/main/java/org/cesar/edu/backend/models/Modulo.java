@@ -2,8 +2,6 @@ package org.cesar.edu.backend.models;
 
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @ToString
@@ -16,5 +14,4 @@ public class Modulo {
     private String titulo;
     private Integer cargaHoraria;
     private String descricao_curso;
-    private List<Aula> aulas;
 }
