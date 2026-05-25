@@ -3,6 +3,7 @@ package org.cesar.edu.backend.controllers;
 import org.cesar.edu.backend.doc.AulaControllerDoc;
 import org.cesar.edu.backend.dtos.requests.AulaRequest;
 import org.cesar.edu.backend.dtos.responses.AulaResponse;
+import org.cesar.edu.backend.models.Aula;
 import org.cesar.edu.backend.services.AulaService;
 import org.cesar.edu.backend.utils.ResultService;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,30 @@ public class AulaController implements AulaControllerDoc {
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id_curso}/{id_modulo}/{titulo}")
+    public ResponseEntity<?> findByTitulo(
+            @PathVariable Long id_curso,
+            @PathVariable Long id_modulo,
+            @PathVariable String titulo
+    ) {
+        try {
+            Aula aula = aulaService.findByTitulo(titulo, id_curso, id_modulo);
+
+            if (aula == null) {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body("Aula não encontrada");
+            }
+
+            return ResponseEntity.ok(aula);
+        }
+        catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(e.getMessage());
         }
     }

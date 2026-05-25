@@ -11,7 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cesar.edu.backend.dtos.requests.AulaRequest;
 import org.cesar.edu.backend.dtos.responses.AulaResponse;
+import org.cesar.edu.backend.models.Aula;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(
         name = "Aulas",
@@ -388,5 +390,72 @@ public interface AulaControllerDoc {
                     required = true
             )
             Long idAula
+    );
+
+    @Operation(
+            summary = "Buscar aula por título, curso e módulo",
+            description = """
+                    Busca uma aula específica a partir do título informado, do ID do curso
+                    e do ID do módulo ao qual a aula pertence.
+                    
+                    Caso exista uma aula com o título informado dentro do módulo e curso especificados,
+                    o sistema retorna os dados completos da aula.
+                    
+                    Caso nenhuma aula seja encontrada, retorna uma mensagem informando que a aula não foi encontrada.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Aula encontrada com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Aula.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Nenhuma aula encontrada para o título, curso e módulo informados.",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(
+                                    implementation = String.class,
+                                    example = "Aula não encontrada"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno no servidor ao tentar buscar a aula.",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(
+                                    implementation = String.class,
+                                    example = "Erro interno no servidor"
+                            )
+                    )
+            )
+    })
+    ResponseEntity<?> findByTitulo(
+            @Parameter(
+                    description = "ID do curso ao qual a aula pertence.",
+                    example = "1",
+                    required = true
+            )
+            @PathVariable Long id_curso,
+
+            @Parameter(
+                    description = "ID do módulo ao qual a aula pertence.",
+                    example = "2",
+                    required = true
+            )
+            @PathVariable Long id_modulo,
+
+            @Parameter(
+                    description = "Título da aula que será buscada.",
+                    example = "Introdução ao SQL",
+                    required = true
+            )
+            @PathVariable String titulo
     );
 }

@@ -43,6 +43,16 @@ public class AulaRepository {
             return null;
         }
     }
+    public Aula findByTitulo(String titulo, Long id_curso, Long id_modulo) {
+        String sql = "SELECT * FROM aula WHERE titulo = ? AND id_curso = ? AND id_modulo = ?";
+        try{
+            Aula aula = jdbcTemplate.queryForObject(sql, rowMapper, titulo, id_curso, id_modulo);
+            return aula;
+        }
+        catch(Exception e){
+            return null;
+        }
+    }
     public boolean save(Aula aula) {
         String sql = "INSERT INTO aula(id_modulo,id_curso,titulo,descricao,link_do_video) VALUES(?,?,?,?,?)";
         return jdbcTemplate.update(sql,aula.getId_modulo(),aula.getId_curso(),aula.getTitulo(),aula.getDescricao_aula(),aula.getLink()) > 0;

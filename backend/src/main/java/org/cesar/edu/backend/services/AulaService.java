@@ -53,6 +53,21 @@ public class AulaService {
         return AulaResponse.fromEntity(aula);
     }
 
+    public Aula findByTitulo(String titulo, Long id_curso, Long id_modulo) {
+        if (
+                titulo == null ||
+                        titulo.isBlank() ||
+                        id_curso == null ||
+                        id_curso <= 0 ||
+                        id_modulo == null ||
+                        id_modulo <= 0
+        ) {
+            return null;
+        }
+
+        return aulaRepository.findByTitulo(titulo, id_curso, id_modulo);
+    }
+
     public ResultService save(AulaRequest request) {
         ListaString erros = validarRequest(request);
 
