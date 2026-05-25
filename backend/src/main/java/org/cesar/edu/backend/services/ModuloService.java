@@ -29,6 +29,13 @@ public class ModuloService {
                 .toList();
     }
 
+    public Modulo findByTitulo(String titulo, Long id_curso) {
+        if (titulo == null || titulo.isBlank() || id_curso == null || id_curso < 0) {
+            return null;
+        }
+        return moduloRepository.findByTitulo(titulo, id_curso);
+    }
+
     public ModuloResponse findById(Long idCurso, Long idModulo) {
         ListaString erros = new ListaString();
 

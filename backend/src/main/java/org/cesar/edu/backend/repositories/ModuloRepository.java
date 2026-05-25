@@ -41,6 +41,17 @@ public class ModuloRepository {
         }
         return modulo;
     }
+    public Modulo findByTitulo(String titulo, Long id_curso) {
+        String sql = "select * from modulo where titulo = ? AND id_curso = ? ;";
+        try{
+            Modulo modulo = jdbcTemplate.queryForObject(sql, moduloRowMapper, titulo, id_curso);
+            return modulo;
+        }
+        catch(DataAccessException e){
+            return null;
+        }
+    }
+
     public boolean save(Modulo modulo) {
         String sql = "INSERT INTO modulo(id_curso,titulo,carga_horaria,descricao) VALUES(?,?,?,?)";
         return jdbcTemplate.update(sql,modulo.getId_curso(),modulo.getTitulo(),modulo.getCargaHoraria(),modulo.getDescricao_curso()) > 0;

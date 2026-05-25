@@ -3,6 +3,7 @@ package org.cesar.edu.backend.controllers;
 import org.cesar.edu.backend.doc.ModuloControllerDoc;
 import org.cesar.edu.backend.dtos.requests.ModuloRequest;
 import org.cesar.edu.backend.dtos.responses.ModuloResponse;
+import org.cesar.edu.backend.models.Modulo;
 import org.cesar.edu.backend.services.ModuloService;
 import org.cesar.edu.backend.utils.ResultService;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,22 @@ public class ModuloController implements ModuloControllerDoc {
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id_curso}/{titulo}")
+    public ResponseEntity<?> findByTitulo(@PathVariable String titulo, @PathVariable Long id_curso) {
+        try{
+            Modulo modulo = moduloService.findByTitulo(titulo, id_curso);
+            if(modulo == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Consulta não encontrada");
+            }
+            return ResponseEntity.ok(modulo);
+        }
+        catch (Exception e){
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(e.getMessage());
         }
     }

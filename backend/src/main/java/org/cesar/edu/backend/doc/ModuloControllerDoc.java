@@ -11,7 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cesar.edu.backend.dtos.requests.ModuloRequest;
 import org.cesar.edu.backend.dtos.responses.ModuloResponse;
+import org.cesar.edu.backend.models.Modulo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(
         name = "Módulos",
@@ -351,5 +353,64 @@ public interface ModuloControllerDoc {
                     required = true
             )
             Long idModulo
+    );
+    @Operation(
+            summary = "Buscar módulo por título e curso",
+            description = """
+                    Busca um módulo específico a partir do título informado e do ID do curso ao qual ele pertence.
+                    
+                    Caso exista um módulo com o título informado dentro do curso especificado,
+                    o sistema retorna os dados completos do módulo.
+                    
+                    Caso nenhum módulo seja encontrado, retorna uma mensagem informando que a consulta não foi encontrada.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Módulo encontrado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Modulo.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Nenhum módulo encontrado para o título e curso informados.",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(
+                                    implementation = String.class,
+                                    example = "Consulta não encontrada"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno no servidor ao tentar buscar o módulo.",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(
+                                    implementation = String.class,
+                                    example = "Erro interno no servidor"
+                            )
+                    )
+            )
+    })
+    ResponseEntity<?> findByTitulo(
+
+            @Parameter(
+                    description = "Título do módulo que será buscado.",
+                    example = "Introdução ao Java",
+                    required = true
+            )
+            @PathVariable String titulo,
+
+             @Parameter(
+                     description = "ID do curso ao qual o módulo pertence.",
+                     example = "1",
+                     required = true
+             )
+            @PathVariable Long id_curso
     );
 }
