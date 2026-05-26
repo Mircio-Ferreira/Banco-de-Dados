@@ -69,20 +69,71 @@
             </section>
 
             <section style="margin-top: 40px;">
-                <h2>Continue assistindo</h2>
-                <div class="continuar-container">
-                    <div class="card continuar-card">
-                        <h3>JavaScript Completo</h3>
-                        <p>Aula: Funções</p>
-                        <div class="barra">
-                            <div class="progresso" style="width: 60%;"></div>
-                        </div>
-                    </div>
+                <h2>Meu Progresso</h2>
+                <p style="opacity:0.8; font-size:0.9em; margin-bottom: 12px;">
+                    Acompanhe quantas aulas você já assistiu em cada curso adquirido.
+                </p>
+                <div id="progressoContainer" class="progresso-container">
+                    <p style="color:#94a3b8;">Carregando progresso...</p>
                 </div>
             </section>
 
         </main>
     </div>
+
+    <style>
+        .progresso-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+        .progresso-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .progresso-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(56, 189, 248, 0.5);
+        }
+        .progresso-card h3 {
+            font-size: 1em;
+            margin: 0 0 8px 0;
+            color: #f8fafc;
+        }
+        .progresso-meta {
+            font-size: 0.85em;
+            color: #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .progresso-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progresso-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #22c55e);
+            transition: width 0.3s;
+        }
+        .progresso-pct {
+            text-align: right;
+            font-size: 0.8em;
+            color: #38bdf8;
+            margin-top: 4px;
+            font-weight: bold;
+        }
+        .progresso-empty {
+            color: #94a3b8;
+            padding: 15px;
+        }
+    </style>
 
     <div id="modalCompra" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
         <div style="background: #1e293b; color: white; padding: 30px; border-radius: 8px; width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);">
@@ -101,6 +152,7 @@
     <script src="../js/auth.js"></script>
     <script src="../js/logout.js"></script>
     <script src="loadCursos.js"></script>
+    <script src="progresso.js"></script>
 </body>
 
 </html>
