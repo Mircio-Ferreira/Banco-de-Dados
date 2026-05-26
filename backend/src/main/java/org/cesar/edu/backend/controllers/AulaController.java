@@ -31,7 +31,7 @@ public class AulaController implements AulaControllerDoc {
         }
     }
 
-    @GetMapping("/{id_curso}/{id_modulo}/{id_aula}")
+    @GetMapping("/get/{id_curso}/{id_modulo}/{id_aula}")
     public ResponseEntity<?> findById(
             @PathVariable("id_curso") Long idCurso,
             @PathVariable("id_modulo") Long idModulo,

@@ -213,6 +213,9 @@ public class CursoRepository {
         try {
             jdbcTemplate.update(sql, categoria, desconto);
         } catch (DataAccessException e) {
+            System.out.println("ERRO REAL DO BANCO:");
+            System.out.println(e.getMessage());
+            System.out.println(e.getMostSpecificCause().getMessage());
             return false;
         }
         return true;

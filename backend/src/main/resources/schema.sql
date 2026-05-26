@@ -248,7 +248,7 @@ CREATE OR REPLACE FUNCTION calcular_carga_horaria_total(
 @@
 CREATE OR REPLACE PROCEDURE aplicar_desconto_em_categoria(
        IN in_categoria VARCHAR,
-       IN desconto NUMERIC
+       IN desconto DOUBLE PRECISION
 )
        LANGUAGE plpgsql
        AS $$
@@ -267,7 +267,7 @@ CREATE OR REPLACE PROCEDURE aplicar_desconto_em_categoria(
         END IF;
 
        UPDATE curso
-       SET preco = calcular_desconto(preco,desconto)
+       SET preco = calcular_desconto(preco, desconto::NUMERIC)
        WHERE id_curso IN (
            SELECT c.id_curso
            FROM curso c
