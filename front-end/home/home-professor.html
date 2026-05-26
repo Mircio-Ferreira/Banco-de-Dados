@@ -58,8 +58,55 @@
                     <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
                 </div>
             </section>
+
+            <!-- 💸 DESCONTO POR CATEGORIA -->
+            <section style="margin-top: 30px;">
+                <h2>Aplicar desconto em categoria</h2>
+                <p style="opacity:0.8; font-size:0.9em;">
+                    Aplica um desconto percentual a todos os cursos da categoria informada.
+                </p>
+
+                <div class="desconto-form">
+                    <input id="descontoCategoria" type="text" placeholder="Categoria (ex: Programação)">
+                    <input id="descontoValor" type="number" min="0" max="100" step="0.01" placeholder="Desconto (%)">
+                    <button id="btnAplicarDesconto" onclick="aplicarDesconto()">Aplicar</button>
+                </div>
+
+                <div id="descontoStatus" class="desconto-status"></div>
+            </section>
         </main>
     </div>
+
+    <style>
+        .desconto-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .desconto-form input {
+            flex: 1;
+            min-width: 180px;
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+        }
+        .desconto-form button {
+            padding: 8px 14px;
+            cursor: pointer;
+        }
+        .desconto-status {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            display: none;
+        }
+        .desconto-status.info { background: rgba(52, 152, 219, 0.2); display: block; }
+        .desconto-status.ok   { background: rgba(46, 204, 113, 0.25); display: block; }
+        .desconto-status.err  { background: rgba(231, 76, 60, 0.25); display: block; }
+    </style>
 
     <!-- 📜 SCRIPT -->
     <script>
@@ -98,9 +145,11 @@
     </script>
 
     <script src="scrollCarrossel.js"></script>
+    <script src="desconto.js"></script>
     <script src="cursoDirect.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/logout.js"></script>
+    <script src="../js/reloadStorage.js"></script>
 </body>
 
 </html>
