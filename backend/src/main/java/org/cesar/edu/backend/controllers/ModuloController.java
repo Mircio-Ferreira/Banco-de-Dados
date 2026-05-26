@@ -31,7 +31,7 @@ public class ModuloController implements ModuloControllerDoc {
         }
     }
 
-    @GetMapping("/{id_curso}/{id_modulo}")
+    @GetMapping("/get/{id_curso}/{id_modulo}")
     public ResponseEntity<?> findById(
             @PathVariable("id_curso") Long idCurso,
             @PathVariable("id_modulo") Long idModulo
