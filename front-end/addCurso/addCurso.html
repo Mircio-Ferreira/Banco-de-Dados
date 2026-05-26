@@ -45,6 +45,28 @@
         border-left: 2px solid rgba(255, 255, 255, 0.2);
         padding-left: 10px;
     }
+
+    .status {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 0.9em;
+        white-space: pre-line;
+        display: none;
+    }
+
+    .status.info { background: rgba(52, 152, 219, 0.2); display: block; }
+    .status.ok   { background: rgba(46, 204, 113, 0.25); display: block; }
+    .status.err  { background: rgba(231, 76, 60, 0.25); display: block; }
+
+    .remove-btn {
+        background: rgba(231, 76, 60, 0.7);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 4px 8px;
+        margin-left: 8px;
+    }
 </style>
 
 <body>
@@ -67,7 +89,7 @@
     <div class="layout">
 
         <aside class="sidebar">
-            <a href="../home/home.html">🏠 Home</a>
+            <a href="../home/home-professor.html">🏠 Home</a>
             <a href="#">🏆 Certificados</a>
             <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
         </aside>
@@ -81,13 +103,13 @@
                 <div class="box">
                     <h3>Curso</h3>
                     <input id="nomeCurso" placeholder="Nome do curso">
-                    <input id="precoCurso" placeholder="Preço">
+                    <input id="precoCurso" type="number" min="0" step="0.01" placeholder="Preço">
                     <textarea id="descricaoCurso" placeholder="Descrição"></textarea>
                 </div>
 
                 <!-- 🏷️ CATEGORIAS -->
-                <div class="form-group">
-                    <label>Categorias</label>
+                <div class="box">
+                    <h3>Categorias</h3>
                     <input type="text" id="categoriaInput" placeholder="Ex: Programação, IA">
                     <small>Adicione uma ou mais categorias para o curso.</small>
 
@@ -103,16 +125,18 @@
                     <div id="modulos"></div>
                 </div>
 
-                <button onclick="criarCurso()">Salvar Curso</button>
+                <button id="btnSalvar" onclick="criarCurso()">Salvar Curso</button>
+
+                <div id="status" class="status"></div>
 
             </div>
         </main>
     </div>
 
-    <script src="addCurso.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/logout.js"></script>
     <script src="../js/reloadStorage.js"></script>
+    <script src="addCurso.js"></script>
 </body>
 
 </html>
