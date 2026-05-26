@@ -1,6 +1,34 @@
 const API = "http://localhost:8080/api/v1";
 
 /**
+ * 🔐 Lê o CPF do usuário logado do localStorage.
+ * Retorna string vazia caso não exista — o backend trata o header como opcional
+ * em rotas de leitura, mas mantemos a chave para padronizar o tráfego.
+ */
+function getCpfLogado() {
+    try {
+        const raw = localStorage.getItem("user");
+        if (!raw) return "";
+        const user = JSON.parse(raw);
+        return user?.cpf ?? "";
+    } catch {
+        return "";
+    }
+}
+
+/**
+ * 🌐 Wrapper de fetch que injeta o header X-User-CPF em toda requisição.
+ * Aceita `options` no mesmo formato do fetch nativo.
+ */
+function fetchComCpf(url, options = {}) {
+    const headers = {
+        ...(options.headers ?? {}),
+        "X-User-CPF": getCpfLogado()
+    };
+    return fetch(url, { ...options, headers });
+}
+
+/**
  * 🔗 Captura o ID do curso a partir dos parâmetros da URL (ex: assistir.html?id=2)
  */
 function getCursoId() {
@@ -42,7 +70,7 @@ function carregarAula(aula) {
  */
 async function carregarCargaHoraria(idCurso) {
     try {
-        const response = await fetch(`${API}/curso/curso-horas-totais/${idCurso}`);
+        const response = await fetchComCpf(`${API}/curso/curso-horas-totais/${idCurso}`);
         if (!response.ok) throw new Error("Erro ao buscar carga horária");
 
         const horasTotais = await response.text();
@@ -65,7 +93,7 @@ async function carregarCargaHoraria(idCurso) {
  */
 async function buscarDetalheAula(idCurso, idModulo, aulaResumo) {
     try {
-        const res = await fetch(
+        const res = await fetchComCpf(
             `${API}/aula/${idCurso}/${idModulo}/${aulaResumo.id_aula}`,
             { method: "GET" }
         );
@@ -94,7 +122,7 @@ async function buscarDetalheModulo(idCurso, item) {
 
     let moduloCompleto = { ...item.modulo, id_curso: idCurso };
     try {
-        const res = await fetch(`${API}/modulo/${idCurso}/${idModulo}`);
+        const res = await fetchComCpf(`${API}/modulo/${idCurso}/${idModulo}`);
         if (res.ok) {
             const detalhe = await res.json();
             moduloCompleto = {
@@ -168,7 +196,7 @@ async function inicializarCurso() {
     await carregarCargaHoraria(idCurso);
 
     try {
-        const response = await fetch(`${API}/curso/${idCurso}/modulos-aulas`);
+        const response = await fetchComCpf(`${API}/curso/${idCurso}/modulos-aulas`);
         if (!response.ok) throw new Error(`Erro HTTP! Status: ${response.status}`);
 
         const esqueleto = await response.json();
