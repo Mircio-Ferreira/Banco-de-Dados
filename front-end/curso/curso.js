@@ -65,7 +65,10 @@ async function carregarCargaHoraria(idCurso) {
  */
 async function buscarDetalheAula(idCurso, idModulo, aulaResumo) {
     try {
-        const res = await fetch(`${API}/aula/${idCurso}/${idModulo}/${aulaResumo.id_aula}`);
+        const res = await fetch(
+            `${API}/aula/${idCurso}/${idModulo}/${aulaResumo.id_aula}`,
+            { method: "GET" }
+        );
         if (!res.ok) throw new Error("Falha ao buscar aula " + aulaResumo.id_aula);
         const detalhe = await res.json();
 
