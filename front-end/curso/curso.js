@@ -125,7 +125,7 @@ async function inicializarCurso() {
     await carregarCargaHoraria(idCurso);
 
     // 2. Monta a URL e busca a estrutura de módulos do backend
-    const urlModulos = `http://localhost:8080/api/v1/curso/curso/${idCurso}/modulos-aulas`;
+    const urlModulos = `http://localhost:8080/api/v1/curso/${idCurso}/modulos-aulas`;
 
     try {
         const response = await fetch(urlModulos);
