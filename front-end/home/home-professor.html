@@ -106,31 +106,67 @@
         .desconto-status.info { background: rgba(52, 152, 219, 0.2); display: block; }
         .desconto-status.ok   { background: rgba(46, 204, 113, 0.25); display: block; }
         .desconto-status.err  { background: rgba(231, 76, 60, 0.25); display: block; }
+
+        .card-resumo {
+            margin-top: 8px;
+            font-size: 0.8em;
+            color: #cbd5e1;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 6px;
+        }
+        .card-resumo .linha {
+            display: flex;
+            justify-content: space-between;
+            margin: 2px 0;
+        }
+        .card-resumo .preco {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+        .card-resumo .receita {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        .badge-classificacao {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            margin-top: 4px;
+        }
+        .badge-acima  { background: rgba(239, 68, 68, 0.25);  color: #fca5a5; }
+        .badge-na     { background: rgba(234, 179, 8, 0.25);  color: #fde68a; }
+        .badge-abaixo { background: rgba(34, 197, 94, 0.25);  color: #86efac; }
+        .card-resumo .placeholder { color: #64748b; font-style: italic; }
     </style>
 
     <!-- 📜 SCRIPT -->
     <script>
-        function carregarCursosProfessor() {
-            const cursos = []
-
-            const cursosLecionados = currentUser.cursosLecionados
+        async function carregarCursosProfessor() {
+            const cursos = [];
+            const cursosLecionados = currentUser.cursosLecionados ?? [];
 
             for (const c of cursosLecionados) {
                 cursos.push({
                     nome: c.nome_curso,
                     id: c.id_curso
-                })
+                });
             }
 
             const container = document.getElementById("carrosselCursosProfessor");
 
+            // 1) Renderiza os cards já com os dados básicos + um placeholder de resumo
             cursos.forEach(curso => {
                 const div = document.createElement("div");
                 div.classList.add("card", "card-curso");
+                div.dataset.cursoId = curso.id;
 
                 div.innerHTML = `
-                    <img src="${curso.imagem}" class="thumb"/>
+                    <img src="${curso.imagem ?? ''}" class="thumb"/>
                     <h3>${curso.nome}</h3>
+                    <div class="card-resumo" id="resumo-${curso.id}">
+                        <span class="placeholder">Carregando resumo...</span>
+                    </div>
                 `;
 
                 div.addEventListener("click", () => {
@@ -138,6 +174,83 @@
                 });
 
                 container.appendChild(div);
+            });
+
+            // 2) Busca o resumo-geral de cada curso em paralelo e injeta no card
+            await Promise.all(cursos.map(curso => preencherResumo(curso.id)));
+        }
+
+        async function preencherResumo(idCurso) {
+            const slot = document.getElementById(`resumo-${idCurso}`);
+            if (!slot) return;
+
+            try {
+                const res = await fetch(
+                    `http://localhost:8080/api/v1/curso/resumo-geral/${idCurso}`,
+                    { headers: { "X-User-CPF": currentUser.cpf } }
+                );
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                const lista = await res.json();
+                const resumo = Array.isArray(lista) ? lista[0] : lista;
+
+                if (!resumo) {
+                    slot.innerHTML = `<span class="placeholder">Sem dados de resumo.</span>`;
+                    return;
+                }
+
+                slot.innerHTML = renderResumoHtml(resumo);
+            } catch (err) {
+                console.error("Erro ao carregar resumo do curso " + idCurso, err);
+                slot.innerHTML = `<span class="placeholder">Resumo indisponível.</span>`;
+            }
+        }
+
+        function renderResumoHtml(r) {
+            const preco          = formatarBRL(r.preco);
+            const receita        = formatarBRL(r.receitaEstimada);
+            const mediaGeral     = formatarBRL(r.mediaPrecoGeral);
+            const totalCompras   = Number(r.totalCompras ?? 0);
+            const classificacao  = r.classificacaoPreco ?? "";
+
+            const badgeClass =
+                classificacao === "ACIMA_DA_MEDIA" ? "badge-acima"  :
+                classificacao === "ABAIXO_DA_MEDIA" ? "badge-abaixo" :
+                classificacao === "NA_MEDIA"        ? "badge-na"     : "";
+
+            const badgeLabel =
+                classificacao === "ACIMA_DA_MEDIA"  ? "📈 Acima da média"  :
+                classificacao === "ABAIXO_DA_MEDIA" ? "📉 Abaixo da média" :
+                classificacao === "NA_MEDIA"        ? "➖ Na média"        : "—";
+
+            return `
+                <div class="linha">
+                    <span>Preço</span>
+                    <span class="preco">${preco}</span>
+                </div>
+                <div class="linha">
+                    <span>Compras</span>
+                    <span>${totalCompras}</span>
+                </div>
+                <div class="linha">
+                    <span>Receita</span>
+                    <span class="receita">${receita}</span>
+                </div>
+                <div class="linha" style="opacity:0.75;">
+                    <span>Média geral</span>
+                    <span>${mediaGeral}</span>
+                </div>
+                <span class="badge-classificacao ${badgeClass}">${badgeLabel}</span>
+            `;
+        }
+
+        function formatarBRL(valor) {
+            const numero = Number(valor);
+            if (!isFinite(numero)) return "—";
+            return numero.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL"
             });
         }
 
