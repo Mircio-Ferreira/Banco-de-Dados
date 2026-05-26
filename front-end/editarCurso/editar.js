@@ -17,16 +17,68 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         const curso = await getJson(`${API}/curso/${cursoId}`);
-        const modulosAulas = await getJson(`${API}/curso/${cursoId}/modulos-aulas`);
+        const esqueleto = await getJson(`${API}/curso/${cursoId}/modulos-aulas`);
+
+        // O endpoint /modulos-aulas devolve módulos/aulas com a maioria dos campos null.
+        // Enriquecemos cada item com /modulo/{idCurso}/{idModulo} e /aula/{idCurso}/{idModulo}/{idAula}.
+        const modulosCompletos = await Promise.all(
+            (esqueleto ?? []).map(item => enriquecerItem(cursoId, item))
+        );
 
         preencherCurso(curso);
-        carregarModulos(modulosAulas);
+        carregarModulos(modulosCompletos);
         renderModulos();
     } catch (err) {
         console.error(err);
         setStatus("err", "Erro ao carregar curso: " + err.message);
     }
 });
+
+async function enriquecerItem(idCurso, item) {
+    const idModulo = item.modulo?.id_modulo;
+
+    let detalheModulo = {};
+    try {
+        if (idModulo != null) {
+            detalheModulo = await getJson(`${API}/modulo/${idCurso}/${idModulo}`);
+        }
+    } catch (err) {
+        console.error("Falha ao detalhar módulo " + idModulo, err);
+    }
+
+    const aulas = await Promise.all(
+        (item.aulas ?? []).map(async aulaResumo => {
+            try {
+                if (aulaResumo.id_aula == null || idModulo == null) return aulaResumo;
+                const detalhe = await getJson(
+                    `${API}/aula/${idCurso}/${idModulo}/${aulaResumo.id_aula}`
+                );
+                return {
+                    ...aulaResumo,
+                    id_curso: Number(idCurso),
+                    id_modulo: idModulo,
+                    titulo: detalhe.titulo ?? aulaResumo.titulo,
+                    link: detalhe.link_do_video,
+                    descricao_aula: detalhe.descricao
+                };
+            } catch (err) {
+                console.error("Falha ao detalhar aula " + aulaResumo.id_aula, err);
+                return aulaResumo;
+            }
+        })
+    );
+
+    return {
+        modulo: {
+            ...item.modulo,
+            id_curso: Number(idCurso),
+            titulo: detalheModulo.titulo ?? item.modulo?.titulo,
+            cargaHoraria: detalheModulo.carga_horaria ?? item.modulo?.cargaHoraria,
+            descricao_curso: detalheModulo.descricao ?? item.modulo?.descricao_curso
+        },
+        aulas
+    };
+}
 
 function preencherCurso(curso) {
     document.getElementById("nomeCurso").value = curso.nome_curso ?? "";

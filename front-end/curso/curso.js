@@ -1,3 +1,5 @@
+const API = "http://localhost:8080/api/v1";
+
 /**
  * 🔗 Captura o ID do curso a partir dos parâmetros da URL (ex: assistir.html?id=2)
  */
@@ -10,20 +12,16 @@ let aulaAtual = null;
 
 /**
  * 🎬 Carrega a aula selecionada no player principal da tela
- * @param {Object} aula - Objeto contendo os dados da aula
  */
 function carregarAula(aula) {
     aulaAtual = aula;
 
-    // Injeta o iframe do vídeo (utiliza a propriedade 'link' do novo modelo)
     document.getElementById("video").innerHTML =
-        `<iframe width="100%" height="100%" src="${aula.link}" frameborder="0" allowfullscreen></iframe>`;
+        `<iframe width="100%" height="100%" src="${aula.link ?? ""}" frameborder="0" allowfullscreen></iframe>`;
 
-    // Atualiza os textos da aula
-    document.getElementById("tituloAula").innerText = aula.titulo;
-    document.getElementById("descricaoAula").innerText = aula.descricao_aula;
+    document.getElementById("tituloAula").innerText = aula.titulo ?? "";
+    document.getElementById("descricaoAula").innerText = aula.descricao_aula ?? "";
 
-    // Gerencia o bloco de materiais de apoio
     const matDiv = document.getElementById("materiais");
     matDiv.innerHTML = "";
 
@@ -40,57 +38,101 @@ function carregarAula(aula) {
 }
 
 /**
- * 🕒 Busca a Carga Horária Total do Curso no Backend e injeta no topo da Sidebar
- * @param {string} idCurso - ID do curso capturado da URL
+ * 🕒 Carga horária total do curso
  */
 async function carregarCargaHoraria(idCurso) {
-    const urlHoras = `http://localhost:8080/api/v1/curso/curso-horas-totais/${idCurso}`;
-    
     try {
-        const response = await fetch(urlHoras);
+        const response = await fetch(`${API}/curso/curso-horas-totais/${idCurso}`);
         if (!response.ok) throw new Error("Erro ao buscar carga horária");
-        
-        const horasTotais = await response.text(); 
 
+        const horasTotais = await response.text();
         const horasBadge = document.getElementById("cursoCargaHoraria");
         if (horasBadge) {
-            horasBadge.innerHTML = `🕒 Carga Horária Total: <span style="background: #1e293b; color: #38bdf8; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">${horasTotais}h</span>`;
+            horasBadge.innerHTML =
+                `🕒 Carga Horária Total: <span style="background: #1e293b; color: #38bdf8; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">${horasTotais}h</span>`;
         }
     } catch (error) {
         console.error("Não foi possível carregar a carga horária:", error);
         const horasBadge = document.getElementById("cursoCargaHoraria");
-        if (horasBadge) {
-            horasBadge.style.display = "none"; // Esconde o bloco em caso de falha
-        }
+        if (horasBadge) horasBadge.style.display = "none";
     }
 }
 
 /**
- * 📦 Renderiza a árvore de Módulos e Aulas no container dedicado da Sidebar
- * @param {Array} modulos - Lista de módulos e aulas retornada da API
+ * 🔍 Busca detalhes completos de uma aula via /aula/{idCurso}/{idModulo}/{idAula}.
+ * O endpoint /modulos-aulas devolve apenas id_aula e titulo; aqui completamos
+ * link_do_video e descrição.
+ */
+async function buscarDetalheAula(idCurso, idModulo, aulaResumo) {
+    try {
+        const res = await fetch(`${API}/aula/${idCurso}/${idModulo}/${aulaResumo.id_aula}`);
+        if (!res.ok) throw new Error("Falha ao buscar aula " + aulaResumo.id_aula);
+        const detalhe = await res.json();
+
+        return {
+            ...aulaResumo,
+            id_curso: idCurso,
+            id_modulo: idModulo,
+            link: detalhe.link_do_video,
+            descricao_aula: detalhe.descricao
+        };
+    } catch (err) {
+        console.error(err);
+        return { ...aulaResumo, id_curso: idCurso, id_modulo: idModulo };
+    }
+}
+
+/**
+ * 🔍 Busca detalhes completos de um módulo via /modulo/{idCurso}/{idModulo}.
+ * Preenche cargaHoraria e descrição que vêm nulos no /modulos-aulas.
+ */
+async function buscarDetalheModulo(idCurso, item) {
+    const idModulo = item.modulo.id_modulo;
+
+    let moduloCompleto = { ...item.modulo, id_curso: idCurso };
+    try {
+        const res = await fetch(`${API}/modulo/${idCurso}/${idModulo}`);
+        if (res.ok) {
+            const detalhe = await res.json();
+            moduloCompleto = {
+                ...moduloCompleto,
+                titulo: detalhe.titulo ?? moduloCompleto.titulo,
+                cargaHoraria: detalhe.carga_horaria,
+                descricao_curso: detalhe.descricao
+            };
+        }
+    } catch (err) {
+        console.error("Falha ao buscar módulo " + idModulo, err);
+    }
+
+    const aulas = await Promise.all(
+        (item.aulas ?? []).map(a => buscarDetalheAula(idCurso, idModulo, a))
+    );
+
+    return { modulo: moduloCompleto, aulas };
+}
+
+/**
+ * 📦 Renderiza a árvore de Módulos e Aulas na sidebar
  */
 function renderSidebar(modulos) {
     const container = document.getElementById("modulosContainer");
     if (!container) return;
-    
-    // Limpa apenas o conteúdo do container de aulas, preservando o topo da sidebar
-    container.innerHTML = ""; 
+
+    container.innerHTML = "";
 
     modulos.forEach(item => {
         const modDiv = document.createElement("div");
         modDiv.className = "modulo";
 
-        // Título extraído do objeto interno 'modulo'
-        modDiv.innerHTML = `<h3>📦 ${item.modulo.titulo}</h3>`;
+        modDiv.innerHTML = `<h3>📦 ${item.modulo.titulo ?? "(sem título)"}</h3>`;
 
-        // Varre e renderiza as aulas do módulo correspondente
         if (item.aulas && item.aulas.length > 0) {
             item.aulas.forEach(aula => {
                 const aulaDiv = document.createElement("div");
                 aulaDiv.className = "aula";
-                aulaDiv.innerText = aula.titulo;
+                aulaDiv.innerText = aula.titulo ?? "(sem título)";
 
-                // Evento de clique para alternar o player de vídeo
                 aulaDiv.onclick = () => {
                     carregarAula(aula);
                     document.querySelectorAll(".aula").forEach(a => a.classList.remove("ativa"));
@@ -106,14 +148,13 @@ function renderSidebar(modulos) {
 }
 
 /**
- * 🔄 Função Orquestradora: Executada ao carregar a página.
- * Controla o fluxo de chamadas e evita concorrência assíncrona.
+ * 🔄 Orquestra: pega o esqueleto em /modulos-aulas e enriquece cada módulo/aula
+ * com chamadas individuais.
  */
 async function inicializarCurso() {
     const idCurso = getCursoId();
-    
+
     if (!idCurso) {
-        console.error("ID do curso não foi encontrado nos parâmetros da URL (ex: ?id=1)");
         const container = document.getElementById("modulosContainer");
         if (container) {
             container.innerHTML = "<p style='padding:15px; color: #ef4444;'>Erro: Nenhum ID de curso foi especificado na URL.</p>";
@@ -121,26 +162,24 @@ async function inicializarCurso() {
         return;
     }
 
-    // 1. Aguarda obrigatoriamente a carga horária ser injetada
     await carregarCargaHoraria(idCurso);
 
-    // 2. Monta a URL e busca a estrutura de módulos do backend
-    const urlModulos = `http://localhost:8080/api/v1/curso/${idCurso}/modulos-aulas`;
-
     try {
-        const response = await fetch(urlModulos);
+        const response = await fetch(`${API}/curso/${idCurso}/modulos-aulas`);
         if (!response.ok) throw new Error(`Erro HTTP! Status: ${response.status}`);
 
-        const modulos = await response.json();
-        
-        // 3. Renderiza a lista estruturada na barra lateral
+        const esqueleto = await response.json();
+
+        // Enriquece todos os módulos em paralelo
+        const modulos = await Promise.all(
+            esqueleto.map(item => buscarDetalheModulo(idCurso, item))
+        );
+
         renderSidebar(modulos);
 
-        // 4. Se houver dados, inicializa o player com a primeira aula do primeiro módulo
         if (modulos.length > 0 && modulos[0].aulas && modulos[0].aulas.length > 0) {
             carregarAula(modulos[0].aulas[0]);
-            
-            // Ativa visualmente a primeira aula após renderização no DOM
+
             setTimeout(() => {
                 const primeiraAula = document.querySelector(".aula");
                 if (primeiraAula) primeiraAula.classList.add("ativa");
