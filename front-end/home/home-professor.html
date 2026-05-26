@@ -143,17 +143,35 @@
     <!-- 📜 SCRIPT -->
     <script>
         async function carregarCursosProfessor() {
-            const cursos = [];
-            const cursosLecionados = currentUser.cursosLecionados ?? [];
+            const container = document.getElementById("carrosselCursosProfessor");
 
-            for (const c of cursosLecionados) {
-                cursos.push({
-                    nome: c.nome_curso,
-                    id: c.id_curso
-                });
+            let cursosLecionados = [];
+            try {
+                const res = await fetch(
+                    `http://localhost:8080/api/v1/users/professor/${currentUser.cpf}`,
+                    { headers: { "X-User-CPF": currentUser.cpf } }
+                );
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                const professor = await res.json();
+                cursosLecionados = professor.cursosLecionados ?? [];
+            } catch (err) {
+                console.error("Erro ao buscar cursos do professor:", err);
+                container.innerHTML =
+                    `<p style="padding:15px; color:#ef4444;">Erro ao carregar cursos: ${err.message}</p>`;
+                return;
             }
 
-            const container = document.getElementById("carrosselCursosProfessor");
+            const cursos = cursosLecionados.map(c => ({
+                nome: c.nome_curso,
+                id: c.id_curso
+            }));
+
+            if (cursos.length === 0) {
+                container.innerHTML =
+                    `<p style="padding:15px; color:#94a3b8;">Você ainda não leciona nenhum curso. Crie o primeiro!</p>`;
+                return;
+            }
 
             // 1) Renderiza os cards já com os dados básicos + um placeholder de resumo
             cursos.forEach(curso => {
