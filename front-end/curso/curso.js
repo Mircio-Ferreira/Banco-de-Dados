@@ -17,11 +17,12 @@ function getCpfLogado() {
 }
 
 /**
- * 🌐 Wrapper de fetch que injeta o header X-User-CPF em toda requisição.
- * Aceita `options` no mesmo formato do fetch nativo.
+ * 🌐 Wrapper de fetch que injeta os headers padrão (Accept JSON + X-User-CPF)
+ * em toda requisição. Aceita `options` no mesmo formato do fetch nativo.
  */
 function fetchComCpf(url, options = {}) {
     const headers = {
+        "Accept": "application/json",
         ...(options.headers ?? {}),
         "X-User-CPF": getCpfLogado()
     };
@@ -92,12 +93,24 @@ async function carregarCargaHoraria(idCurso) {
  * link_do_video e descrição.
  */
 async function buscarDetalheAula(idCurso, idModulo, aulaResumo) {
+    const idAula = aulaResumo?.id_aula;
+
+    if (idAula == null || idAula <= 0 || idModulo == null) {
+        return { ...aulaResumo, id_curso: idCurso, id_modulo: idModulo };
+    }
+
     try {
         const res = await fetchComCpf(
-            `${API}/aula/${idCurso}/${idModulo}/${aulaResumo.id_aula}`,
-            { method: "GET" }
+            `${API}/aula/${idCurso}/${idModulo}/${idAula}`,
+            {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            }
         );
-        if (!res.ok) throw new Error("Falha ao buscar aula " + aulaResumo.id_aula);
+        if (!res.ok) {
+            const motivo = await res.text().catch(() => "");
+            throw new Error(`Falha ao buscar aula ${idAula} (${res.status}): ${motivo}`);
+        }
         const detalhe = await res.json();
 
         return {
