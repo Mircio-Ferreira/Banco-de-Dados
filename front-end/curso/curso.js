@@ -144,14 +144,14 @@ async function buscarDetalheModulo(idCurso, item) {
     const idModulo = item.modulo.id_modulo;
     let moduloCompleto = { ...item.modulo, id_curso: idCurso };
     try {
-        const res = await fetchComCpf(`${API}/modulo/${idCurso}/${idModulo}`);
+        const res = await fetchComCpf(`${API}/modulo/get/${idCurso}/${idModulo}`);
         if (res.ok) {
             const detalhe = await res.json();
             moduloCompleto = {
                 ...moduloCompleto,
                 titulo: detalhe.titulo ?? moduloCompleto.titulo,
                 cargaHoraria: detalhe.carga_horaria,
-                descricao_curso: detalhe.descricao
+                descricao_modulo: detalhe.descricao
             };
         }
     } catch (err) {
@@ -197,7 +197,9 @@ function renderSidebar() {
                     <span class="seta">▶</span>
                 </div>
             </div>
-            <div class="modulo-aulas"></div>
+            <div class="modulo-aulas">
+                ${item.modulo.descricao_modulo ? `<div class="modulo-descricao">${escapeHtml(item.modulo.descricao_modulo)}</div>` : ''}
+            </div>
         `;
 
         const headerEl = block.querySelector(".modulo-header");
@@ -479,6 +481,7 @@ async function inicializarCurso() {
         const modulos = await Promise.all(
             esqueleto.map(item => buscarDetalheModulo(idCurso, item))
         );
+        console.log(modulos)
 
         estadoCurso.modulos = modulos;
         estadoCurso.aulasFlat = modulos.flatMap(m => m.aulas ?? []);
