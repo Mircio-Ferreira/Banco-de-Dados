@@ -5,83 +5,218 @@
     <meta charset="UTF-8">
     <title>CesarEdu - Home</title>
     <link rel="stylesheet" href="../css/style.css">
-</head>
-
-<body>
-
-    <header class="navbar">
-        <div class="logo">
-            <img src="../img/cesar_edu.png" alt="Logo" />
-            <a href="../home/home.html">CesarEdu</a>
-        </div>
-
-        <input class="search" type="text" placeholder="O que você quer aprender?" />
-
-        <div class="perfil">
-            <span id="userName">Usuário</span>
-            <button onclick="logout()" class="logout-btn">Sair</button>
-        </div>
-    </header>
-
-    <div class="layout">
-
-        <aside class="sidebar">
-            <a href="../home/home-aluno.html">🏠 Home</a>
-            <a href="#">📚 Meus cursos</a>
-            <a href="#">🏆 Certificados</a>
-            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
-        </aside>
-
-        <main class="conteudo">
-
-            <section>
-                <h2>Meus Cursos Adquiridos</h2>
-                <div class="carrossel-wrapper">
-                    <button class="scroll-btn left" onclick="scrollCarrossel(this, -1)">❮</button>
-                    <div class="carrossel" id="carrosselCursos"></div>
-                    <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
-                </div>
-            </section>
-
-            <section style="margin-top: 40px;">
-                <h2>Cursos Disponíveis na Plataforma</h2>
-                <div class="carrossel-wrapper">
-                    <button class="scroll-btn left" onclick="scrollCarrossel(this, -1)">❮</button>
-                    <div class="carrossel" id="carrosselCatalogo"></div>
-                    <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
-                </div>
-            </section>
-
-            <section style="margin-top: 40px;">
-                <h2>Categorias</h2>
-                <div class="carrossel-wrapper">
-                    <button class="scroll-btn left" onclick="scrollCarrossel(this, -1)">❮</button>
-                    <div class="carrossel">
-                        <div class="categoria">Programação</div>
-                        <div class="categoria">Design</div>
-                        <div class="categoria">Data Science</div>
-                        <div class="categoria">Mobile</div>
-                        <div class="categoria">DevOps</div>
-                        <div class="categoria">IA</div>
-                    </div>
-                    <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
-                </div>
-            </section>
-
-            <section style="margin-top: 40px;">
-                <h2>Meu Progresso</h2>
-                <p style="opacity:0.8; font-size:0.9em; margin-bottom: 12px;">
-                    Acompanhe quantas aulas você já assistiu em cada curso adquirido.
-                </p>
-                <div id="progressoContainer" class="progresso-container">
-                    <p style="color:#94a3b8;">Carregando progresso...</p>
-                </div>
-            </section>
-
-        </main>
-    </div>
 
     <style>
+        /* ===== Search bar global (na navbar) ===== */
+        .search {
+            transition: box-shadow 0.15s, border-color 0.15s;
+        }
+        .search:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.5);
+        }
+
+        /* ===== KPIs do aluno ===== */
+        .kpis-aluno {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .kpi-card .label {
+            font-size: 0.75em;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-card .valor {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-top: 4px;
+        }
+        .kpi-card .sub {
+            font-size: 0.78em;
+            color: #cbd5e1;
+            margin-top: 2px;
+        }
+
+        /* ===== Filtros do catálogo ===== */
+        .filtros-catalogo {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .filtros-catalogo select,
+        .filtros-catalogo input[type="number"] {
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 0.88em;
+        }
+        .filtros-catalogo .label {
+            font-size: 0.78em;
+            color: #94a3b8;
+        }
+        .filtros-catalogo .reset {
+            margin-left: auto;
+            padding: 7px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(56, 189, 248, 0.15);
+            color: #bae6fd;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+        .filtros-catalogo .reset:hover {
+            background: rgba(56, 189, 248, 0.25);
+        }
+
+        .chips-categoria {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .chip {
+            padding: 6px 12px;
+            border-radius: 18px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            font-size: 0.82em;
+            cursor: pointer;
+            transition: 0.15s;
+            user-select: none;
+        }
+        .chip:hover {
+            border-color: rgba(56, 189, 248, 0.5);
+            color: #f1f5f9;
+        }
+        .chip.ativo {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: rgba(56, 189, 248, 0.6);
+            color: #bae6fd;
+            font-weight: bold;
+        }
+
+        /* ===== Cards melhorados ===== */
+        .card-melhor {
+            position: relative;
+            width: 220px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-melhor:hover {
+            transform: translateY(-4px);
+            border-color: rgba(56, 189, 248, 0.45);
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15);
+        }
+        .card-melhor .thumb-area {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #1d4ed8, #4c1d95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            color: #f1f5f9;
+        }
+        .card-melhor .thumb-area .preco-tag {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #38bdf8;
+            font-weight: bold;
+            font-size: 0.85em;
+            padding: 4px 10px;
+            border-radius: 14px;
+            backdrop-filter: blur(4px);
+        }
+        .card-melhor .thumb-area .preco-tag.gratis {
+            color: #86efac;
+        }
+        .card-melhor .corpo {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+        .card-melhor h3 {
+            margin: 0;
+            font-size: 0.95em;
+            color: #f1f5f9;
+            min-height: 2.4em;
+            line-height: 1.2;
+        }
+        .card-melhor .cats {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .card-melhor .cat {
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(99, 102, 241, 0.2);
+            color: #c7d2fe;
+        }
+        .card-melhor .cta {
+            margin-top: auto;
+            padding: 6px 0 0 0;
+            font-size: 0.8em;
+            color: #22c55e;
+            font-weight: bold;
+        }
+        .card-melhor.adquirido .cta {
+            color: #fbbf24;
+        }
+
+        .secao-vazia {
+            padding: 24px;
+            color: #94a3b8;
+            font-style: italic;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 8px;
+            border: 1px dashed rgba(255, 255, 255, 0.08);
+        }
+
+        .secao-titulo {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .secao-titulo h2 { margin: 0; }
+        .secao-titulo .contagem {
+            font-size: 0.85em;
+            color: #94a3b8;
+        }
+
+        /* ===== Progresso ===== */
         .progresso-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -134,12 +269,107 @@
             padding: 15px;
         }
     </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <img src="../img/cesar_edu.png" alt="Logo" />
+            <a href="../home/home.html">CesarEdu</a>
+        </div>
+
+        <input id="busca" class="search" type="text" placeholder="🔎 Buscar curso por nome..." />
+
+        <div class="perfil">
+            <span id="userName">Usuário</span>
+            <button onclick="logout()" class="logout-btn">Sair</button>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+            <a href="../home/home-aluno.html">🏠 Home</a>
+            <a href="#" id="linkMeusCursos">📚 Meus cursos</a>
+            <a href="#">🏆 Certificados</a>
+            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
+        </aside>
+
+        <main class="conteudo">
+
+            <!-- KPIs -->
+            <div class="kpis-aluno">
+                <div class="kpi-card"><div class="label">Cursos adquiridos</div><div class="valor" id="kpiAdquiridos">—</div><div class="sub">no seu acervo</div></div>
+                <div class="kpi-card"><div class="label">Cursos disponíveis</div><div class="valor" id="kpiDisponiveis">—</div><div class="sub">para comprar</div></div>
+                <div class="kpi-card"><div class="label">Categorias</div><div class="valor" id="kpiCategorias">—</div><div class="sub">no catálogo</div></div>
+                <div class="kpi-card"><div class="label">Preço médio</div><div class="valor" id="kpiPrecoMedio">—</div><div class="sub">do catálogo</div></div>
+            </div>
+
+            <!-- MEUS CURSOS -->
+            <section>
+                <div class="secao-titulo">
+                    <h2>Meus Cursos Adquiridos</h2>
+                    <span class="contagem" id="contagemMeus">—</span>
+                </div>
+                <div class="carrossel-wrapper">
+                    <button class="scroll-btn left" onclick="scrollCarrossel(this, -1)">❮</button>
+                    <div class="carrossel" id="carrosselCursos"></div>
+                    <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
+                </div>
+            </section>
+
+            <!-- CATÁLOGO -->
+            <section style="margin-top: 36px;">
+                <div class="secao-titulo">
+                    <h2>Cursos Disponíveis na Plataforma</h2>
+                    <span class="contagem" id="contagemCatalogo">—</span>
+                </div>
+
+                <div class="filtros-catalogo">
+                    <span class="label">Ordenar por</span>
+                    <select id="ordenarCatalogo">
+                        <option value="nome-asc">Nome (A → Z)</option>
+                        <option value="nome-desc">Nome (Z → A)</option>
+                        <option value="preco-asc">Preço (menor)</option>
+                        <option value="preco-desc">Preço (maior)</option>
+                    </select>
+
+                    <span class="label">Preço máx.</span>
+                    <input id="filtroPrecoMax" type="number" min="0" step="1" placeholder="qualquer">
+
+                    <button class="reset" id="btnResetar">Limpar filtros</button>
+                </div>
+
+                <div class="chips-categoria" id="chipsCategoria"></div>
+
+                <div class="carrossel-wrapper">
+                    <button class="scroll-btn left" onclick="scrollCarrossel(this, -1)">❮</button>
+                    <div class="carrossel" id="carrosselCatalogo"></div>
+                    <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
+                </div>
+            </section>
+
+            <!-- PROGRESSO -->
+            <section style="margin-top: 36px;">
+                <h2>Meu Progresso</h2>
+                <p style="opacity:0.8; font-size:0.9em; margin-bottom: 12px;">
+                    Acompanhe quantas aulas você já assistiu em cada curso adquirido.
+                </p>
+                <div id="progressoContainer" class="progresso-container">
+                    <p style="color:#94a3b8;">Carregando progresso...</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
 
     <div id="modalCompra" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
         <div style="background: #1e293b; color: white; padding: 30px; border-radius: 8px; width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);">
             <h3 style="margin-top: 0; font-size: 1.4em; color: #f8fafc;">Confirmar Matrícula</h3>
             <p style="color: #cbd5e1; margin-top: 15px;">Você deseja adquirir o curso:<br><strong id="nomeCursoModal" style="color: #38bdf8; font-size: 1.1em; display: inline-block; margin-top: 5px;"></strong>?</p>
-            
+            <p id="precoCursoModal" style="color: #22c55e; font-weight: bold; font-size: 1.1em; margin-top: 8px;"></p>
+
             <div style="margin-top: 30px; display: flex; justify-content: space-between; gap: 15px;">
                 <button onclick="fecharModal()" style="flex: 1; background: #475569; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s;">Cancelar</button>
                 <button onclick="efetivarCompra()" style="flex: 1; background: #22c55e; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s;">Confirmar</button>

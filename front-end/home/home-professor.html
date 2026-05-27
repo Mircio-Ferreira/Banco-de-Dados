@@ -5,82 +5,185 @@
     <meta charset="UTF-8">
     <title>Painel do Professor - CesarEdu</title>
     <link rel="stylesheet" href="../css/style.css">
-</head>
-
-<body>
-
-    <!-- 🔝 NAVBAR -->
-    <header class="navbar">
-        <div class="logo">
-            <img src="../img/cesar_edu.png" />
-            <a href="../home/home.html">CesarEdu</a>
-        </div>
-
-        <input class="search" type="text" placeholder="O que você quer aprender?" />
-
-        <div class="perfil">
-            <span id="userName">Usuário</span>
-
-            <button onclick="logout()" class="logout-btn">Sair</button>
-        </div>
-    </header>
-
-    <div class="layout">
-
-        <!-- 📌 SIDEBAR -->
-        <aside class="sidebar">
-            <a href="#">🏆 Certificados</a>
-            <a href="../addCurso/addCurso.html">➕ Criar curso</a>
-            <a href="../dashboardPreco/dashboardPreco.html">📊 Dashboard de Preços</a>
-            <a href="../dashboardAlunosInativos/dashboardAlunosInativos.html">😴 Alunos Inativos</a>
-            <a href="../dashboardProfessores/dashboardProfessores.html">🏆 Comparar Professores</a>
-            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
-        </aside>
-
-        <!-- 📊 CONTEÚDO -->
-        <main class="conteudo">
-
-            <!-- 📚 MEUS CURSOS -->
-            <section>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2>Meus Cursos</h2>
-
-                    <!-- 🚀 ATALHO -->
-                    <a href="../addCurso/addCurso.html">
-                        <button>➕ Novo Curso</button>
-                    </a>
-                </div>
-
-                <div class="carrossel-wrapper">
-                    <button class="scroll-btn left" onclick="scrollCarrossel(this, -1)">❮</button>
-
-                    <div class="carrossel" id="carrosselCursosProfessor">
-                        <!-- JS vai inserir aqui -->
-                    </div>
-
-                    <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
-                </div>
-            </section>
-
-            <!-- 💸 DESCONTO POR CATEGORIA -->
-            <section style="margin-top: 30px;">
-                <h2>Aplicar desconto em categoria</h2>
-                <p style="opacity:0.8; font-size:0.9em;">
-                    Aplica um desconto percentual a todos os cursos da categoria informada.
-                </p>
-
-                <div class="desconto-form">
-                    <input id="descontoCategoria" type="text" placeholder="Categoria (ex: Programação)">
-                    <input id="descontoValor" type="number" min="0" max="100" step="0.01" placeholder="Desconto (%)">
-                    <button id="btnAplicarDesconto" onclick="aplicarDesconto()">Aplicar</button>
-                </div>
-
-                <div id="descontoStatus" class="desconto-status"></div>
-            </section>
-        </main>
-    </div>
 
     <style>
+        .search:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.5);
+        }
+
+        /* ===== KPIs ===== */
+        .kpis-prof {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .kpi-card .label {
+            font-size: 0.75em;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-card .valor {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-top: 4px;
+        }
+        .kpi-card.receita .valor { color: #22c55e; }
+        .kpi-card .sub {
+            font-size: 0.78em;
+            color: #cbd5e1;
+            margin-top: 2px;
+        }
+
+        /* ===== Filtros do "Meus Cursos" ===== */
+        .filtros-prof {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .filtros-prof select {
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 0.88em;
+        }
+        .filtros-prof .label {
+            font-size: 0.78em;
+            color: #94a3b8;
+        }
+        .filtros-prof .reset {
+            margin-left: auto;
+            padding: 7px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(56, 189, 248, 0.15);
+            color: #bae6fd;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+        .filtros-prof .reset:hover {
+            background: rgba(56, 189, 248, 0.25);
+        }
+
+        .secao-titulo {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .secao-titulo h2 { margin: 0; }
+        .secao-titulo .contagem { font-size: 0.85em; color: #94a3b8; }
+
+        /* ===== Cards de curso do professor ===== */
+        .card-prof {
+            position: relative;
+            width: 240px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-prof:hover {
+            transform: translateY(-4px);
+            border-color: rgba(56, 189, 248, 0.45);
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15);
+        }
+        .card-prof .thumb-area {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #1d4ed8, #4c1d95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            color: #f1f5f9;
+        }
+        .card-prof .thumb-area .preco-tag {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #38bdf8;
+            font-weight: bold;
+            font-size: 0.85em;
+            padding: 4px 10px;
+            border-radius: 14px;
+            backdrop-filter: blur(4px);
+        }
+        .card-prof .corpo {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+        .card-prof h3 {
+            margin: 0;
+            font-size: 0.95em;
+            color: #f1f5f9;
+            min-height: 2.4em;
+            line-height: 1.2;
+        }
+        .card-resumo {
+            font-size: 0.8em;
+            color: #cbd5e1;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 6px;
+            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .card-resumo .linha {
+            display: flex;
+            justify-content: space-between;
+        }
+        .card-resumo .receita { color: #22c55e; font-weight: bold; }
+        .badge-classificacao {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.72em;
+            margin-top: 2px;
+            align-self: flex-start;
+        }
+        .badge-acima  { background: rgba(239, 68, 68, 0.25);  color: #fca5a5; }
+        .badge-na     { background: rgba(234, 179, 8, 0.25);  color: #fde68a; }
+        .badge-abaixo { background: rgba(34, 197, 94, 0.25);  color: #86efac; }
+        .card-resumo .placeholder { color: #64748b; font-style: italic; font-size: 0.85em; }
+
+        .secao-vazia {
+            padding: 24px;
+            color: #94a3b8;
+            font-style: italic;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 8px;
+            border: 1px dashed rgba(255, 255, 255, 0.08);
+        }
+
+        /* ===== Desconto ===== */
         .desconto-form {
             display: flex;
             gap: 10px;
@@ -110,173 +213,116 @@
         .desconto-status.ok   { background: rgba(46, 204, 113, 0.25); display: block; }
         .desconto-status.err  { background: rgba(231, 76, 60, 0.25); display: block; }
 
-        .card-resumo {
-            margin-top: 8px;
-            font-size: 0.8em;
-            color: #cbd5e1;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding-top: 6px;
-        }
-        .card-resumo .linha {
-            display: flex;
-            justify-content: space-between;
-            margin: 2px 0;
-        }
-        .card-resumo .preco {
-            color: #38bdf8;
+        .novo-curso-btn {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.45);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
             font-weight: bold;
-        }
-        .card-resumo .receita {
-            color: #22c55e;
-            font-weight: bold;
-        }
-        .badge-classificacao {
+            font-size: 0.88em;
+            transition: 0.15s;
+            text-decoration: none;
             display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75em;
-            margin-top: 4px;
         }
-        .badge-acima  { background: rgba(239, 68, 68, 0.25);  color: #fca5a5; }
-        .badge-na     { background: rgba(234, 179, 8, 0.25);  color: #fde68a; }
-        .badge-abaixo { background: rgba(34, 197, 94, 0.25);  color: #86efac; }
-        .card-resumo .placeholder { color: #64748b; font-style: italic; }
+        .novo-curso-btn:hover {
+            background: rgba(34, 197, 94, 0.3);
+        }
     </style>
+</head>
 
-    <!-- 📜 SCRIPT -->
-    <script>
-        async function carregarCursosProfessor() {
-            const container = document.getElementById("carrosselCursosProfessor");
+<body>
 
-            let cursosLecionados = [];
-            try {
-                const res = await fetch(
-                    `http://localhost:8080/api/v1/users/professor/${currentUser.cpf}`,
-                    { headers: { "X-User-CPF": currentUser.cpf } }
-                );
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    <header class="navbar">
+        <div class="logo">
+            <img src="../img/cesar_edu.png" />
+            <a href="../home/home.html">CesarEdu</a>
+        </div>
 
-                const professor = await res.json();
-                cursosLecionados = professor.cursosLecionados ?? [];
-            } catch (err) {
-                console.error("Erro ao buscar cursos do professor:", err);
-                container.innerHTML =
-                    `<p style="padding:15px; color:#ef4444;">Erro ao carregar cursos: ${err.message}</p>`;
-                return;
-            }
+        <input id="busca" class="search" type="text" placeholder="🔎 Buscar nos seus cursos..." />
 
-            const cursos = cursosLecionados.map(c => ({
-                nome: c.nome_curso,
-                id: c.id_curso
-            }));
+        <div class="perfil">
+            <span id="userName">Usuário</span>
+            <button onclick="logout()" class="logout-btn">Sair</button>
+        </div>
+    </header>
 
-            if (cursos.length === 0) {
-                container.innerHTML =
-                    `<p style="padding:15px; color:#94a3b8;">Você ainda não leciona nenhum curso. Crie o primeiro!</p>`;
-                return;
-            }
+    <div class="layout">
 
-            // 1) Renderiza os cards já com os dados básicos + um placeholder de resumo
-            cursos.forEach(curso => {
-                const div = document.createElement("div");
-                div.classList.add("card", "card-curso");
-                div.dataset.cursoId = curso.id;
+        <aside class="sidebar">
+            <a href="#">🏆 Certificados</a>
+            <a href="../addCurso/addCurso.html">➕ Criar curso</a>
+            <a href="../dashboardPreco/dashboardPreco.html">📊 Dashboard de Preços</a>
+            <a href="../dashboardAlunosInativos/dashboardAlunosInativos.html">😴 Alunos Inativos</a>
+            <a href="../dashboardProfessores/dashboardProfessores.html">🏆 Comparar Professores</a>
+            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
+        </aside>
 
-                div.innerHTML = `
-                    <img src="${curso.imagem ?? ''}" class="thumb"/>
-                    <h3>${curso.nome}</h3>
-                    <div class="card-resumo" id="resumo-${curso.id}">
-                        <span class="placeholder">Carregando resumo...</span>
+        <main class="conteudo">
+
+            <!-- KPIs -->
+            <div class="kpis-prof">
+                <div class="kpi-card"><div class="label">Cursos lecionados</div><div class="valor" id="kpiCursos">—</div><div class="sub">no seu portfólio</div></div>
+                <div class="kpi-card"><div class="label">Alunos totais</div><div class="valor" id="kpiAlunos">—</div><div class="sub">somando todos os cursos</div></div>
+                <div class="kpi-card receita"><div class="label">Receita estimada</div><div class="valor" id="kpiReceita">—</div><div class="sub">somando todos os cursos</div></div>
+                <div class="kpi-card"><div class="label">Preço médio</div><div class="valor" id="kpiPrecoMedio">—</div><div class="sub">dos seus cursos</div></div>
+            </div>
+
+            <section>
+                <div class="secao-titulo">
+                    <h2>Meus Cursos</h2>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <span class="contagem" id="contagemCursos">—</span>
+                        <a href="../addCurso/addCurso.html" class="novo-curso-btn">➕ Novo Curso</a>
                     </div>
-                `;
-
-                div.addEventListener("click", () => {
-                    window.location.href = `../editarCurso/editarCurso.html?id=${curso.id}`;
-                });
-
-                container.appendChild(div);
-            });
-
-            // 2) Busca o resumo-geral de cada curso em paralelo e injeta no card
-            await Promise.all(cursos.map(curso => preencherResumo(curso.id)));
-        }
-
-        async function preencherResumo(idCurso) {
-            const slot = document.getElementById(`resumo-${idCurso}`);
-            if (!slot) return;
-
-            try {
-                const res = await fetch(
-                    `http://localhost:8080/api/v1/curso/resumo-geral/${idCurso}`,
-                    { headers: { "X-User-CPF": currentUser.cpf } }
-                );
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-                const lista = await res.json();
-                const resumo = Array.isArray(lista) ? lista[0] : lista;
-
-                if (!resumo) {
-                    slot.innerHTML = `<span class="placeholder">Sem dados de resumo.</span>`;
-                    return;
-                }
-
-                slot.innerHTML = renderResumoHtml(resumo);
-            } catch (err) {
-                console.error("Erro ao carregar resumo do curso " + idCurso, err);
-                slot.innerHTML = `<span class="placeholder">Resumo indisponível.</span>`;
-            }
-        }
-
-        function renderResumoHtml(r) {
-            const preco          = formatarBRL(r.preco);
-            const receita        = formatarBRL(r.receitaEstimada);
-            const mediaGeral     = formatarBRL(r.mediaPrecoGeral);
-            const totalCompras   = Number(r.totalCompras ?? 0);
-            const classificacao  = r.classificacaoPreco ?? "";
-
-            const badgeClass =
-                classificacao === "ACIMA_DA_MEDIA" ? "badge-acima"  :
-                classificacao === "ABAIXO_DA_MEDIA" ? "badge-abaixo" :
-                classificacao === "NA_MEDIA"        ? "badge-na"     : "";
-
-            const badgeLabel =
-                classificacao === "ACIMA_DA_MEDIA"  ? "📈 Acima da média"  :
-                classificacao === "ABAIXO_DA_MEDIA" ? "📉 Abaixo da média" :
-                classificacao === "NA_MEDIA"        ? "➖ Na média"        : "—";
-
-            return `
-                <div class="linha">
-                    <span>Preço</span>
-                    <span class="preco">${preco}</span>
                 </div>
-                <div class="linha">
-                    <span>Compras</span>
-                    <span>${totalCompras}</span>
-                </div>
-                <div class="linha">
-                    <span>Receita</span>
-                    <span class="receita">${receita}</span>
-                </div>
-                <div class="linha" style="opacity:0.75;">
-                    <span>Média geral</span>
-                    <span>${mediaGeral}</span>
-                </div>
-                <span class="badge-classificacao ${badgeClass}">${badgeLabel}</span>
-            `;
-        }
 
-        function formatarBRL(valor) {
-            const numero = Number(valor);
-            if (!isFinite(numero)) return "—";
-            return numero.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL"
-            });
-        }
+                <div class="filtros-prof">
+                    <span class="label">Ordenar por</span>
+                    <select id="ordenarCursos">
+                        <option value="nome-asc">Nome (A → Z)</option>
+                        <option value="nome-desc">Nome (Z → A)</option>
+                        <option value="alunos-desc">Mais alunos</option>
+                        <option value="receita-desc">Maior receita</option>
+                        <option value="preco-desc">Preço (maior)</option>
+                        <option value="preco-asc">Preço (menor)</option>
+                    </select>
 
-        window.onload = carregarCursosProfessor;
-    </script>
+                    <span class="label">Classificação</span>
+                    <select id="filtroClassificacao">
+                        <option value="">Todas</option>
+                        <option value="ACIMA_DA_MEDIA">📈 Acima da média</option>
+                        <option value="NA_MEDIA">➖ Na média</option>
+                        <option value="ABAIXO_DA_MEDIA">📉 Abaixo da média</option>
+                    </select>
+
+                    <button class="reset" id="btnResetar">Limpar filtros</button>
+                </div>
+
+                <div class="carrossel-wrapper">
+                    <button class="scroll-btn left" onclick="scrollCarrossel(this, -1)">❮</button>
+                    <div class="carrossel" id="carrosselCursosProfessor"></div>
+                    <button class="scroll-btn right" onclick="scrollCarrossel(this, 1)">❯</button>
+                </div>
+            </section>
+
+            <section style="margin-top: 36px;">
+                <h2>Aplicar desconto em categoria</h2>
+                <p style="opacity:0.8; font-size:0.9em;">
+                    Aplica um desconto percentual a todos os cursos da categoria informada.
+                </p>
+
+                <div class="desconto-form">
+                    <input id="descontoCategoria" type="text" placeholder="Categoria (ex: Programação)">
+                    <input id="descontoValor" type="number" min="0" max="100" step="0.01" placeholder="Desconto (%)">
+                    <button id="btnAplicarDesconto" onclick="aplicarDesconto()">Aplicar</button>
+                </div>
+
+                <div id="descontoStatus" class="desconto-status"></div>
+            </section>
+        </main>
+    </div>
 
     <script src="scrollCarrossel.js"></script>
     <script src="desconto.js"></script>
@@ -284,6 +330,7 @@
     <script src="../js/auth.js"></script>
     <script src="../js/logout.js"></script>
     <script src="../js/reloadStorage.js"></script>
+    <script src="home-professor.js"></script>
 </body>
 
 </html>

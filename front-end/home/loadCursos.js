@@ -1,14 +1,45 @@
-// Variáveis de controle de estado
-let cursoSelecionadoId = null;
-let cpfAlunoLogado = null;
-let todosCursosDoSistema = []; // Guardará o catálogo completo para busca de nomes
+const API = "http://localhost:8080/api/v1";
 
-/**
- * 🔄 Inicializador do Dashboard do Aluno
- */
+let cursoSelecionadoId = null;
+let cursoSelecionadoPreco = null;
+let cpfAlunoLogado = null;
+let todosCursosDoSistema = [];
+let idsAdquiridos = new Set();
+
+const filtros = {
+    busca: "",
+    categoria: "",
+    precoMax: null,
+    ordenacao: "nome-asc"
+};
+
+function fetchAuth(url, options = {}) {
+    return fetch(url, {
+        ...options,
+        headers: {
+            "Accept": "application/json",
+            "X-User-CPF": cpfAlunoLogado ?? "",
+            ...(options.headers ?? {})
+        }
+    });
+}
+
+function formatarBRL(valor) {
+    const n = Number(valor);
+    if (!isFinite(n)) return "—";
+    return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function nomesCategorias(curso) {
+    return (curso.categorias ?? []).map(c => c.nome).filter(Boolean);
+}
+
+function inicialDoTitulo(nome) {
+    return (nome ?? "C").trim().charAt(0).toUpperCase();
+}
+
 async function inicializarDashboard() {
     const userStorage = localStorage.getItem("user");
-    
     if (!userStorage) {
         console.error("Nenhum usuário detectado no localStorage.");
         window.location.href = "../login/login.html";
@@ -17,126 +48,258 @@ async function inicializarDashboard() {
 
     const usuario = JSON.parse(userStorage);
     cpfAlunoLogado = usuario.cpf;
-
     if (!cpfAlunoLogado) {
         console.error("CPF não encontrado nos dados do usuário local.");
         return;
     }
 
     try {
-        // 1. Busca PRIMEIRO todos os cursos do sistema para termos os nomes e detalhes
-        const resTodosCursos = await fetch("http://localhost:8080/api/v1/curso");
-        if (resTodosCursos.ok) {
-            todosCursosDoSistema = await resTodosCursos.json();
-        } else {
-            throw new Error("Não foi possível carregar o catálogo geral de cursos.");
-        }
+        const [resTodos, resCompras] = await Promise.all([
+            fetchAuth(`${API}/curso`),
+            fetchAuth(`${API}/compra/aluno/${cpfAlunoLogado}`)
+        ]);
 
-        // 2. Busca os históricos de compra do aluno (que só contém o id_curso)
-        const resMinhasCompras = await fetch(`http://localhost:8080/api/v1/compra/aluno/${cpfAlunoLogado}`);
-        const minhasCompras = resMinhasCompras.ok ? await resMinhasCompras.json() : [];
-        
-        // Mapeia um array simples contendo apenas os IDs das compras do aluno
-        const idsCursosAdquiridos = minhasCompras.map(item => item.id_curso);
+        if (!resTodos.ok) throw new Error("Não foi possível carregar o catálogo geral de cursos.");
+        todosCursosDoSistema = await resTodos.json();
 
-        // 3. Renderiza os cursos que o aluno comprou (passando os IDs e o catálogo para cruzar os dados)
-        renderizarMeusCursos(idsCursosAdquiridos);
+        const minhasCompras = resCompras.ok ? await resCompras.json() : [];
+        idsAdquiridos = new Set(minhasCompras.map(c => Number(c.id_curso)));
 
-        // 4. Filtra o catálogo: remove os que o aluno já comprou para exibir no catálogo de vendas
-        const cursosDisponiveis = todosCursosDoSistema.filter(c => !idsCursosAdquiridos.includes(c.id_curso));
-        renderizarCatalogoCompra(cursosDisponiveis);
-
+        atualizarKpis();
+        renderChipsCategoria();
+        bindFiltros();
+        renderTudo();
     } catch (err) {
         console.error("Erro ao carregar dados do dashboard:", err);
+        document.getElementById("carrosselCatalogo").innerHTML =
+            `<p class="secao-vazia" style="color:#ef4444;">Erro ao carregar catálogo: ${err.message}</p>`;
     }
 }
 
-/**
- * 📚 Renderiza a lista de cursos que o aluno JÁ possui acesso
- */
-function renderizarMeusCursos(idsCursosAdquiridos) {
+function atualizarKpis() {
+    const adquiridos  = idsAdquiridos.size;
+    const disponiveis = todosCursosDoSistema.filter(c => !idsAdquiridos.has(Number(c.id_curso))).length;
+    const cats = new Set();
+    let somaPreco = 0, qtd = 0;
+
+    todosCursosDoSistema.forEach(c => {
+        nomesCategorias(c).forEach(n => cats.add(n));
+        if (c.preco != null && isFinite(Number(c.preco))) {
+            somaPreco += Number(c.preco);
+            qtd++;
+        }
+    });
+
+    document.getElementById("kpiAdquiridos").textContent = adquiridos;
+    document.getElementById("kpiDisponiveis").textContent = disponiveis;
+    document.getElementById("kpiCategorias").textContent = cats.size;
+    document.getElementById("kpiPrecoMedio").textContent = qtd ? formatarBRL(somaPreco / qtd) : "—";
+}
+
+function renderChipsCategoria() {
+    const container = document.getElementById("chipsCategoria");
+    if (!container) return;
+
+    const cats = new Set();
+    todosCursosDoSistema.forEach(c => nomesCategorias(c).forEach(n => cats.add(n)));
+    const ordenadas = [...cats].sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+    container.innerHTML = "";
+
+    const chipTodas = document.createElement("div");
+    chipTodas.className = "chip" + (filtros.categoria === "" ? " ativo" : "");
+    chipTodas.textContent = "Todas";
+    chipTodas.dataset.categoria = "";
+    chipTodas.addEventListener("click", () => selecionarCategoria(""));
+    container.appendChild(chipTodas);
+
+    ordenadas.forEach(nome => {
+        const chip = document.createElement("div");
+        chip.className = "chip" + (filtros.categoria === nome ? " ativo" : "");
+        chip.textContent = nome;
+        chip.dataset.categoria = nome;
+        chip.addEventListener("click", () => selecionarCategoria(nome));
+        container.appendChild(chip);
+    });
+}
+
+function selecionarCategoria(nome) {
+    filtros.categoria = filtros.categoria === nome ? "" : nome;
+    renderChipsCategoria();
+    renderCatalogo();
+}
+
+function bindFiltros() {
+    const busca = document.getElementById("busca");
+    if (busca) {
+        busca.addEventListener("input", (e) => {
+            filtros.busca = e.target.value.trim().toLowerCase();
+            renderTudo();
+        });
+    }
+
+    const ordem = document.getElementById("ordenarCatalogo");
+    if (ordem) {
+        ordem.addEventListener("change", (e) => {
+            filtros.ordenacao = e.target.value;
+            renderCatalogo();
+        });
+    }
+
+    const preco = document.getElementById("filtroPrecoMax");
+    if (preco) {
+        preco.addEventListener("input", (e) => {
+            const v = Number(e.target.value);
+            filtros.precoMax = isFinite(v) && v > 0 ? v : null;
+            renderCatalogo();
+        });
+    }
+
+    const reset = document.getElementById("btnResetar");
+    if (reset) {
+        reset.addEventListener("click", () => {
+            filtros.busca = "";
+            filtros.categoria = "";
+            filtros.precoMax = null;
+            filtros.ordenacao = "nome-asc";
+
+            if (busca)  busca.value = "";
+            if (ordem) ordem.value = "nome-asc";
+            if (preco) preco.value = "";
+
+            renderChipsCategoria();
+            renderTudo();
+        });
+    }
+}
+
+function aplicaFiltrosNoCurso(curso, ignoraAdquirido = false) {
+    if (!ignoraAdquirido && idsAdquiridos.has(Number(curso.id_curso))) return false;
+
+    if (filtros.busca) {
+        const nome = (curso.nome_curso ?? "").toLowerCase();
+        if (!nome.includes(filtros.busca)) return false;
+    }
+    if (filtros.categoria) {
+        const cats = nomesCategorias(curso);
+        if (!cats.includes(filtros.categoria)) return false;
+    }
+    if (filtros.precoMax != null) {
+        const p = Number(curso.preco ?? 0);
+        if (p > filtros.precoMax) return false;
+    }
+    return true;
+}
+
+function ordenarCatalogo(lista) {
+    const arr = [...lista];
+    switch (filtros.ordenacao) {
+        case "nome-asc":  return arr.sort((a, b) => (a.nome_curso ?? "").localeCompare(b.nome_curso ?? "", "pt-BR"));
+        case "nome-desc": return arr.sort((a, b) => (b.nome_curso ?? "").localeCompare(a.nome_curso ?? "", "pt-BR"));
+        case "preco-asc": return arr.sort((a, b) => Number(a.preco ?? 0) - Number(b.preco ?? 0));
+        case "preco-desc":return arr.sort((a, b) => Number(b.preco ?? 0) - Number(a.preco ?? 0));
+        default: return arr;
+    }
+}
+
+function montarCard(curso, { adquirido }) {
+    const card = document.createElement("div");
+    card.className = "card-melhor" + (adquirido ? " adquirido" : "");
+    card.dataset.id = curso.id_curso;
+
+    const cats = nomesCategorias(curso);
+    const preco = Number(curso.preco ?? 0);
+    const precoLabel = preco > 0 ? formatarBRL(preco) : "Grátis";
+    const precoCls = preco > 0 ? "" : "gratis";
+    const inicial = inicialDoTitulo(curso.nome_curso);
+
+    card.innerHTML = `
+        <div class="thumb-area">
+            <span>${inicial}</span>
+            <span class="preco-tag ${precoCls}">${precoLabel}</span>
+        </div>
+        <div class="corpo">
+            <h3>${curso.nome_curso ?? "(sem nome)"}</h3>
+            <div class="cats">
+                ${cats.length
+                    ? cats.slice(0, 3).map(n => `<span class="cat">${n}</span>`).join("")
+                    : `<span class="cat" style="opacity:0.6;">sem categoria</span>`}
+            </div>
+            <div class="cta">${adquirido ? "▶ Continuar" : "🛒 Adquirir"}</div>
+        </div>
+    `;
+
+    if (adquirido) {
+        card.onclick = () => { window.location.href = `../curso/curso.html?id=${curso.id_curso}`; };
+    } else {
+        card.onclick = () => abrirModalCompra(curso.id_curso, curso.nome_curso, curso.preco);
+    }
+
+    return card;
+}
+
+function renderTudo() {
+    renderMeusCursos();
+    renderCatalogo();
+}
+
+function renderMeusCursos() {
     const container = document.getElementById("carrosselCursos");
+    const contagem  = document.getElementById("contagemMeus");
     if (!container) return;
-    container.innerHTML = "";
 
-    if (idsCursosAdquiridos.length === 0) {
-        container.innerHTML = "<p style='padding:15px; color: #94a3b8;'>Você ainda não possui nenhum curso cadastrado.</p>";
+    const meus = todosCursosDoSistema
+        .filter(c => idsAdquiridos.has(Number(c.id_curso)))
+        .filter(c => aplicaFiltrosNoCurso(c, true));
+
+    contagem.textContent = `${meus.length} ${meus.length === 1 ? "curso" : "cursos"}`;
+
+    container.innerHTML = "";
+    if (meus.length === 0) {
+        container.innerHTML = idsAdquiridos.size === 0
+            ? `<div class="secao-vazia">Você ainda não possui nenhum curso. Confira o catálogo abaixo!</div>`
+            : `<div class="secao-vazia">Nenhum curso seu corresponde à busca.</div>`;
         return;
     }
 
-    idsCursosAdquiridos.forEach(idCurso => {
-        // 🔍 Cruza o id_curso da compra com a lista global para achar os dados do curso (nome, categoria, etc)
-        const cursoDados = todosCursosDoSistema.find(c => c.id_curso === idCurso);
-
-        // Se por algum motivo o curso não existir mais no catálogo geral, ignora para não quebrar a tela
-        if (!cursoDados) return;
-
-        const card = document.createElement("div");
-        card.classList.add("card", "card-curso");
-        card.innerHTML = `
-            <img src="https://via.placeholder.com/150" class="thumb" alt="Capa" />
-            <h3>${cursoDados.nome_curso}</h3>
-            <p style="font-size:12px; opacity:0.7;">
-                ${cursoDados.categorias ? cursoDados.categorias.map(c => c.nome).join(", ") : "Geral"}
-            </p>
-        `;
-        
-        // Ao clicar, o aluno vai para a página de assistir as aulas passando o ID correto
-        card.onclick = () => {
-            window.location.href = `../curso/curso.html?id=${cursoDados.id_curso}`;
-        };
-        
-        container.appendChild(card);
-    });
+    ordenarCatalogo(meus).forEach(c => container.appendChild(montarCard(c, { adquirido: true })));
 }
 
-/**
- * 🛒 Renderiza os cursos disponíveis para compra (catálogo filtrado)
- */
-function renderizarCatalogoCompra(cursos) {
+function renderCatalogo() {
     const container = document.getElementById("carrosselCatalogo");
+    const contagem  = document.getElementById("contagemCatalogo");
     if (!container) return;
-    container.innerHTML = "";
 
-    if (cursos.length === 0) {
-        container.innerHTML = "<p style='padding:15px; color: #94a3b8;'>Parabéns! Você já possui todos os nossos cursos.</p>";
+    const disponiveis = todosCursosDoSistema.filter(c => aplicaFiltrosNoCurso(c, false));
+
+    contagem.textContent = `${disponiveis.length} ${disponiveis.length === 1 ? "curso" : "cursos"}`;
+
+    container.innerHTML = "";
+    if (disponiveis.length === 0) {
+        container.innerHTML = `<div class="secao-vazia">Nenhum curso encontrado com esses filtros.</div>`;
         return;
     }
 
-    cursos.forEach(curso => {
-        const card = document.createElement("div");
-        card.classList.add("card", "card-curso");
-        card.style.border = "1px solid rgba(34, 197, 94, 0.3)";
-
-        card.innerHTML = `
-            <img src="https://via.placeholder.com/150" class="thumb" alt="Capa" />
-            <h3>${curso.nome_curso}</h3>
-            <p style="font-size:12px; color: #22c55e; font-weight: bold; margin-top: 5px;">🛒 Adquirir Curso</p>
-        `;
-
-        card.onclick = () => abrirModalCompra(curso.id_curso, curso.nome_curso);
-
-        container.appendChild(card);
-    });
+    ordenarCatalogo(disponiveis).forEach(c => container.appendChild(montarCard(c, { adquirido: false })));
 }
 
-/**
- * 🎭 Controle do Pop-up (Modal)
- */
-function abrirModalCompra(idCurso, nomeCurso) {
+function abrirModalCompra(idCurso, nomeCurso, preco) {
     cursoSelecionadoId = idCurso;
+    cursoSelecionadoPreco = preco;
     document.getElementById("nomeCursoModal").innerText = nomeCurso;
+    const slotPreco = document.getElementById("precoCursoModal");
+    if (slotPreco) {
+        slotPreco.innerText = (preco != null && Number(preco) > 0) ? formatarBRL(preco) : "Grátis";
+    }
     document.getElementById("modalCompra").style.display = "flex";
 }
 
 function fecharModal() {
     document.getElementById("modalCompra").style.display = "none";
     cursoSelecionadoId = null;
+    cursoSelecionadoPreco = null;
 }
 
-/**
- * 🚀 Envia o POST da compra para o backend
- */
 async function efetivarCompra() {
     if (!cursoSelecionadoId || !cpfAlunoLogado) return;
 
@@ -146,21 +309,19 @@ async function efetivarCompra() {
     };
 
     try {
-        const response = await fetch("http://localhost:8080/api/v1/compra", {
+        const response = await fetchAuth(`${API}/compra`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
 
         if (response.ok) {
             alert("Curso adquirido com sucesso!");
             fecharModal();
-            // Atualiza o painel inteiro de forma reativa recarregando os fluxos
-            inicializarDashboard(); 
+            inicializarDashboard();
         } else {
-            alert("Erro ao processar compra no servidor. Verifique os dados.");
+            const motivo = await response.text().catch(() => "");
+            alert("Erro ao processar compra: " + (motivo || `HTTP ${response.status}`));
         }
     } catch (error) {
         console.error("Erro na rota POST de compra:", error);
@@ -168,5 +329,4 @@ async function efetivarCompra() {
     }
 }
 
-// 🎬 Roda a aplicação assim que a estrutura da página carregar
 document.addEventListener("DOMContentLoaded", inicializarDashboard);
