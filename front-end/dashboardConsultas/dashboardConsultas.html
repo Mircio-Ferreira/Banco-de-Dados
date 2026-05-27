@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Consultas SQL - CesarEdu</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .kpi-card {
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .kpi-card .label {
+            font-size: 0.78em;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-card .valor {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-top: 4px;
+        }
+        .kpi-card.receita .valor { color: #22c55e; }
+        .kpi-card.alerta  .valor { color: #f87171; }
+        .kpi-card .sub {
+            font-size: 0.78em;
+            color: #cbd5e1;
+            margin-top: 2px;
+        }
+
+        .secao {
+            margin-top: 28px;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 16px 18px;
+        }
+        .secao h3 { margin: 0 0 4px 0; }
+        .secao .descricao {
+            font-size: 0.85em;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+        .secao .descricao code {
+            background: rgba(56, 189, 248, 0.15);
+            color: #bae6fd;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.92em;
+        }
+
+        .filtros {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 14px;
+        }
+        .filtros label {
+            display: block;
+            font-size: 0.78em;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        .filtros input,
+        .filtros select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 0.9em;
+        }
+        .filtros .reset-btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(56, 189, 248, 0.15);
+            color: #bae6fd;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .filtros .reset-btn:hover {
+            background: rgba(56, 189, 248, 0.25);
+        }
+
+        .grid-grafico-tabela {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 1000px) {
+            .grid-grafico-tabela { grid-template-columns: 1fr; }
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+        }
+        .bloco-painel {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .bloco-painel h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.95em;
+            color: #cbd5e1;
+        }
+
+        table.tabela {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88em;
+        }
+        table.tabela th,
+        table.tabela td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        table.tabela th {
+            color: #94a3b8;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+        table.tabela th:hover { color: #38bdf8; }
+        table.tabela th.sort-asc::after  { content: " ▲"; color: #38bdf8; }
+        table.tabela th.sort-desc::after { content: " ▼"; color: #38bdf8; }
+        table.tabela tbody tr:hover {
+            background: rgba(56, 189, 248, 0.05);
+        }
+        table.tabela td.numero {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.78em;
+            font-weight: bold;
+        }
+        .badge-receita { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+        .badge-abandono-leve  { background: rgba(234, 179, 8, 0.25);  color: #fde68a; }
+        .badge-abandono-medio { background: rgba(249, 115, 22, 0.25); color: #fdba74; }
+        .badge-abandono-grave { background: rgba(239, 68, 68, 0.30);  color: #fca5a5; }
+
+        .placeholder { color: #64748b; font-style: italic; }
+        .erro { color: #ef4444; }
+
+        .tabela-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .tabela-header .contagem {
+            font-size: 0.85em;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <img src="../img/cesar_edu.png" />
+            <a href="../home/home.html">CesarEdu</a>
+        </div>
+
+        <input class="search" type="text" placeholder="O que você quer aprender?" />
+
+        <div class="perfil">
+            <span id="userName">Usuário</span>
+            <button onclick="logout()" class="logout-btn">Sair</button>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+            <a href="../home/home-professor.html">🏠 Início</a>
+            <a href="../certificados/certificadosProfessor.html">🏆 Certificados</a>
+            <a href="../addCurso/addCurso.html">➕ Criar curso</a>
+            <a href="../dashboardPreco/dashboardPreco.html">📊 Dashboard de Preços</a>
+            <a href="../dashboardAlunosInativos/dashboardAlunosInativos.html">😴 Alunos Inativos</a>
+            <a href="../dashboardConsultas/dashboardConsultas.html">📈 Consultas SQL</a>
+            <a href="../dashboardProfessores/dashboardProfessores.html">🏆 Comparar Professores</a>
+            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
+        </aside>
+
+        <main class="conteudo">
+            <h2>📈 Consultas SQL</h2>
+            <p style="opacity: 0.8; font-size: 0.92em; margin-top: 4px;">
+                Visualização das consultas SQL avançadas usadas pela aplicação.
+                Cada bloco mostra os dados retornados por uma consulta diferente do banco,
+                com filtros e gráficos para facilitar a interpretação.
+            </p>
+
+            <div class="kpis">
+                <div class="kpi-card"><div class="label">Cursos com vendas</div><div class="valor" id="kpiCursosVendidos">—</div><div class="sub">cursos com ≥ 1 compra</div></div>
+                <div class="kpi-card receita"><div class="label">Receita total estimada</div><div class="valor" id="kpiReceita">—</div><div class="sub">soma de todos os cursos</div></div>
+                <div class="kpi-card"><div class="label">Compras totais</div><div class="valor" id="kpiCompras">—</div><div class="sub">somando todos os cursos</div></div>
+                <div class="kpi-card alerta"><div class="label">Alunos sem aulas</div><div class="valor" id="kpiSemAulas">—</div><div class="sub">compraram e nunca assistiram</div></div>
+            </div>
+
+            <!-- ================================================== -->
+            <!-- CONSULTA 1: JOIN + GROUP BY + HAVING                -->
+            <!-- ================================================== -->
+            <section class="secao">
+                <h3>📊 Cursos com compras</h3>
+                <p class="descricao">
+                    Consulta com <code>JOIN + GROUP BY + HAVING</code> — agrega
+                    a tabela <code>compra</code> por curso e filtra apenas cursos com pelo
+                    menos uma venda. Endpoint: <code>GET /curso/curso/compras</code>.
+                </p>
+
+                <div class="filtros">
+                    <div>
+                        <label for="filtroBuscaCurso">Buscar curso</label>
+                        <input id="filtroBuscaCurso" type="text" placeholder="ex: Java, Python...">
+                    </div>
+                    <div>
+                        <label for="filtroMinCompras">Mín. compras</label>
+                        <input id="filtroMinCompras" type="number" min="0" placeholder="0">
+                    </div>
+                    <div>
+                        <label for="ordenarCompras">Ordenar por</label>
+                        <select id="ordenarCompras">
+                            <option value="receita-desc">Maior receita</option>
+                            <option value="receita-asc">Menor receita</option>
+                            <option value="compras-desc">Mais compras</option>
+                            <option value="compras-asc">Menos compras</option>
+                            <option value="preco-desc">Preço (maior)</option>
+                            <option value="preco-asc">Preço (menor)</option>
+                            <option value="nome-asc">Nome (A → Z)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button class="reset-btn" id="btnResetarCompras">Limpar filtros</button>
+                    </div>
+                </div>
+
+                <div class="grid-grafico-tabela">
+                    <div class="bloco-painel">
+                        <h4>Receita estimada por curso</h4>
+                        <div class="chart-wrapper"><canvas id="chartReceita"></canvas></div>
+                    </div>
+                    <div class="bloco-painel">
+                        <h4>Compras por curso</h4>
+                        <div class="chart-wrapper"><canvas id="chartCompras"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="bloco-painel" style="margin-top:14px;">
+                    <div class="tabela-header">
+                        <h4>Detalhamento</h4>
+                        <span class="contagem" id="contagemCompras">—</span>
+                    </div>
+                    <div id="tabelaComprasWrapper">
+                        <p class="placeholder">Carregando...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================================================== -->
+            <!-- CONSULTA 4: ANTI JOIN                               -->
+            <!-- ================================================== -->
+            <section class="secao">
+                <h3>🚪 Abandono inicial — alunos sem aulas assistidas</h3>
+                <p class="descricao">
+                    Consulta com <strong>anti join</strong> (<code>LEFT JOIN ... WHERE assistir.id_aula IS NULL</code>) —
+                    retorna pares aluno/curso onde o aluno comprou o curso mas nunca
+                    assistiu nenhuma aula. Endpoint: <code>GET /users/aluno/aulas-nao-assistidas</code>.
+                </p>
+
+                <div class="filtros">
+                    <div>
+                        <label for="filtroCursoAbandono">Curso</label>
+                        <select id="filtroCursoAbandono">
+                            <option value="">Todos os cursos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filtroBuscaCpf">Buscar CPF do aluno</label>
+                        <input id="filtroBuscaCpf" type="text" placeholder="ex: 123...">
+                    </div>
+                    <div>
+                        <button class="reset-btn" id="btnResetarAbandono">Limpar filtros</button>
+                    </div>
+                </div>
+
+                <div class="grid-grafico-tabela">
+                    <div class="bloco-painel">
+                        <h4>Ranking de cursos com mais abandono</h4>
+                        <div class="chart-wrapper"><canvas id="chartAbandonoCurso"></canvas></div>
+                    </div>
+                    <div class="bloco-painel">
+                        <h4>Distribuição percentual</h4>
+                        <div class="chart-wrapper"><canvas id="chartAbandonoPizza"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="bloco-painel" style="margin-top:14px;">
+                    <div class="tabela-header">
+                        <h4>Detalhamento</h4>
+                        <span class="contagem" id="contagemAbandono">—</span>
+                    </div>
+                    <div id="tabelaAbandonoWrapper">
+                        <p class="placeholder">Carregando...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/logout.js"></script>
+    <script src="../js/reloadStorage.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="dashboardConsultas.js"></script>
+</body>
+
+</html>

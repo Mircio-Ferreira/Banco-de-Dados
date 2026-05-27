@@ -37,6 +37,7 @@ public class AlunoRepository {
             ConsultaPegarAlunoComAulasNaoAssistidas consultaPegarAlunoComAulasNaoAssistidas = new ConsultaPegarAlunoComAulasNaoAssistidas();
             consultaPegarAlunoComAulasNaoAssistidas.setCpf(rs.getString("cpf_aluno"));
             consultaPegarAlunoComAulasNaoAssistidas.setNome_curso(rs.getString("nome_curso"));
+            consultaPegarAlunoComAulasNaoAssistidas.setIdCurso(rs.getLong("id_curso"));
             return consultaPegarAlunoComAulasNaoAssistidas;
         }
     };
