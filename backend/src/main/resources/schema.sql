@@ -289,7 +289,7 @@ CREATE TABLE IF NOT EXISTS alunos_inativos (
     ultima_aula_assistida DATE,
     data_referencia_inatividade DATE NOT NULL,
 
-    dias_inativo INT NOT NULL CHECK (dias_inativo > 30),
+    dias_inativo INT NOT NULL ,
 
     motivo VARCHAR(50) NOT NULL,
     data_atualizacao TIMESTAMP NOT NULL DEFAULT now(),
@@ -355,7 +355,7 @@ CREATE OR REPLACE PROCEDURE atualizar_alunos_inativos()
                 v_motivo := 'SEM_ACESSO_RECENTE';
     END IF;
 
-            IF v_dias_inativo > 30 THEN
+            IF v_dias_inativo > 1 THEN
 
                 INSERT INTO alunos_inativos (
                     cpf_aluno,
