@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Alunos Inativos - CesarEdu</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .kpi-card {
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .kpi-card .label {
+            font-size: 0.78em;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-card .valor {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-top: 4px;
+        }
+        .kpi-card.alerta .valor { color: #f87171; }
+        .kpi-card.atencao .valor { color: #fbbf24; }
+        .kpi-card .sub {
+            font-size: 0.78em;
+            color: #cbd5e1;
+            margin-top: 2px;
+        }
+
+        .filtros {
+            margin-top: 18px;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+        .filtros label {
+            display: block;
+            font-size: 0.78em;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        .filtros input,
+        .filtros select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 0.9em;
+        }
+        .filtros .reset-btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(56, 189, 248, 0.15);
+            color: #bae6fd;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .filtros .reset-btn:hover {
+            background: rgba(56, 189, 248, 0.25);
+        }
+
+        .graficos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 18px;
+        }
+        @media (max-width: 900px) {
+            .graficos { grid-template-columns: 1fr; }
+        }
+        .grafico-card {
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .grafico-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1em;
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 260px;
+        }
+
+        .tabela-section {
+            margin-top: 18px;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .tabela-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .tabela-header h3 { margin: 0; }
+        .tabela-header .contagem {
+            font-size: 0.85em;
+            color: #94a3b8;
+        }
+
+        table.tabela-inativos {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88em;
+        }
+        table.tabela-inativos th,
+        table.tabela-inativos td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        table.tabela-inativos th {
+            color: #94a3b8;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+        table.tabela-inativos th:hover { color: #38bdf8; }
+        table.tabela-inativos th.sort-asc::after  { content: " ▲"; color: #38bdf8; }
+        table.tabela-inativos th.sort-desc::after { content: " ▼"; color: #38bdf8; }
+        table.tabela-inativos tbody tr:hover {
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .badge-dias {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.78em;
+            font-weight: bold;
+        }
+        .dias-leve   { background: rgba(234, 179, 8, 0.25);  color: #fde68a; }
+        .dias-medio  { background: rgba(249, 115, 22, 0.25); color: #fdba74; }
+        .dias-grave  { background: rgba(239, 68, 68, 0.30);  color: #fca5a5; }
+
+        .placeholder { color: #64748b; font-style: italic; }
+        .erro { color: #ef4444; }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <img src="../img/cesar_edu.png" />
+            <a href="../home/home.html">CesarEdu</a>
+        </div>
+
+        <input class="search" type="text" placeholder="O que você quer aprender?" />
+
+        <div class="perfil">
+            <span id="userName">Usuário</span>
+            <button onclick="logout()" class="logout-btn">Sair</button>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+            <a href="../home/home-professor.html">🏠 Início</a>
+            <a href="../addCurso/addCurso.html">➕ Criar curso</a>
+            <a href="../dashboardPreco/dashboardPreco.html">📊 Dashboard de Preços</a>
+            <a href="../dashboardAlunosInativos/dashboardAlunosInativos.html">😴 Alunos Inativos</a>
+            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
+        </aside>
+
+        <main class="conteudo">
+            <h2>😴 Alunos Inativos</h2>
+            <p style="opacity: 0.8; font-size: 0.92em; margin-top: 4px;">
+                Acompanhe os alunos que pararam de assistir aulas nos seus cursos.
+                Lista atualizada diariamente pelo job <code>atualizarAlunosInativos</code>.
+            </p>
+
+            <div class="kpis" id="kpis">
+                <div class="kpi-card"><div class="label">Total inativos</div><div class="valor" id="kpiTotal">—</div><div class="sub" id="kpiTotalSub">aguardando dados</div></div>
+                <div class="kpi-card"><div class="label">Cursos afetados</div><div class="valor" id="kpiCursos">—</div><div class="sub" id="kpiCursosSub">de 0 lecionados</div></div>
+                <div class="kpi-card atencao"><div class="label">Média de dias inativo</div><div class="valor" id="kpiMedia">—</div><div class="sub">dias</div></div>
+                <div class="kpi-card alerta"><div class="label">Mais grave</div><div class="valor" id="kpiPior">—</div><div class="sub" id="kpiPiorSub">dias</div></div>
+            </div>
+
+            <div class="filtros">
+                <div>
+                    <label for="filtroCurso">Curso</label>
+                    <select id="filtroCurso">
+                        <option value="">Todos os meus cursos</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filtroMotivo">Motivo</label>
+                    <select id="filtroMotivo">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filtroDiasMin">Mín. dias inativo</label>
+                    <input id="filtroDiasMin" type="number" min="0" placeholder="0">
+                </div>
+                <div>
+                    <label for="filtroBusca">Buscar (nome ou CPF)</label>
+                    <input id="filtroBusca" type="text" placeholder="ex: João, 123...">
+                </div>
+                <div>
+                    <button class="reset-btn" id="btnResetar">Limpar filtros</button>
+                </div>
+            </div>
+
+            <div class="graficos">
+                <div class="grafico-card">
+                    <h3>Inativos por curso</h3>
+                    <div class="chart-wrapper"><canvas id="chartCurso"></canvas></div>
+                </div>
+                <div class="grafico-card">
+                    <h3>Inativos por motivo</h3>
+                    <div class="chart-wrapper"><canvas id="chartMotivo"></canvas></div>
+                </div>
+            </div>
+
+            <div class="grafico-card" style="margin-top:16px;">
+                <h3>Distribuição por dias inativo</h3>
+                <div class="chart-wrapper"><canvas id="chartDias"></canvas></div>
+            </div>
+
+            <div class="tabela-section">
+                <div class="tabela-header">
+                    <h3>Lista detalhada</h3>
+                    <span class="contagem" id="contagemLista">—</span>
+                </div>
+                <div id="tabelaWrapper">
+                    <p class="placeholder">Carregando...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/logout.js"></script>
+    <script src="../js/reloadStorage.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="dashboardAlunosInativos.js"></script>
+</body>
+
+</html>
