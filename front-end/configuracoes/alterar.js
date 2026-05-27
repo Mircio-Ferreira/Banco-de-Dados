@@ -8,8 +8,34 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    montarSidebar();
     preencherFormulario();
 });
+
+function montarSidebar() {
+    const sidebar = document.getElementById("sidebarAlterar");
+    if (!sidebar) return;
+
+    const isProfessor = user?.tipoUsuario === "PROFESSOR";
+
+    if (isProfessor) {
+        sidebar.innerHTML = `
+            <a href="../home/home-professor.html">🏠 Início</a>
+            <a href="../certificados/certificadosProfessor.html">🏆 Certificados</a>
+            <a href="../addCurso/addCurso.html">➕ Criar curso</a>
+            <a href="../dashboardPreco/dashboardPreco.html">📊 Dashboard de Preços</a>
+            <a href="../dashboardAlunosInativos/dashboardAlunosInativos.html">😴 Alunos Inativos</a>
+            <a href="../dashboardProfessores/dashboardProfessores.html">🏆 Comparar Professores</a>
+            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
+        `;
+    } else {
+        sidebar.innerHTML = `
+            <a href="../home/home-aluno.html">🏠 Home</a>
+            <a href="../home/home-aluno.html">📚 Meus cursos</a>
+            <a href="../configuracoes/configuracoes.html">⚙️ Configurações</a>
+        `;
+    }
+}
 
 function preencherFormulario() {
     document.getElementById("cpf").value = user.cpf || "";
