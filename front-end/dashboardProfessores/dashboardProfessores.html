@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Alunos Inativos - CesarEdu</title>
+    <title>Comparar Professores - CesarEdu</title>
     <link rel="stylesheet" href="../css/style.css">
 
     <style>
@@ -31,13 +31,13 @@
             color: #38bdf8;
             margin-top: 4px;
         }
-        .kpi-card.alerta .valor { color: #f87171; }
-        .kpi-card.atencao .valor { color: #fbbf24; }
         .kpi-card .sub {
             font-size: 0.78em;
             color: #cbd5e1;
             margin-top: 2px;
         }
+        .kpi-card.destaque .valor { color: #22c55e; }
+        .kpi-card.podio   .valor  { color: #fbbf24; }
 
         .filtros {
             margin-top: 18px;
@@ -98,9 +98,14 @@
             margin: 0 0 8px 0;
             font-size: 1em;
         }
+        .grafico-card .descricao {
+            font-size: 0.8em;
+            color: #94a3b8;
+            margin: 0 0 8px 0;
+        }
         .chart-wrapper {
             position: relative;
-            height: 260px;
+            height: 280px;
         }
 
         .tabela-section {
@@ -119,45 +124,45 @@
             margin-bottom: 10px;
         }
         .tabela-header h3 { margin: 0; }
-        .tabela-header .contagem {
-            font-size: 0.85em;
-            color: #94a3b8;
-        }
+        .tabela-header .contagem { font-size: 0.85em; color: #94a3b8; }
 
-        table.tabela-inativos {
+        table.tabela-prof {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.88em;
         }
-        table.tabela-inativos th,
-        table.tabela-inativos td {
+        table.tabela-prof th,
+        table.tabela-prof td {
             padding: 8px 10px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
-        table.tabela-inativos th {
+        table.tabela-prof th {
             color: #94a3b8;
             font-weight: 500;
             cursor: pointer;
             user-select: none;
         }
-        table.tabela-inativos th:hover { color: #38bdf8; }
-        table.tabela-inativos th.sort-asc::after  { content: " ▲"; color: #38bdf8; }
-        table.tabela-inativos th.sort-desc::after { content: " ▼"; color: #38bdf8; }
-        table.tabela-inativos tbody tr:hover {
-            background: rgba(56, 189, 248, 0.05);
+        table.tabela-prof th:hover { color: #38bdf8; }
+        table.tabela-prof th.sort-asc::after  { content: " ▲"; color: #38bdf8; }
+        table.tabela-prof th.sort-desc::after { content: " ▼"; color: #38bdf8; }
+        table.tabela-prof tbody tr:hover { background: rgba(56, 189, 248, 0.05); }
+        table.tabela-prof tbody tr.eu {
+            background: rgba(34, 197, 94, 0.1);
         }
-
-        .badge-dias {
+        table.tabela-prof tbody tr.eu:hover {
+            background: rgba(34, 197, 94, 0.18);
+        }
+        .badge-eu {
             display: inline-block;
-            padding: 2px 8px;
+            padding: 1px 6px;
             border-radius: 4px;
-            font-size: 0.78em;
-            font-weight: bold;
+            font-size: 0.7em;
+            margin-left: 6px;
+            background: rgba(34, 197, 94, 0.25);
+            color: #86efac;
         }
-        .dias-leve   { background: rgba(234, 179, 8, 0.25);  color: #fde68a; }
-        .dias-medio  { background: rgba(249, 115, 22, 0.25); color: #fdba74; }
-        .dias-grave  { background: rgba(239, 68, 68, 0.30);  color: #fca5a5; }
+        .col-num { text-align: right; }
 
         .placeholder { color: #64748b; font-style: italic; }
         .erro { color: #ef4444; }
@@ -183,7 +188,7 @@
     <div class="layout">
 
         <aside class="sidebar">
-            <a href="#">🏆 Certificados</a>
+            <a href="../home/home-professor.html">🏠 Início</a>
             <a href="../addCurso/addCurso.html">➕ Criar curso</a>
             <a href="../dashboardPreco/dashboardPreco.html">📊 Dashboard de Preços</a>
             <a href="../dashboardAlunosInativos/dashboardAlunosInativos.html">😴 Alunos Inativos</a>
@@ -192,39 +197,42 @@
         </aside>
 
         <main class="conteudo">
-            <h2>😴 Alunos Inativos</h2>
+            <h2>🏆 Comparativo de Professores</h2>
             <p style="opacity: 0.8; font-size: 0.92em; margin-top: 4px;">
-                Acompanhe os alunos que pararam de assistir aulas nos seus cursos.
-                Lista atualizada diariamente pelo job <code>atualizarAlunosInativos</code>.
+                Veja como você se posiciona em relação aos demais professores da plataforma.
+                Sua linha aparece destacada em verde.
             </p>
 
             <div class="kpis" id="kpis">
-                <div class="kpi-card"><div class="label">Total inativos</div><div class="valor" id="kpiTotal">—</div><div class="sub" id="kpiTotalSub">aguardando dados</div></div>
-                <div class="kpi-card"><div class="label">Cursos afetados</div><div class="valor" id="kpiCursos">—</div><div class="sub" id="kpiCursosSub">de 0 lecionados</div></div>
-                <div class="kpi-card atencao"><div class="label">Média de dias inativo</div><div class="valor" id="kpiMedia">—</div><div class="sub">dias</div></div>
-                <div class="kpi-card alerta"><div class="label">Mais grave</div><div class="valor" id="kpiPior">—</div><div class="sub" id="kpiPiorSub">dias</div></div>
+                <div class="kpi-card destaque"><div class="label">Sua posição (alunos)</div><div class="valor" id="kpiRankAlunos">—</div><div class="sub" id="kpiRankAlunosSub">—</div></div>
+                <div class="kpi-card podio"><div class="label">Sua posição (receita)</div><div class="valor" id="kpiRankReceita">—</div><div class="sub" id="kpiRankReceitaSub">—</div></div>
+                <div class="kpi-card podio"><div class="label">Sua posição (carga h.)</div><div class="valor" id="kpiRankCargaH">—</div><div class="sub" id="kpiRankCargaHSub">—</div></div>
+                <div class="kpi-card"><div class="label">Total de professores</div><div class="valor" id="kpiTotal">—</div><div class="sub">na plataforma</div></div>
             </div>
 
             <div class="filtros">
                 <div>
-                    <label for="filtroCurso">Curso</label>
-                    <select id="filtroCurso">
-                        <option value="">Todos os meus cursos</option>
+                    <label for="filtroBusca">Buscar professor</label>
+                    <input id="filtroBusca" type="text" placeholder="nome ou CPF">
+                </div>
+                <div>
+                    <label for="filtroMinCursos">Mín. de cursos</label>
+                    <input id="filtroMinCursos" type="number" min="0" placeholder="0">
+                </div>
+                <div>
+                    <label for="filtroMinAlunos">Mín. de alunos</label>
+                    <input id="filtroMinAlunos" type="number" min="0" placeholder="0">
+                </div>
+                <div>
+                    <label for="filtroOrdenarPor">Métrica do gráfico</label>
+                    <select id="filtroOrdenarPor">
+                        <option value="totalAlunos">Total de alunos</option>
+                        <option value="receitaTotal">Receita total</option>
+                        <option value="cargaHorariaTotal">Carga horária</option>
+                        <option value="qtdCursos">Qtd. de cursos</option>
+                        <option value="qtdCertificacoes">Certificações</option>
+                        <option value="precoMedio">Preço médio</option>
                     </select>
-                </div>
-                <div>
-                    <label for="filtroMotivo">Motivo</label>
-                    <select id="filtroMotivo">
-                        <option value="">Todos</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="filtroDiasMin">Mín. dias inativo</label>
-                    <input id="filtroDiasMin" type="number" min="0" placeholder="0">
-                </div>
-                <div>
-                    <label for="filtroBusca">Buscar (nome ou CPF)</label>
-                    <input id="filtroBusca" type="text" placeholder="ex: João, 123...">
                 </div>
                 <div>
                     <button class="reset-btn" id="btnResetar">Limpar filtros</button>
@@ -233,23 +241,33 @@
 
             <div class="graficos">
                 <div class="grafico-card">
-                    <h3>Inativos por curso</h3>
-                    <div class="chart-wrapper"><canvas id="chartCurso"></canvas></div>
+                    <h3>Ranking dinâmico</h3>
+                    <p class="descricao">Top 10 professores pela métrica escolhida no filtro.</p>
+                    <div class="chart-wrapper"><canvas id="chartRanking"></canvas></div>
                 </div>
                 <div class="grafico-card">
-                    <h3>Inativos por motivo</h3>
-                    <div class="chart-wrapper"><canvas id="chartMotivo"></canvas></div>
+                    <h3>Carga horária × Alunos</h3>
+                    <p class="descricao">Cada bolha é um professor. Eixo X: carga horária total. Eixo Y: total de alunos.</p>
+                    <div class="chart-wrapper"><canvas id="chartScatter"></canvas></div>
                 </div>
             </div>
 
-            <div class="grafico-card" style="margin-top:16px;">
-                <h3>Distribuição por dias inativo</h3>
-                <div class="chart-wrapper"><canvas id="chartDias"></canvas></div>
+            <div class="graficos">
+                <div class="grafico-card">
+                    <h3>Certificações por professor</h3>
+                    <p class="descricao">Quantidade de certificações comprovadas (top 10).</p>
+                    <div class="chart-wrapper"><canvas id="chartCertif"></canvas></div>
+                </div>
+                <div class="grafico-card">
+                    <h3>Receita estimada por professor</h3>
+                    <p class="descricao">Soma das receitas estimadas dos cursos lecionados (top 10).</p>
+                    <div class="chart-wrapper"><canvas id="chartReceita"></canvas></div>
+                </div>
             </div>
 
             <div class="tabela-section">
                 <div class="tabela-header">
-                    <h3>Lista detalhada</h3>
+                    <h3>Tabela completa</h3>
                     <span class="contagem" id="contagemLista">—</span>
                 </div>
                 <div id="tabelaWrapper">
@@ -263,7 +281,7 @@
     <script src="../js/logout.js"></script>
     <script src="../js/reloadStorage.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="dashboardAlunosInativos.js"></script>
+    <script src="dashboardProfessores.js"></script>
 </body>
 
 </html>
