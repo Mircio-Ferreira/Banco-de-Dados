@@ -59,27 +59,34 @@ let estadoCurso = {
     modulos: [],          // [{ modulo, aulas: [{...}] }]
     aulasFlat: [],        // lista plana de aulas em ordem
     indiceAtual: -1,
-    assistidasSet: new Set(), // ids de aulas marcadas como assistidas (localStorage)
+    assistidasSet: new Set(), // chaves de aulas assistidas (sincronizado com o backend)
     busca: ""
 };
 
-const STORAGE_KEY_PREFIX = "cesar.assistidas.";
-
-function carregarAssistidasLocal(idCurso) {
+async function verificarAulaAssistida(cpf, aula) {
     try {
-        const raw = localStorage.getItem(STORAGE_KEY_PREFIX + idCurso);
-        if (!raw) return new Set();
-        const arr = JSON.parse(raw);
-        return new Set(Array.isArray(arr) ? arr : []);
+        const res = await fetchComCpf(
+            `${API}/assistir/${cpf}/${aula.id_curso}/${aula.id_modulo}/${aula.id_aula}`
+        );
+        return res.ok;
     } catch {
-        return new Set();
+        return false;
     }
 }
 
-function salvarAssistidasLocal(idCurso, set) {
-    try {
-        localStorage.setItem(STORAGE_KEY_PREFIX + idCurso, JSON.stringify([...set]));
-    } catch { /* ignore */ }
+async function carregarAssistidasDoBackend(cpf, aulas) {
+    const set = new Set();
+    if (!cpf) return set;
+    const resultados = await Promise.all(
+        aulas.map(async aula => ({
+            key: aulaKey(aula),
+            assistida: await verificarAulaAssistida(cpf, aula)
+        }))
+    );
+    resultados.forEach(({ key, assistida }) => {
+        if (assistida) set.add(key);
+    });
+    return set;
 }
 
 function aulaKey(aula) {
@@ -371,6 +378,21 @@ async function registrarAssistirNoBackend(aula) {
     }
 }
 
+async function desmarcarAssistirNoBackend(aula) {
+    const cpf = getCpfLogado();
+    if (!cpf) throw new Error("CPF do aluno não encontrado.");
+
+    const res = await fetchComCpf(
+        `${API}/assistir/${cpf}/${aula.id_curso}/${aula.id_modulo}/${aula.id_aula}`,
+        { method: "DELETE" }
+    );
+
+    if (!res.ok) {
+        const motivo = await res.text().catch(() => "");
+        throw new Error(motivo || `HTTP ${res.status}`);
+    }
+}
+
 async function alternarAssistida() {
     if (estadoCurso.indiceAtual < 0) return;
     const aula = estadoCurso.aulasFlat[estadoCurso.indiceAtual];
@@ -378,15 +400,26 @@ async function alternarAssistida() {
     const btnMarc = document.getElementById("btnMarcar");
 
     if (estadoCurso.assistidasSet.has(key)) {
-        // Desmarcar — somente local (sem endpoint DELETE).
-        estadoCurso.assistidasSet.delete(key);
-        salvarAssistidasLocal(estadoCurso.idCurso, estadoCurso.assistidasSet);
-        carregarAulaPorIndice(estadoCurso.indiceAtual);
-        renderProgresso();
+        if (btnMarc) {
+            btnMarc.disabled = true;
+            btnMarc.innerHTML = "⏳ Removendo...";
+        }
+        try {
+            await desmarcarAssistirNoBackend(aula);
+            estadoCurso.assistidasSet.delete(key);
+            carregarAulaPorIndice(estadoCurso.indiceAtual);
+            renderProgresso();
+        } catch (err) {
+            console.error("Falha ao remover 'assistir' no backend:", err);
+            alert(`Não foi possível desmarcar a aula: ${err.message}`);
+            if (btnMarc) {
+                btnMarc.disabled = false;
+                btnMarc.innerHTML = "✓ Assistida (clique para desmarcar)";
+            }
+        }
         return;
     }
 
-    // Marcar como assistida — registra no backend antes de atualizar a UI
     if (btnMarc) {
         btnMarc.disabled = true;
         btnMarc.innerHTML = "⏳ Registrando...";
@@ -396,7 +429,6 @@ async function alternarAssistida() {
         await registrarAssistirNoBackend(aula);
 
         estadoCurso.assistidasSet.add(key);
-        salvarAssistidasLocal(estadoCurso.idCurso, estadoCurso.assistidasSet);
         carregarAulaPorIndice(estadoCurso.indiceAtual);
         renderProgresso();
 
@@ -465,8 +497,6 @@ async function inicializarCurso() {
     bindTabs();
     bindBuscaAula();
 
-    estadoCurso.assistidasSet = carregarAssistidasLocal(idCurso);
-
     // dispara em paralelo
     const [curso] = await Promise.all([
         carregarInfoCurso(idCurso),
@@ -485,6 +515,11 @@ async function inicializarCurso() {
 
         estadoCurso.modulos = modulos;
         estadoCurso.aulasFlat = modulos.flatMap(m => m.aulas ?? []);
+
+        estadoCurso.assistidasSet = await carregarAssistidasDoBackend(
+            getCpfLogado(),
+            estadoCurso.aulasFlat
+        );
 
         renderHeaderCurso(curso);
         renderSidebar();
