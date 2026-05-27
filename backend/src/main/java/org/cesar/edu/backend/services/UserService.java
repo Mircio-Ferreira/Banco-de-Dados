@@ -866,4 +866,8 @@ public class UserService {
 
         return progressos;
     }
+
+    public void atualizarAlunosInativosNow(){
+        alunoRepository.atualizarAlunosInativos();
+    }
 }

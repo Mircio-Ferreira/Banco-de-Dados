@@ -247,4 +247,14 @@ public class UserController implements UserControllerDoc {
             return ResponseEntity.internalServerError().body(e.getMessage());
          }
     }
+    @GetMapping("/atualizar-alunos-inativos")
+    public ResponseEntity<?> listarAlunosAtualizadosInativos() {
+        try {
+            userService.atualizarAlunosInativosNow();
+            return ResponseEntity.ok().body("Alunos atualizados");
+        }
+        catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }
