@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS categoria(
 @@
 CREATE TABLE IF NOT EXISTS possui(
                        id_categoria BIGINT REFERENCES categoria(id_categoria) ON DELETE CASCADE,
-                       id_curso BIGINT REFERENCES curso(id_curso) ON DELETE CASCADE,
+                           id_curso BIGINT REFERENCES curso(id_curso) ON DELETE CASCADE,
                        PRIMARY KEY (id_categoria, id_curso)
 );
 @@
@@ -478,4 +478,55 @@ CREATE TRIGGER trg_verificar_compra_antes_assistir
 BEFORE INSERT OR UPDATE ON assistir
                        FOR EACH ROW
                        EXECUTE FUNCTION fn_verificar_compra_antes_assistir();
+@@
+
+CREATE OR REPLACE FUNCTION fn_verficar_conclusao_do_curso_liberar_certificado()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+v_total_aulas INT;
+    v_aulas_assistidas INT;
+BEGIN
+SELECT COUNT(*)
+INTO v_total_aulas
+FROM aula a
+WHERE a.id_curso = NEW.id_curso_concluido;
+
+IF v_total_aulas = 0 THEN
+        RAISE EXCEPTION
+            'O curso em questão não possui aulas cadastradas';
+END IF;
+
+SELECT COUNT(DISTINCT (ass.id_curso, ass.id_modulo, ass.id_aula))
+INTO v_aulas_assistidas
+FROM assistir ass
+WHERE ass.id_curso = NEW.id_curso_concluido
+  AND ass.cpf_aluno = NEW.cpf_aluno_graduado;
+
+IF v_total_aulas <> v_aulas_assistidas THEN
+        RAISE EXCEPTION
+        'Certificado negado: aluno não concluiu todas as aulas do curso';
+END IF;
+
+RETURN NEW;
+END;
+$$;
+@@
+
+DROP TRIGGER IF EXISTS trg_verficar_conclusao_do_curso_liberar_certificado ON certificado_curso;
+@@
+
+CREATE TRIGGER trg_verficar_conclusao_do_curso_liberar_certificado
+    BEFORE INSERT ON certificado_curso
+    FOR EACH ROW
+    EXECUTE FUNCTION fn_verficar_conclusao_do_curso_liberar_certificado();
+@@
+
+CREATE INDEX IF NOT EXISTS idx_aula_titulo
+    ON aula(id_curso,id_modulo,titulo);
+@@
+
+CREATE INDEX IF NOT EXISTS idx_modulo_titulo
+    ON modulo(id_curso,titulo);
 @@
