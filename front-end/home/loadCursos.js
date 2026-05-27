@@ -316,7 +316,7 @@ function abrirModalCompra(idCurso, nomeCurso, preco) {
     const qr = sortearQrCodePix();
     const qrImg = document.getElementById("qrCodePix");
     const destinatario = document.getElementById("pixDestinatario");
-    if (qrImg) qrImg.src = `../../resource/${qr.arquivo}`;
+    if (qrImg) qrImg.src = `../img/${qr.arquivo}`;
     if (destinatario) destinatario.innerHTML = `Pix de <strong style="color:#f1f5f9;">${qr.nome}</strong>`;
 
     document.getElementById("modalCompra").style.display = "flex";

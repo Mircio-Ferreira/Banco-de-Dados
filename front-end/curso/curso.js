@@ -346,23 +346,70 @@ function navegarAula(delta) {
     }
 }
 
-function alternarAssistida() {
+async function registrarAssistirNoBackend(aula) {
+    const cpf = getCpfLogado();
+    if (!cpf) throw new Error("CPF do aluno não encontrado.");
+
+    const payload = {
+        cpf_aluno: cpf,
+        id_aula: aula.id_aula,
+        id_modulo: aula.id_modulo,
+        id_curso: aula.id_curso
+    };
+
+    const res = await fetchComCpf(`${API}/assistir`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+        const motivo = await res.text().catch(() => "");
+        throw new Error(motivo || `HTTP ${res.status}`);
+    }
+}
+
+async function alternarAssistida() {
     if (estadoCurso.indiceAtual < 0) return;
     const aula = estadoCurso.aulasFlat[estadoCurso.indiceAtual];
     const key = aulaKey(aula);
+    const btnMarc = document.getElementById("btnMarcar");
 
     if (estadoCurso.assistidasSet.has(key)) {
+        // Desmarcar — somente local (sem endpoint DELETE).
         estadoCurso.assistidasSet.delete(key);
-    } else {
+        salvarAssistidasLocal(estadoCurso.idCurso, estadoCurso.assistidasSet);
+        carregarAulaPorIndice(estadoCurso.indiceAtual);
+        renderProgresso();
+        return;
+    }
+
+    // Marcar como assistida — registra no backend antes de atualizar a UI
+    if (btnMarc) {
+        btnMarc.disabled = true;
+        btnMarc.innerHTML = "⏳ Registrando...";
+    }
+
+    try {
+        await registrarAssistirNoBackend(aula);
+
         estadoCurso.assistidasSet.add(key);
-        // Auto-avança se houver próxima aula
+        salvarAssistidasLocal(estadoCurso.idCurso, estadoCurso.assistidasSet);
+        carregarAulaPorIndice(estadoCurso.indiceAtual);
+        renderProgresso();
+
+        // Auto-avança para a próxima aula
         if (estadoCurso.indiceAtual < estadoCurso.aulasFlat.length - 1) {
             setTimeout(() => navegarAula(1), 250);
         }
+    } catch (err) {
+        console.error("Falha ao registrar 'assistir' no backend:", err);
+        alert(`Não foi possível registrar a aula como assistida: ${err.message}`);
+        if (btnMarc) {
+            btnMarc.disabled = false;
+            btnMarc.innerHTML = "✓ Marcar como assistida";
+        }
     }
-    salvarAssistidasLocal(estadoCurso.idCurso, estadoCurso.assistidasSet);
-    carregarAulaPorIndice(estadoCurso.indiceAtual); // re-render
-    renderProgresso();
 }
 
 /* ============================================================
