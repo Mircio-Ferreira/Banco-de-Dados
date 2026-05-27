@@ -7,63 +7,716 @@
     <link rel="stylesheet" href="../css/style.css">
 
     <style>
+        body { background: #0f172a; }
 
+        /* ===== Header do curso ===== */
+        .curso-info-bar {
+            background: linear-gradient(135deg, rgba(29, 78, 216, 0.15), rgba(76, 29, 149, 0.15));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 18px 30px;
+        }
+        .curso-info-bar .titulo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .curso-info-bar h1 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #f1f5f9;
+        }
+        .curso-info-bar .meta {
+            display: flex;
+            gap: 18px;
+            margin-top: 8px;
+            color: #cbd5f5;
+            font-size: 0.88em;
+            flex-wrap: wrap;
+        }
+        .curso-info-bar .meta .item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .curso-info-bar .badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.78em;
+            font-weight: 700;
+            background: rgba(34, 197, 94, 0.18);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+        .curso-info-bar .voltar {
+            color: #93c5fd;
+            text-decoration: none;
+            font-size: 0.85em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .curso-info-bar .voltar:hover {
+            color: #bfdbfe;
+        }
+
+        .curso-progresso {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .curso-progresso .barra {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0;
+        }
+        .curso-progresso .preencher {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #22c55e);
+            transition: width 0.4s ease;
+        }
+        .curso-progresso .label {
+            color: #cbd5e1;
+            font-size: 0.85em;
+            font-weight: 600;
+            min-width: 100px;
+            text-align: right;
+        }
+
+        /* ===== Layout player ===== */
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .aulas-sidebar {
+            width: 340px;
+            background: #0b1226;
+            padding: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 70px);
+        }
+
+        .sidebar-topo {
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-topo .ch {
+            font-size: 0.85em;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sidebar-busca {
+            position: relative;
+        }
+        .sidebar-busca input {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 23, 42, 0.7);
+            color: #e2e8f0;
+            font-size: 0.85em;
+            box-sizing: border-box;
+        }
+        .sidebar-busca input:focus {
+            outline: none;
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.18);
+        }
+        .sidebar-busca::before {
+            content: "🔎";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85em;
+            opacity: 0.6;
+        }
+
+        .modulos-list {
+            overflow-y: auto;
+            flex: 1;
+            padding: 10px;
+        }
+
+        .modulo-block {
+            margin-bottom: 6px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .modulo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            cursor: pointer;
+            background: rgba(15, 23, 42, 0.6);
+            transition: 0.15s;
+            user-select: none;
+        }
+        .modulo-header:hover {
+            background: rgba(30, 41, 59, 0.8);
+        }
+        .modulo-header .nome {
+            font-size: 0.92em;
+            color: #f1f5f9;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modulo-header .stats {
+            font-size: 0.75em;
+            color: #94a3b8;
+        }
+        .modulo-header .seta {
+            transition: transform 0.2s;
+            color: #94a3b8;
+            font-size: 0.8em;
+        }
+        .modulo-block.aberto .modulo-header .seta {
+            transform: rotate(90deg);
+        }
+
+        .modulo-aulas {
+            display: none;
+            padding: 4px 0;
+        }
+        .modulo-block.aberto .modulo-aulas {
+            display: block;
+        }
+
+        .aula-item {
+            padding: 9px 12px 9px 36px;
+            cursor: pointer;
+            transition: 0.15s;
+            font-size: 0.86em;
+            color: #cbd5e1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .aula-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
+        }
+
+        .aula-item .check {
+            position: absolute;
+            left: 12px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            background: transparent;
+            transition: 0.15s;
+        }
+
+        .aula-item.assistida .check {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: white;
+        }
+        .aula-item.assistida .check::after {
+            content: "✓";
+            font-weight: bold;
+        }
+
+        .aula-item.assistida .titulo {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .aula-item.ativa {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.35), transparent);
+            border-left: 3px solid #38bdf8;
+            padding-left: 33px;
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .aula-item .titulo {
+            flex: 1;
+            line-height: 1.3;
+        }
+
+        /* ===== Conteúdo principal ===== */
+        .conteudo {
+            flex: 1;
+            padding: 0;
+            overflow-y: auto;
+            background: #0f172a;
+        }
+
+        .player-content {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 25px 30px 60px;
+        }
+
+        .video {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: black;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 18px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .video iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* ===== Toolbar abaixo do vídeo ===== */
+        .aula-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .aula-toolbar .nav-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .aula-toolbar button {
+            padding: 9px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.7);
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: 0.88em;
+            font-weight: 600;
+            transition: 0.15s;
+        }
+        .aula-toolbar button:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: rgba(56, 189, 248, 0.4);
+            color: #bae6fd;
+        }
+        .aula-toolbar button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-marcar {
+            background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+            border-color: rgba(34, 197, 94, 0.6) !important;
+            color: white !important;
+            box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
+        }
+        .btn-marcar.assistida {
+            background: rgba(34, 197, 94, 0.2) !important;
+            color: #86efac !important;
+            box-shadow: none;
+        }
+
+        /* ===== Tabs ===== */
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 18px;
+        }
+        .tab-bar .tab {
+            padding: 10px 18px;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 0.92em;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: 0.15s;
+        }
+        .tab-bar .tab:hover {
+            color: #cbd5e1;
+        }
+        .tab-bar .tab.ativo {
+            color: #38bdf8;
+            border-bottom-color: #38bdf8;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.ativo { display: block; }
+
+        /* ===== Boxes ===== */
+        .info-box {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        #tituloAula {
+            font-size: 1.4em;
+            margin: 0 0 10px 0;
+            color: #f8fafc;
+        }
+
+        .aula-meta {
+            display: flex;
+            gap: 14px;
+            color: #94a3b8;
+            font-size: 0.83em;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .aula-meta .item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #descricaoAula {
+            color: #e2e8f0;
+            line-height: 1.65;
+            font-size: 0.95em;
+            white-space: pre-wrap;
+        }
+
+        #descricaoAula:empty::before {
+            content: "Esta aula não possui descrição.";
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .materiais-box h3, .comentarios-box h3 {
+            font-size: 1em;
+            margin-top: 0;
+            margin-bottom: 14px;
+            color: #f1f5f9;
+        }
+
+        .materiais a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: rgba(99, 102, 241, 0.1);
+            color: #c7d2fe;
+            text-decoration: none;
+            margin-bottom: 6px;
+            transition: 0.15s;
+            border: 1px solid rgba(99, 102, 241, 0.18);
+        }
+
+        .materiais a:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateX(4px);
+            color: #e0e7ff;
+        }
+
+        /* ===== Comentários ===== */
+        .comentarios-box {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .novo-comentario {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 18px;
+        }
+
+        .novo-comentario .avatar-mini {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            color: white;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .novo-comentario .input-area {
+            flex: 1;
+        }
+
+        .novo-comentario textarea {
+            width: 100%;
+            min-height: 70px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.6);
+            color: #f1f5f9;
+            box-sizing: border-box;
+            font-family: inherit;
+            margin-bottom: 8px;
+            resize: vertical;
+        }
+
+        .novo-comentario textarea:focus {
+            outline: none;
+            border-color: rgba(56, 189, 248, 0.5);
+        }
+
+        .novo-comentario button {
+            padding: 8px 16px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .novo-comentario button:hover {
+            background: #1d4ed8;
+        }
+
+        .comentario {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .comentario .avatar-mini {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.9em;
+        }
+
+        .comentario .body {
+            flex: 1;
+        }
+
+        .comentario-header {
+            font-size: 0.82em;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .comentario-header strong {
+            color: #93c5fd;
+            margin-right: 6px;
+        }
+
+        .comentario-conteudo {
+            color: #e2e8f0;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        .responder {
+            font-size: 0.8em;
+            color: #60a5fa;
+            cursor: pointer;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .responder:hover { color: #93c5fd; }
+
+        .respostas {
+            margin-left: 0;
+            margin-top: 10px;
+            padding-left: 14px;
+            border-left: 2px solid rgba(56, 189, 248, 0.25);
+        }
+
+        .resposta-box {
+            margin-top: 10px;
+        }
+
+        .resposta-box textarea {
+            width: 100%;
+            min-height: 50px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.6);
+            color: #f1f5f9;
+            box-sizing: border-box;
+            margin-bottom: 6px;
+            font-family: inherit;
+        }
+
+        .resposta-box button {
+            padding: 6px 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .hidden { display: none; }
+
+        @media (max-width: 800px) {
+            .layout { flex-direction: column; }
+            .aulas-sidebar { width: 100%; max-height: 380px; }
+        }
     </style>
 </head>
 
 <body>
 
     <header class="navbar">
-        <div class="logo">
+        <a class="logo" href="../home/home.html">
             <img src="../img/cesar_edu.png" />
-            <a href="../home/home.html">CesarEdu</a>
-        </div>
+            <div>
+                <span style="font-size: 22px; font-weight: 800;">CesarEdu</span>
+                <div class="logo-tagline">Educação que conecta</div>
+            </div>
+        </a>
 
-        <input class="search" type="text" placeholder="O que você quer aprender?" />
+        <input class="search" type="text" placeholder="🔎 Pesquisar..." />
 
         <div class="perfil">
             <span id="userName">Usuário</span>
-
             <button onclick="logout()" class="logout-btn">Sair</button>
         </div>
     </header>
 
+    <!-- Header do curso -->
+    <div class="curso-info-bar">
+        <a href="../home/home-aluno.html" class="voltar">← Voltar aos meus cursos</a>
+        <div class="titulo" style="margin-top: 8px;">
+            <h1 id="cursoNome">Carregando curso...</h1>
+            <span class="badge" id="cursoBadge" style="display:none;">📚 Adquirido</span>
+        </div>
+        <div class="meta">
+            <div class="item">🕒 <span id="cursoHoras">—</span></div>
+            <div class="item">📦 <span id="cursoModulosCount">—</span></div>
+            <div class="item">🎬 <span id="cursoAulasCount">—</span></div>
+            <div class="item">🏷️ <span id="cursoCategorias">—</span></div>
+        </div>
+        <div class="curso-progresso">
+            <span class="label" id="progressoLabel">— / — aulas</span>
+            <div class="barra"><div class="preencher" id="progressoFill" style="width:0%;"></div></div>
+            <span class="label" id="progressoPct" style="min-width: 50px; text-align:left; color:#38bdf8;">0%</span>
+        </div>
+    </div>
+
     <div class="layout">
 
-        <!-- Sidebar -->
-        <aside class="aulas-sidebar" id="sidebar">
-    <div id="cursoCargaHoraria" style="padding: 10px 15px; font-size: 0.9em; font-weight: bold; color: #94a3b8;"></div>
-    
-    <div id="modulosContainer"></div>
-</aside>
+        <!-- Sidebar com módulos/aulas -->
+        <aside class="aulas-sidebar">
+            <div class="sidebar-topo">
+                <div class="ch" id="cursoCargaHoraria">🕒 Carga horária total: —</div>
+                <div class="sidebar-busca">
+                    <input id="buscaAula" type="text" placeholder="Buscar aula..." />
+                </div>
+            </div>
+            <div class="modulos-list" id="modulosContainer">
+                <p style="padding: 15px; color: #94a3b8; font-size: 0.85em;">Carregando aulas...</p>
+            </div>
+        </aside>
 
         <!-- Conteúdo principal -->
         <main class="conteudo">
             <div class="player-content">
 
-                <div class="video" id="video"></div>
-
-                <div class="info-box">
-                    <h2 id="tituloAula"></h2>
-                    <p id="descricaoAula"></p>
-                </div>
-
-                <div class="materiais-box">
-                    <h3>Materiais</h3>
-                    <div class="materiais" id="materiais"></div>
-                </div>
-
-                <div class="comentarios-box">
-                    <h3>Comentários</h3>
-
-                    <!-- Novo comentário -->
-                    <div class="novo-comentario">
-                        <textarea id="comentarioInput" placeholder="Escreva um comentário..."></textarea>
-                        <button onclick="addComentario()">Comentar</button>
+                <div class="video" id="video">
+                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#64748b;">
+                        Selecione uma aula para começar
                     </div>
+                </div>
 
-                    <!-- Lista -->
-                    <div id="comentariosList"></div>
+                <!-- Toolbar abaixo do vídeo -->
+                <div class="aula-toolbar">
+                    <div class="nav-btns">
+                        <button id="btnAnterior" onclick="navegarAula(-1)" disabled>← Aula anterior</button>
+                        <button id="btnProxima"  onclick="navegarAula(1)"  disabled>Próxima aula →</button>
+                    </div>
+                    <button class="btn-marcar" id="btnMarcar" onclick="alternarAssistida()" disabled>
+                        ✓ Marcar como assistida
+                    </button>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tab-bar">
+                    <div class="tab ativo" data-tab="sobre">📝 Sobre</div>
+                    <div class="tab" data-tab="materiais">📎 Materiais</div>
+                    <div class="tab" data-tab="comentarios">💬 Comentários</div>
+                </div>
+
+                <!-- Tab Sobre -->
+                <div class="tab-content ativo" id="tabSobre">
+                    <div class="info-box">
+                        <h2 id="tituloAula">—</h2>
+                        <div class="aula-meta">
+                            <div class="item">📦 <span id="aulaModulo">—</span></div>
+                            <div class="item">🎬 Aula <span id="aulaIndice">—</span></div>
+                        </div>
+                        <p id="descricaoAula"></p>
+                    </div>
+                </div>
+
+                <!-- Tab Materiais -->
+                <div class="tab-content" id="tabMateriais">
+                    <div class="info-box materiais-box">
+                        <h3>📎 Materiais de apoio</h3>
+                        <div class="materiais" id="materiais"></div>
+                    </div>
+                </div>
+
+                <!-- Tab Comentários -->
+                <div class="tab-content" id="tabComentarios">
+                    <div class="comentarios-box">
+                        <h3>💬 Comentários da turma</h3>
+
+                        <div class="novo-comentario">
+                            <div class="avatar-mini" id="meuAvatar">U</div>
+                            <div class="input-area">
+                                <textarea id="comentarioInput" placeholder="Faça uma pergunta ou compartilhe um insight..."></textarea>
+                                <button onclick="addComentario()">Comentar</button>
+                            </div>
+                        </div>
+
+                        <div id="comentariosList"></div>
+                    </div>
                 </div>
 
             </div>

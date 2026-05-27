@@ -157,11 +157,20 @@ function renderCarrossel() {
 
 function bindFiltros() {
     const busca = document.getElementById("busca");
+    const buscaTitulo = document.getElementById("buscaTitulo");
+
+    function aplicarBusca(valor) {
+        filtros.busca = (valor ?? "").trim().toLowerCase();
+        if (busca && busca.value !== valor) busca.value = valor;
+        if (buscaTitulo && buscaTitulo.value !== valor) buscaTitulo.value = valor;
+        renderCarrossel();
+    }
+
     if (busca) {
-        busca.addEventListener("input", (e) => {
-            filtros.busca = e.target.value.trim().toLowerCase();
-            renderCarrossel();
-        });
+        busca.addEventListener("input", (e) => aplicarBusca(e.target.value));
+    }
+    if (buscaTitulo) {
+        buscaTitulo.addEventListener("input", (e) => aplicarBusca(e.target.value));
     }
 
     const ordem = document.getElementById("ordenarCursos");
@@ -187,7 +196,8 @@ function bindFiltros() {
             filtros.classificacao = "";
             filtros.ordenacao = "nome-asc";
 
-            if (busca)   busca.value = "";
+            if (busca)        busca.value = "";
+            if (buscaTitulo)  buscaTitulo.value = "";
             if (ordem)   ordem.value = "nome-asc";
             if (classif) classif.value = "";
 

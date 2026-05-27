@@ -327,6 +327,9 @@
                 </div>
 
                 <div class="filtros-catalogo">
+                    <span class="label">🔎 Título</span>
+                    <input id="buscaTitulo" type="text" placeholder="Buscar por nome do curso..." style="flex: 1; min-width: 220px;">
+
                     <span class="label">Ordenar por</span>
                     <select id="ordenarCatalogo">
                         <option value="nome-asc">Nome (A → Z)</option>
@@ -369,6 +372,12 @@
             <h3 style="margin-top: 0; font-size: 1.4em; color: #f8fafc;">Confirmar Matrícula</h3>
             <p style="color: #cbd5e1; margin-top: 15px;">Você deseja adquirir o curso:<br><strong id="nomeCursoModal" style="color: #38bdf8; font-size: 1.1em; display: inline-block; margin-top: 5px;"></strong>?</p>
             <p id="precoCursoModal" style="color: #22c55e; font-weight: bold; font-size: 1.1em; margin-top: 8px;"></p>
+
+            <div style="margin: 18px auto 6px; padding: 14px; background: white; border-radius: 10px; width: fit-content; box-shadow: 0 4px 12px rgba(0,0,0,0.25);">
+                <img id="qrCodePix" alt="QR Code Pix" style="display: block; width: 180px; height: 180px; object-fit: contain;" />
+            </div>
+            <div style="font-size: 0.78em; color: #94a3b8; margin-bottom: 4px;">📱 Pague via Pix escaneando o QR code</div>
+            <div id="pixDestinatario" style="font-size: 0.8em; color: #cbd5e1; margin-bottom: 6px;"></div>
 
             <div style="margin-top: 30px; display: flex; justify-content: space-between; gap: 15px;">
                 <button onclick="fecharModal()" style="flex: 1; background: #475569; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s;">Cancelar</button>

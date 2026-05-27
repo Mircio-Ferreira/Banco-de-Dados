@@ -7,108 +7,383 @@
     <link rel="stylesheet" href="../css/style.css">
 
     <style>
+        body {
+            background: radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.18), transparent 40%),
+                        radial-gradient(circle at 80% 90%, rgba(34, 197, 94, 0.12), transparent 40%),
+                        linear-gradient(135deg, #1e3a8a, #4c1d95, #0f172a);
+            min-height: 100vh;
+        }
 
+        .cadastro-page {
+            max-width: 720px;
+            margin: 30px auto;
+            padding: 30px 24px 60px;
+        }
+
+        .cadastro-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .cadastro-header h2 {
+            font-size: 1.9em;
+            margin: 0 0 6px 0;
+            background: linear-gradient(135deg, #f1f5f9, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cadastro-header .subtitle {
+            color: #94a3b8;
+            font-size: 0.95em;
+        }
+
+        /* Toggle Aluno / Professor */
+        .role-toggle {
+            display: flex;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .role-toggle .role-option {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 14px;
+            cursor: pointer;
+            border-radius: 9px;
+            transition: 0.15s;
+            text-align: center;
+            color: #cbd5e1;
+        }
+
+        .role-toggle .role-option .icone {
+            font-size: 1.6em;
+            margin-bottom: 4px;
+        }
+
+        .role-toggle .role-option .titulo {
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        .role-toggle .role-option .desc {
+            font-size: 0.75em;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .role-toggle .role-option.ativo {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(99, 102, 241, 0.18));
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            color: #f1f5f9;
+        }
+
+        .role-toggle .role-option.ativo .desc {
+            color: #cbd5e1;
+        }
+
+        /* Cards de seção */
+        .section-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px 22px;
+            margin-bottom: 18px;
+            backdrop-filter: blur(8px);
+        }
+
+        .section-card h3 {
+            margin: 0 0 16px 0;
+            font-size: 1em;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            font-size: 0.78em;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .field input {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(2, 6, 23, 0.6);
+            color: #f1f5f9;
+            font-size: 0.92em;
+            transition: 0.15s;
+        }
+
+        .field input::placeholder {
+            color: #64748b;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        .field small {
+            color: #94a3b8;
+            font-size: 0.75em;
+            margin-top: 4px;
+        }
+
+        /* Listas (telefone, certificações) */
+        .list-input {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .list-input input { flex: 1; }
+
+        .list-input button {
+            padding: 0 14px;
+            background: rgba(56, 189, 248, 0.18);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #bae6fd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .list-input button:hover {
+            background: rgba(56, 189, 248, 0.3);
+        }
+
+        .telefone-list,
+        .cert-list {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .telefone-list:empty::before,
+        .cert-list:empty::before {
+            content: "Nenhum item adicionado.";
+            color: #64748b;
+            font-size: 0.82em;
+            font-style: italic;
+        }
+
+        /* Botão final */
+        .submit-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .btn-cadastrar {
+            flex: 1;
+            padding: 13px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.35);
+            transition: 0.15s;
+        }
+
+        .btn-cadastrar:hover {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+        }
+
+        .login-redirect {
+            text-align: center;
+            margin-top: 20px;
+            color: #cbd5f5;
+            font-size: 0.92em;
+        }
+
+        #erroMsg {
+            margin-bottom: 14px;
+        }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .role-toggle { flex-direction: column; }
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="layout">
+    <header class="navbar">
+        <a class="logo" href="../home/home.html">
+            <img src="../img/cesar_edu.png" />
+            <div>
+                <span style="font-size: 22px; font-weight: 800;">CesarEdu</span>
+                <div class="logo-tagline">Educação que conecta</div>
+            </div>
+        </a>
+        <a href="../login/login.html" class="link-login" style="text-decoration:none; padding: 8px 16px; border: 1px solid rgba(96, 165, 250, 0.4); border-radius: 8px;">Já tenho conta</a>
+    </header>
 
-        <main class="conteudo">
-            <div class="form-container">
+    <main class="cadastro-page">
 
-                <h2>Cadastro</h2>
+        <div class="cadastro-header">
+            <h2>Crie sua conta na CesarEdu</h2>
+            <div class="subtitle">Leva menos de 2 minutos. Vamos começar?</div>
+        </div>
 
-                <div id="erroMsg"></div>
+        <div id="erroMsg"></div>
 
-                <!-- Tipo de usuário -->
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="isProfessor" />
-                        Sou professor
-                    </label>
-                    <!-- <small>Marque esta opção se você deseja ensinar cursos na plataforma.</small> -->
-                </div>
+        <!-- Tipo de usuário -->
+        <div class="role-toggle">
+            <label class="role-option ativo" id="roleAluno">
+                <input type="radio" name="tipo" value="ALUNO" checked style="display:none;">
+                <span class="icone">📚</span>
+                <span class="titulo">Sou aluno</span>
+                <span class="desc">Quero estudar e adquirir cursos</span>
+            </label>
+            <label class="role-option" id="roleProfessor">
+                <input type="radio" name="tipo" value="PROFESSOR" style="display:none;">
+                <span class="icone">🎓</span>
+                <span class="titulo">Sou professor</span>
+                <span class="desc">Quero criar e ensinar cursos</span>
+            </label>
+        </div>
 
-                <!-- Dados básicos -->
-                <div class="form-group">
+        <!-- Mantém compatibilidade com isProfessor.js -->
+        <input type="checkbox" id="isProfessor" style="display:none;">
+
+        <!-- Dados pessoais -->
+        <section class="section-card">
+            <h3>👤 Dados pessoais</h3>
+            <div class="form-grid">
+                <div class="field">
                     <label>CPF</label>
                     <input type="text" placeholder="000.000.000-00" id="cpf">
-                    <!-- <small>Digite seu CPF para identificação única no sistema.</small> -->
                 </div>
-
-                <div class="form-group">
+                <div class="field">
                     <label>Nome completo</label>
-                    <input type="text" id="nome">
-                    <!-- <small>Informe seu nome completo como aparece em documentos oficiais.</small> -->
+                    <input type="text" id="nome" placeholder="Como aparece no documento">
                 </div>
-
-                <div class="form-group">
+                <div class="field">
                     <label>Email</label>
-                    <input type="email" id="email">
-                    <!-- <small>Será usado para login e comunicações da plataforma.</small> -->
+                    <input type="email" id="email" placeholder="seu@email.com">
                 </div>
-
-                <div class="form-group">
+                <div class="field">
                     <label>Senha</label>
-                    <input type="password" id="password">
-                    <!-- <small>Crie uma senha segura com pelo menos 6 caracteres.</small> -->
+                    <input type="password" id="password" placeholder="••••••••">
+                    <small>Mínimo 6 caracteres.</small>
                 </div>
-
-                <div class="form-group">
-                    <label>CEP</label>
-                    <input type="text" id="cep" onblur="buscarCEP(this.value)">
-                    <!-- <small>Informe o CEP do seu endereço.</small> -->
-                </div>
-
-                <!-- Endereço -->
-                <div class="form-group">
-                    <label>Logradouro</label>
-                    <input type="text" id="logradouro">
-                    <!-- <small>Nome da rua, avenida ou local onde você reside.</small> -->
-                </div>
-
-                <div class="form-group">
-                    <label>Número</label>
-                    <input type="text" id="numero">
-                    <!-- <small>Número da residência.</small> -->
-                </div>
-
-                <!-- Telefones -->
-                <div class="form-group">
-                    <label>Telefones</label>
-                    <input type="text" id="telefoneInput" placeholder="(xx) xxxxx-xxxx">
-                    <!-- <small>Adicione um ou mais números de telefone para contato.</small> -->
-
-                    <button type="button" onclick="addTelefone()">Adicionar telefone</button>
-
-                    <div class="telefone-list" id="telefoneList"></div>
-                </div>
-
-                <!-- Certificações -->
-                <div id="certificacoesContainer" class="hidden">
-                    <div class="form-group">
-                        <label>Certificações</label>
-                        <input type="text" id="certInput" placeholder="Ex: AWS, Google Cloud">
-                        <small>Liste certificações que comprovem sua experiência como professor.</small>
-
-                        <button type="button" onclick="addCert()">Adicionar certificação</button>
-
-                        <div class="cert-list" id="certList"></div>
-                    </div>
-                </div>
-
-                <button class="btn" onclick="cadastrar()">Cadastrar</button>
-
-                <div style="text-align: center; margin-top: 15px;">
-                    <span style="color: #cbd5f5;">Já tem conta?</span>
-                    <a href="../login/login.html" class="link-login">Entrar</a>
-                </div>
-
             </div>
-        </main>
-    </div>
+        </section>
+
+        <!-- Endereço -->
+        <section class="section-card">
+            <h3>📍 Endereço</h3>
+            <div class="form-grid">
+                <div class="field">
+                    <label>CEP</label>
+                    <input type="text" id="cep" placeholder="00000-000" onblur="buscarCEP(this.value)">
+                </div>
+                <div class="field">
+                    <label>Número</label>
+                    <input type="text" id="numero" placeholder="Ex: 123">
+                </div>
+                <div class="field full">
+                    <label>Logradouro</label>
+                    <input type="text" id="logradouro" placeholder="Rua, avenida, etc.">
+                </div>
+            </div>
+        </section>
+
+        <!-- Telefones -->
+        <section class="section-card">
+            <h3>📞 Telefones</h3>
+            <div class="list-input">
+                <input type="text" id="telefoneInput" placeholder="(xx) xxxxx-xxxx">
+                <button type="button" onclick="addTelefone()">+ Adicionar</button>
+            </div>
+            <div class="telefone-list" id="telefoneList"></div>
+        </section>
+
+        <!-- Certificações (apenas professor) -->
+        <section class="section-card hidden" id="certificacoesContainer">
+            <h3>🏆 Certificações</h3>
+            <p style="color:#94a3b8; font-size: 0.85em; margin: 0 0 10px 0;">
+                Liste suas certificações para ganhar credibilidade junto aos alunos.
+            </p>
+            <div class="list-input">
+                <input type="text" id="certInput" placeholder="Ex: AWS Solutions Architect">
+                <button type="button" onclick="addCert()">+ Adicionar</button>
+            </div>
+            <div class="cert-list" id="certList"></div>
+        </section>
+
+        <div class="submit-bar">
+            <button class="btn-cadastrar" onclick="cadastrar()">✓ Cadastrar</button>
+        </div>
+
+        <div class="login-redirect">
+            Já tem conta?
+            <a href="../login/login.html" class="link-login">Entrar agora</a>
+        </div>
+
+    </main>
+
+    <script>
+        // Sincroniza o toggle visual com o checkbox legado #isProfessor
+        const roleAluno = document.getElementById("roleAluno");
+        const roleProf  = document.getElementById("roleProfessor");
+        const isProf    = document.getElementById("isProfessor");
+
+        function selecionarRole(prof) {
+            isProf.checked = prof;
+            roleAluno.classList.toggle("ativo", !prof);
+            roleProf.classList.toggle("ativo",  prof);
+            isProf.dispatchEvent(new Event("change"));
+        }
+
+        roleAluno.addEventListener("click", (e) => { e.preventDefault(); selecionarRole(false); });
+        roleProf .addEventListener("click", (e) => { e.preventDefault(); selecionarRole(true);  });
+    </script>
     <script src="loadCEP.js"></script>
     <script src="addTelefone.js"></script>
     <script src="addCertificacao.js"></script>

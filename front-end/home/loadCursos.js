@@ -131,11 +131,20 @@ function selecionarCategoria(nome) {
 
 function bindFiltros() {
     const busca = document.getElementById("busca");
+    const buscaTitulo = document.getElementById("buscaTitulo");
+
+    function aplicarBusca(valor) {
+        filtros.busca = (valor ?? "").trim().toLowerCase();
+        if (busca && busca.value !== valor) busca.value = valor;
+        if (buscaTitulo && buscaTitulo.value !== valor) buscaTitulo.value = valor;
+        renderTudo();
+    }
+
     if (busca) {
-        busca.addEventListener("input", (e) => {
-            filtros.busca = e.target.value.trim().toLowerCase();
-            renderTudo();
-        });
+        busca.addEventListener("input", (e) => aplicarBusca(e.target.value));
+    }
+    if (buscaTitulo) {
+        buscaTitulo.addEventListener("input", (e) => aplicarBusca(e.target.value));
     }
 
     const ordem = document.getElementById("ordenarCatalogo");
@@ -163,7 +172,8 @@ function bindFiltros() {
             filtros.precoMax = null;
             filtros.ordenacao = "nome-asc";
 
-            if (busca)  busca.value = "";
+            if (busca)        busca.value = "";
+            if (buscaTitulo)  buscaTitulo.value = "";
             if (ordem) ordem.value = "nome-asc";
             if (preco) preco.value = "";
 
@@ -283,6 +293,17 @@ function renderCatalogo() {
     ordenarCatalogo(disponiveis).forEach(c => container.appendChild(montarCard(c, { adquirido: false })));
 }
 
+const QR_CODES_PIX = [
+    { arquivo: "pix_amanda.png",  nome: "Amanda"  },
+    { arquivo: "pix_eric.png",    nome: "Eric"    },
+    { arquivo: "pix_gabriel.png", nome: "Gabriel" }
+];
+
+function sortearQrCodePix() {
+    const idx = Math.floor(Math.random() * QR_CODES_PIX.length);
+    return QR_CODES_PIX[idx];
+}
+
 function abrirModalCompra(idCurso, nomeCurso, preco) {
     cursoSelecionadoId = idCurso;
     cursoSelecionadoPreco = preco;
@@ -291,6 +312,13 @@ function abrirModalCompra(idCurso, nomeCurso, preco) {
     if (slotPreco) {
         slotPreco.innerText = (preco != null && Number(preco) > 0) ? formatarBRL(preco) : "Grátis";
     }
+
+    const qr = sortearQrCodePix();
+    const qrImg = document.getElementById("qrCodePix");
+    const destinatario = document.getElementById("pixDestinatario");
+    if (qrImg) qrImg.src = `../../resource/${qr.arquivo}`;
+    if (destinatario) destinatario.innerHTML = `Pix de <strong style="color:#f1f5f9;">${qr.nome}</strong>`;
+
     document.getElementById("modalCompra").style.display = "flex";
 }
 

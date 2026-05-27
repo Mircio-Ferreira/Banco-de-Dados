@@ -1,10 +1,8 @@
 const API = "http://localhost:8080/api/v1";
 
-/**
- * 🔐 Lê o CPF do usuário logado do localStorage.
- * Retorna string vazia caso não exista — o backend trata o header como opcional
- * em rotas de leitura, mas mantemos a chave para padronizar o tráfego.
- */
+/* ============================================================
+ * Helpers
+ * ============================================================ */
 function getCpfLogado() {
     try {
         const raw = localStorage.getItem("user");
@@ -16,10 +14,6 @@ function getCpfLogado() {
     }
 }
 
-/**
- * 🌐 Wrapper de fetch que injeta os headers padrão (Accept JSON + X-User-CPF)
- * em toda requisição. Aceita `options` no mesmo formato do fetch nativo.
- */
 function fetchComCpf(url, options = {}) {
     const headers = {
         "Accept": "application/json",
@@ -29,128 +23,110 @@ function fetchComCpf(url, options = {}) {
     return fetch(url, { ...options, headers });
 }
 
-/**
- * 🔗 Captura o ID do curso a partir dos parâmetros da URL (ex: assistir.html?id=2)
- */
 function getCursoId() {
     const params = new URLSearchParams(window.location.search);
     return params.get("id");
 }
 
-let aulaAtual = null;
+function escapeHtml(s) {
+    return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+}
 
-/**
- * 🎬 Carrega a aula selecionada no player principal da tela
- */
 function converterYoutubeParaEmbed(url) {
     if (!url) return "";
-
-    // youtube.com/watch?v=
     if (url.includes("watch?v=")) {
         const videoId = url.split("v=")[1]?.split("&")[0];
         return `https://www.youtube.com/embed/${videoId}`;
     }
-
-    // youtu.be/
     if (url.includes("youtu.be/")) {
         const videoId = url.split("youtu.be/")[1]?.split("?")[0];
         return `https://www.youtube.com/embed/${videoId}`;
     }
-
-    // já está em embed
-    if (url.includes("/embed/")) {
-        return url;
-    }
-
+    if (url.includes("/embed/")) return url;
     return url;
 }
 
-function carregarAula(aula) {
-    aulaAtual = aula;
+/* ============================================================
+ * Estado da página
+ * ============================================================ */
+let estadoCurso = {
+    idCurso: null,
+    nome: "",
+    modulos: [],          // [{ modulo, aulas: [{...}] }]
+    aulasFlat: [],        // lista plana de aulas em ordem
+    indiceAtual: -1,
+    assistidasSet: new Set(), // ids de aulas marcadas como assistidas (localStorage)
+    busca: ""
+};
 
-    const videoUrl = converterYoutubeParaEmbed(aula.link ?? "");
+const STORAGE_KEY_PREFIX = "cesar.assistidas.";
 
-    document.getElementById("video").innerHTML = `
-        <iframe
-            width="100%"
-            height="500"
-            src="${videoUrl}"
-            title="${aula.titulo ?? "Vídeo da aula"}"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-        </iframe>
-    `;
-
-    document.getElementById("tituloAula").innerText =
-        aula.titulo ?? "";
-
-    document.getElementById("descricaoAula").innerText =
-        aula.descricao_aula ?? "";
-
-    const matDiv = document.getElementById("materiais");
-    matDiv.innerHTML = "";
-
-    if (aula.materiais && aula.materiais.length > 0) {
-        aula.materiais.forEach(m => {
-            const a = document.createElement("a");
-            a.href = m.link;
-            a.innerText = m.nome;
-            a.target = "_blank";
-            matDiv.appendChild(a);
-        });
-    } else {
-        matDiv.innerHTML =
-            "<p style='color: #64748b; font-size: 0.9em;'>Nenhum material de apoio para esta aula.</p>";
+function carregarAssistidasLocal(idCurso) {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY_PREFIX + idCurso);
+        if (!raw) return new Set();
+        const arr = JSON.parse(raw);
+        return new Set(Array.isArray(arr) ? arr : []);
+    } catch {
+        return new Set();
     }
 }
-/**
- * 🕒 Carga horária total do curso
- */
+
+function salvarAssistidasLocal(idCurso, set) {
+    try {
+        localStorage.setItem(STORAGE_KEY_PREFIX + idCurso, JSON.stringify([...set]));
+    } catch { /* ignore */ }
+}
+
+function aulaKey(aula) {
+    // composta porque o id_aula é único só dentro de (curso, modulo)
+    return `${aula.id_curso}-${aula.id_modulo}-${aula.id_aula}`;
+}
+
+/* ============================================================
+ * Carregamento de dados
+ * ============================================================ */
 async function carregarCargaHoraria(idCurso) {
     try {
         const response = await fetchComCpf(`${API}/curso/curso-horas-totais/${idCurso}`);
         if (!response.ok) throw new Error("Erro ao buscar carga horária");
-
         const horasTotais = await response.text();
-        const horasBadge = document.getElementById("cursoCargaHoraria");
-        if (horasBadge) {
-            horasBadge.innerHTML =
-                `🕒 Carga Horária Total: <span style="background: #1e293b; color: #38bdf8; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">${horasTotais}h</span>`;
-        }
-    } catch (error) {
-        console.error("Não foi possível carregar a carga horária:", error);
-        const horasBadge = document.getElementById("cursoCargaHoraria");
-        if (horasBadge) horasBadge.style.display = "none";
+        const el = document.getElementById("cursoCargaHoraria");
+        const elTopo = document.getElementById("cursoHoras");
+        if (el) el.innerHTML = `🕒 Carga horária total: <strong style="color:#38bdf8;">${horasTotais}h</strong>`;
+        if (elTopo) elTopo.textContent = `${horasTotais}h totais`;
+    } catch (err) {
+        console.error("Não foi possível carregar a carga horária:", err);
     }
 }
 
-/**
- * 🔍 Busca detalhes completos de uma aula via /aula/{idCurso}/{idModulo}/{idAula}.
- * O endpoint /modulos-aulas devolve apenas id_aula e titulo; aqui completamos
- * link_do_video e descrição.
- */
+async function carregarInfoCurso(idCurso) {
+    try {
+        const res = await fetchComCpf(`${API}/curso/${idCurso}`);
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (err) {
+        console.error("Falha ao buscar curso:", err);
+        return null;
+    }
+}
+
 async function buscarDetalheAula(idCurso, idModulo, aulaResumo) {
     const idAula = aulaResumo?.id_aula;
-
     if (idAula == null || idAula <= 0 || idModulo == null) {
         return { ...aulaResumo, id_curso: idCurso, id_modulo: idModulo };
     }
-
     try {
-        const res = await fetchComCpf(
-            `${API}/aula/get/${idCurso}/${idModulo}/${idAula}`,
-            {
-                method: "GET",
-                headers: { "Accept": "application/json" }
-            }
-        );
+        const res = await fetchComCpf(`${API}/aula/get/${idCurso}/${idModulo}/${idAula}`);
         if (!res.ok) {
             const motivo = await res.text().catch(() => "");
             throw new Error(`Falha ao buscar aula ${idAula} (${res.status}): ${motivo}`);
         }
         const detalhe = await res.json();
-
         return {
             ...aulaResumo,
             id_curso: idCurso,
@@ -164,13 +140,8 @@ async function buscarDetalheAula(idCurso, idModulo, aulaResumo) {
     }
 }
 
-/**
- * 🔍 Busca detalhes completos de um módulo via /modulo/{idCurso}/{idModulo}.
- * Preenche cargaHoraria e descrição que vêm nulos no /modulos-aulas.
- */
 async function buscarDetalheModulo(idCurso, item) {
     const idModulo = item.modulo.id_modulo;
-
     let moduloCompleto = { ...item.modulo, id_curso: idCurso };
     try {
         const res = await fetchComCpf(`${API}/modulo/${idCurso}/${idModulo}`);
@@ -186,101 +157,297 @@ async function buscarDetalheModulo(idCurso, item) {
     } catch (err) {
         console.error("Falha ao buscar módulo " + idModulo, err);
     }
-
     const aulas = await Promise.all(
         (item.aulas ?? []).map(a => buscarDetalheAula(idCurso, idModulo, a))
     );
-
     return { modulo: moduloCompleto, aulas };
 }
 
-/**
- * 📦 Renderiza a árvore de Módulos e Aulas na sidebar
- */
-function renderSidebar(modulos) {
+/* ============================================================
+ * Render — sidebar
+ * ============================================================ */
+function renderSidebar() {
     const container = document.getElementById("modulosContainer");
     if (!container) return;
-
     container.innerHTML = "";
 
-    modulos.forEach(item => {
-        const modDiv = document.createElement("div");
-        modDiv.className = "modulo";
+    const termo = (estadoCurso.busca ?? "").trim().toLowerCase();
 
-        modDiv.innerHTML = `<h3>📦 ${item.modulo.titulo ?? "(sem título)"}</h3>`;
+    let totalVisiveis = 0;
 
-        if (item.aulas && item.aulas.length > 0) {
-            item.aulas.forEach(aula => {
-                const aulaDiv = document.createElement("div");
-                aulaDiv.className = "aula";
-                aulaDiv.innerText = aula.titulo ?? "(sem título)";
+    estadoCurso.modulos.forEach((item, idxModulo) => {
+        const aulasFiltradas = (item.aulas ?? []).filter(a => {
+            if (!termo) return true;
+            return (a.titulo ?? "").toLowerCase().includes(termo);
+        });
 
-                aulaDiv.onclick = () => {
-                    carregarAula(aula);
-                    document.querySelectorAll(".aula").forEach(a => a.classList.remove("ativa"));
-                    aulaDiv.classList.add("ativa");
-                };
+        if (termo && aulasFiltradas.length === 0) return;
 
-                modDiv.appendChild(aulaDiv);
-            });
+        const block = document.createElement("div");
+        block.className = "modulo-block aberto";
+
+        const totalAulas = (item.aulas ?? []).length;
+        const assistidas = (item.aulas ?? []).filter(a => estadoCurso.assistidasSet.has(aulaKey(a))).length;
+
+        block.innerHTML = `
+            <div class="modulo-header">
+                <div class="nome">📦 ${escapeHtml(item.modulo.titulo ?? "(sem título)")}</div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="stats">${assistidas}/${totalAulas}</span>
+                    <span class="seta">▶</span>
+                </div>
+            </div>
+            <div class="modulo-aulas"></div>
+        `;
+
+        const headerEl = block.querySelector(".modulo-header");
+        const aulasEl = block.querySelector(".modulo-aulas");
+
+        headerEl.addEventListener("click", () => block.classList.toggle("aberto"));
+
+        aulasFiltradas.forEach(aula => {
+            const idx = estadoCurso.aulasFlat.findIndex(a =>
+                a.id_aula === aula.id_aula && a.id_modulo === aula.id_modulo
+            );
+
+            const aulaDiv = document.createElement("div");
+            aulaDiv.className = "aula-item";
+            if (estadoCurso.assistidasSet.has(aulaKey(aula))) aulaDiv.classList.add("assistida");
+            if (idx === estadoCurso.indiceAtual) aulaDiv.classList.add("ativa");
+
+            aulaDiv.innerHTML = `
+                <span class="check"></span>
+                <span class="titulo">${escapeHtml(aula.titulo ?? "(sem título)")}</span>
+            `;
+
+            aulaDiv.addEventListener("click", () => carregarAulaPorIndice(idx));
+            aulasEl.appendChild(aulaDiv);
+            totalVisiveis++;
+        });
+
+        container.appendChild(block);
+    });
+
+    if (totalVisiveis === 0) {
+        container.innerHTML = `<p style="padding: 20px; color: #94a3b8; font-size: 0.88em; text-align: center;">
+            ${termo ? `Nenhuma aula encontrada com "${escapeHtml(estadoCurso.busca)}".` : "Nenhuma aula disponível para este curso."}
+        </p>`;
+    }
+}
+
+/* ============================================================
+ * Render — header / progresso
+ * ============================================================ */
+function renderProgresso() {
+    const total = estadoCurso.aulasFlat.length;
+    const assistidas = estadoCurso.aulasFlat.filter(a => estadoCurso.assistidasSet.has(aulaKey(a))).length;
+    const pct = total === 0 ? 0 : Math.round((assistidas / total) * 100);
+
+    const lbl = document.getElementById("progressoLabel");
+    const fill = document.getElementById("progressoFill");
+    const pctEl = document.getElementById("progressoPct");
+    if (lbl) lbl.textContent = `${assistidas} / ${total} aulas`;
+    if (fill) fill.style.width = `${pct}%`;
+    if (pctEl) pctEl.textContent = `${pct}%`;
+}
+
+function renderHeaderCurso(curso) {
+    const nomeEl = document.getElementById("cursoNome");
+    const catEl = document.getElementById("cursoCategorias");
+    const badgeEl = document.getElementById("cursoBadge");
+
+    if (curso) {
+        if (nomeEl) nomeEl.textContent = curso.nome_curso ?? "(sem nome)";
+        estadoCurso.nome = curso.nome_curso ?? "";
+        const cats = (curso.categorias ?? []).map(c => c.nome).filter(Boolean);
+        if (catEl) catEl.textContent = cats.length ? cats.join(", ") : "Sem categoria";
+    } else {
+        if (nomeEl) nomeEl.textContent = "Curso #" + (estadoCurso.idCurso ?? "?");
+        if (catEl) catEl.textContent = "—";
+    }
+    if (badgeEl) badgeEl.style.display = "inline-block";
+
+    const totalMod = estadoCurso.modulos.length;
+    const totalAul = estadoCurso.aulasFlat.length;
+    const modEl = document.getElementById("cursoModulosCount");
+    const aulEl = document.getElementById("cursoAulasCount");
+    if (modEl) modEl.textContent = `${totalMod} ${totalMod === 1 ? "módulo" : "módulos"}`;
+    if (aulEl) aulEl.textContent = `${totalAul} ${totalAul === 1 ? "aula" : "aulas"}`;
+}
+
+/* ============================================================
+ * Render — aula atual
+ * ============================================================ */
+function carregarAulaPorIndice(idx) {
+    if (idx < 0 || idx >= estadoCurso.aulasFlat.length) return;
+    estadoCurso.indiceAtual = idx;
+    const aula = estadoCurso.aulasFlat[idx];
+
+    const videoUrl = converterYoutubeParaEmbed(aula.link ?? "");
+    const videoEl = document.getElementById("video");
+    if (videoUrl) {
+        videoEl.innerHTML = `
+            <iframe
+                src="${videoUrl}"
+                title="${escapeHtml(aula.titulo ?? "Vídeo da aula")}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>`;
+    } else {
+        videoEl.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#64748b;">
+            Esta aula ainda não possui vídeo.
+        </div>`;
+    }
+
+    document.getElementById("tituloAula").innerText = aula.titulo ?? "";
+    document.getElementById("descricaoAula").innerText = aula.descricao_aula ?? "";
+
+    const moduloDoAula = estadoCurso.modulos.find(m =>
+        (m.aulas ?? []).some(a => a.id_aula === aula.id_aula && a.id_modulo === aula.id_modulo)
+    );
+    document.getElementById("aulaModulo").textContent = moduloDoAula?.modulo?.titulo ?? "—";
+    document.getElementById("aulaIndice").textContent = `${idx + 1} de ${estadoCurso.aulasFlat.length}`;
+
+    // Materiais
+    const matDiv = document.getElementById("materiais");
+    matDiv.innerHTML = "";
+    if (aula.materiais && aula.materiais.length > 0) {
+        aula.materiais.forEach(m => {
+            const a = document.createElement("a");
+            a.href = m.link;
+            a.innerHTML = `<span>📎</span><span>${escapeHtml(m.nome ?? "Material")}</span>`;
+            a.target = "_blank";
+            a.rel = "noopener";
+            matDiv.appendChild(a);
+        });
+    } else {
+        matDiv.innerHTML = "<p style='color: #64748b; font-size: 0.9em;'>Nenhum material de apoio para esta aula.</p>";
+    }
+
+    // Botões nav
+    const btnAnt = document.getElementById("btnAnterior");
+    const btnProx = document.getElementById("btnProxima");
+    const btnMarc = document.getElementById("btnMarcar");
+    if (btnAnt) btnAnt.disabled = idx === 0;
+    if (btnProx) btnProx.disabled = idx === estadoCurso.aulasFlat.length - 1;
+    if (btnMarc) {
+        btnMarc.disabled = false;
+        const isAssistida = estadoCurso.assistidasSet.has(aulaKey(aula));
+        btnMarc.classList.toggle("assistida", isAssistida);
+        btnMarc.innerHTML = isAssistida ? "✓ Assistida (clique para desmarcar)" : "✓ Marcar como assistida";
+    }
+
+    renderSidebar();
+}
+
+function navegarAula(delta) {
+    const novo = estadoCurso.indiceAtual + delta;
+    if (novo >= 0 && novo < estadoCurso.aulasFlat.length) {
+        carregarAulaPorIndice(novo);
+    }
+}
+
+function alternarAssistida() {
+    if (estadoCurso.indiceAtual < 0) return;
+    const aula = estadoCurso.aulasFlat[estadoCurso.indiceAtual];
+    const key = aulaKey(aula);
+
+    if (estadoCurso.assistidasSet.has(key)) {
+        estadoCurso.assistidasSet.delete(key);
+    } else {
+        estadoCurso.assistidasSet.add(key);
+        // Auto-avança se houver próxima aula
+        if (estadoCurso.indiceAtual < estadoCurso.aulasFlat.length - 1) {
+            setTimeout(() => navegarAula(1), 250);
         }
+    }
+    salvarAssistidasLocal(estadoCurso.idCurso, estadoCurso.assistidasSet);
+    carregarAulaPorIndice(estadoCurso.indiceAtual); // re-render
+    renderProgresso();
+}
 
-        container.appendChild(modDiv);
+/* ============================================================
+ * Tabs e busca
+ * ============================================================ */
+function bindTabs() {
+    document.querySelectorAll(".tab-bar .tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+            const alvo = tab.dataset.tab;
+            document.querySelectorAll(".tab-bar .tab").forEach(t => t.classList.remove("ativo"));
+            document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("ativo"));
+            tab.classList.add("ativo");
+            const content = document.getElementById("tab" + alvo.charAt(0).toUpperCase() + alvo.slice(1));
+            if (content) content.classList.add("ativo");
+        });
     });
 }
 
-/**
- * 🔄 Orquestra: pega o esqueleto em /modulos-aulas e enriquece cada módulo/aula
- * com chamadas individuais.
- */
+function bindBuscaAula() {
+    const input = document.getElementById("buscaAula");
+    if (!input) return;
+    input.addEventListener("input", (e) => {
+        estadoCurso.busca = e.target.value;
+        renderSidebar();
+    });
+}
+
+function setarAvatar() {
+    try {
+        const u = JSON.parse(localStorage.getItem("user") ?? "{}");
+        const inicial = (u?.nome ?? "U").charAt(0).toUpperCase();
+        const avatarEl = document.getElementById("meuAvatar");
+        if (avatarEl) avatarEl.textContent = inicial;
+    } catch { /* ignore */ }
+}
+
+/* ============================================================
+ * Inicialização
+ * ============================================================ */
 async function inicializarCurso() {
     const idCurso = getCursoId();
+    estadoCurso.idCurso = idCurso;
 
     if (!idCurso) {
         const container = document.getElementById("modulosContainer");
-        if (container) {
-            container.innerHTML = "<p style='padding:15px; color: #ef4444;'>Erro: Nenhum ID de curso foi especificado na URL.</p>";
-        }
+        if (container) container.innerHTML = "<p style='padding:15px; color: #ef4444;'>Erro: Nenhum ID de curso foi especificado na URL.</p>";
         return;
     }
 
-    await carregarCargaHoraria(idCurso);
+    setarAvatar();
+    bindTabs();
+    bindBuscaAula();
+
+    estadoCurso.assistidasSet = carregarAssistidasLocal(idCurso);
+
+    // dispara em paralelo
+    const [curso] = await Promise.all([
+        carregarInfoCurso(idCurso),
+        carregarCargaHoraria(idCurso)
+    ]);
 
     try {
         const response = await fetchComCpf(`${API}/curso/${idCurso}/modulos-aulas`);
         if (!response.ok) throw new Error(`Erro HTTP! Status: ${response.status}`);
-
         const esqueleto = await response.json();
 
-        // Enriquece todos os módulos em paralelo
         const modulos = await Promise.all(
             esqueleto.map(item => buscarDetalheModulo(idCurso, item))
         );
 
-        renderSidebar(modulos);
+        estadoCurso.modulos = modulos;
+        estadoCurso.aulasFlat = modulos.flatMap(m => m.aulas ?? []);
 
-        if (modulos.length > 0 && modulos[0].aulas && modulos[0].aulas.length > 0) {
-            carregarAula(modulos[0].aulas[0]);
+        renderHeaderCurso(curso);
+        renderSidebar();
+        renderProgresso();
 
-            setTimeout(() => {
-                const primeiraAula = document.querySelector(".aula");
-                if (primeiraAula) primeiraAula.classList.add("ativa");
-            }, 50);
-        } else {
-            const container = document.getElementById("modulosContainer");
-            if (container) {
-                container.innerHTML = "<p style='padding:15px; color: #94a3b8;'>Nenhuma aula disponível para este curso.</p>";
-            }
+        if (estadoCurso.aulasFlat.length > 0) {
+            carregarAulaPorIndice(0);
         }
-
     } catch (error) {
         console.error("Não foi possível carregar os módulos do backend:", error);
         const container = document.getElementById("modulosContainer");
-        if (container) {
-            container.innerHTML = "<p style='padding:15px; color: #ef4444;'>Erro ao carregar os módulos. Verifique o servidor.</p>";
-        }
+        if (container) container.innerHTML = "<p style='padding:15px; color: #ef4444;'>Erro ao carregar os módulos. Verifique o servidor.</p>";
     }
 }
 
-/* 🚀 Inicialização automática */
 inicializarCurso();
