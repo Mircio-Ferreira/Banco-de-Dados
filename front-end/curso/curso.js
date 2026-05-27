@@ -42,14 +42,51 @@ let aulaAtual = null;
 /**
  * 🎬 Carrega a aula selecionada no player principal da tela
  */
+function converterYoutubeParaEmbed(url) {
+    if (!url) return "";
+
+    // youtube.com/watch?v=
+    if (url.includes("watch?v=")) {
+        const videoId = url.split("v=")[1]?.split("&")[0];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    // youtu.be/
+    if (url.includes("youtu.be/")) {
+        const videoId = url.split("youtu.be/")[1]?.split("?")[0];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    // já está em embed
+    if (url.includes("/embed/")) {
+        return url;
+    }
+
+    return url;
+}
+
 function carregarAula(aula) {
     aulaAtual = aula;
 
-    document.getElementById("video").innerHTML =
-        `<iframe width="100%" height="100%" src="${aula.link ?? ""}" frameborder="0" allowfullscreen></iframe>`;
+    const videoUrl = converterYoutubeParaEmbed(aula.link ?? "");
 
-    document.getElementById("tituloAula").innerText = aula.titulo ?? "";
-    document.getElementById("descricaoAula").innerText = aula.descricao_aula ?? "";
+    document.getElementById("video").innerHTML = `
+        <iframe
+            width="100%"
+            height="500"
+            src="${videoUrl}"
+            title="${aula.titulo ?? "Vídeo da aula"}"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>
+    `;
+
+    document.getElementById("tituloAula").innerText =
+        aula.titulo ?? "";
+
+    document.getElementById("descricaoAula").innerText =
+        aula.descricao_aula ?? "";
 
     const matDiv = document.getElementById("materiais");
     matDiv.innerHTML = "";
@@ -59,13 +96,14 @@ function carregarAula(aula) {
             const a = document.createElement("a");
             a.href = m.link;
             a.innerText = m.nome;
+            a.target = "_blank";
             matDiv.appendChild(a);
         });
     } else {
-        matDiv.innerHTML = "<p style='color: #64748b; font-size: 0.9em;'>Nenhum material de apoio para esta aula.</p>";
+        matDiv.innerHTML =
+            "<p style='color: #64748b; font-size: 0.9em;'>Nenhum material de apoio para esta aula.</p>";
     }
 }
-
 /**
  * 🕒 Carga horária total do curso
  */
@@ -101,7 +139,7 @@ async function buscarDetalheAula(idCurso, idModulo, aulaResumo) {
 
     try {
         const res = await fetchComCpf(
-            `${API}/aula/${idCurso}/${idModulo}/${idAula}`,
+            `${API}/aula/get/${idCurso}/${idModulo}/${idAula}`,
             {
                 method: "GET",
                 headers: { "Accept": "application/json" }

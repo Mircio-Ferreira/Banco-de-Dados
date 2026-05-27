@@ -40,7 +40,7 @@ async function enriquecerItem(idCurso, item) {
     let detalheModulo = {};
     try {
         if (idModulo != null) {
-            detalheModulo = await getJson(`${API}/modulo/${idCurso}/${idModulo}`);
+            detalheModulo = await getJson(`${API}/modulo/get/${idCurso}/${idModulo}`);
         }
     } catch (err) {
         console.error("Falha ao detalhar módulo " + idModulo, err);
@@ -51,7 +51,7 @@ async function enriquecerItem(idCurso, item) {
             try {
                 if (aulaResumo.id_aula == null || idModulo == null) return aulaResumo;
                 const detalhe = await getJson(
-                    `${API}/aula/${idCurso}/${idModulo}/${aulaResumo.id_aula}`
+                    `${API}/aula/get/${idCurso}/${idModulo}/${aulaResumo.id_aula}`
                 );
                 return {
                     ...aulaResumo,
