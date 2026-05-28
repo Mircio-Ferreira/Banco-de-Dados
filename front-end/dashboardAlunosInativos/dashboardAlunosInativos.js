@@ -4,6 +4,7 @@ let cursosProfessor = [];      // lista de CursoResponse do professor
 let idsCursosProfessor = new Set();
 let inativosBase = [];         // inativos cruzados com cursos do professor
 let inativosFiltrados = [];
+let semAulaBase = [];          // alunos que compraram mas não assistiram, cruzados com cursos do professor
 
 let chartCurso  = null;
 let chartMotivo = null;
@@ -46,6 +47,12 @@ async function carregarCursosProfessor() {
 async function carregarAlunosInativos() {
     const res = await fetchAuth(`${API}/users/alunos/alunos-inativos`);
     if (!res.ok) throw new Error(`Falha ao buscar inativos (HTTP ${res.status})`);
+    return await res.json();
+}
+
+async function carregarAulasNaoAssistidas() {
+    const res = await fetchAuth(`${API}/users/aluno/aulas-nao-assistidas`);
+    if (!res.ok) throw new Error(`Falha ao buscar aulas não assistidas (HTTP ${res.status})`);
     return await res.json();
 }
 
@@ -95,6 +102,7 @@ function aplicarFiltros() {
     renderChartMotivo();
     renderChartDias();
     renderTabela();
+    renderTabelaSemAula();
 }
 
 function atualizarKpis() {
@@ -120,6 +128,14 @@ function atualizarKpis() {
         : null;
     document.getElementById("kpiPiorSub").textContent =
         piorAluno ? `dias — ${piorAluno.nomeAluno}` : "dias";
+
+    const idCurso = document.getElementById("filtroCurso").value;
+    const semAulaFiltrado = idCurso
+        ? semAulaBase.filter(s => String(s.idCurso) === String(idCurso))
+        : semAulaBase;
+    document.getElementById("kpiSemAula").textContent = semAulaFiltrado.length;
+    document.getElementById("kpiSemAulaSub").textContent =
+        semAulaFiltrado.length === 1 ? "aluno sem 1ª aula" : "alunos sem 1ª aula";
 }
 
 function agruparPor(lista, chave) {
@@ -347,6 +363,48 @@ function renderTabela() {
     });
 }
 
+function renderTabelaSemAula() {
+    const wrapper = document.getElementById("tabelaSemAulaWrapper");
+    const contagem = document.getElementById("contagemSemAula");
+    if (!wrapper) return;
+
+    const idCurso = document.getElementById("filtroCurso").value;
+    const busca = document.getElementById("filtroBusca").value.trim().toLowerCase();
+
+    let lista = idCurso
+        ? semAulaBase.filter(s => String(s.idCurso) === String(idCurso))
+        : semAulaBase;
+
+    if (busca) {
+        lista = lista.filter(s => {
+            const cpf = (s.cpf ?? "").toLowerCase();
+            const nomeCurso = (s.nome_curso ?? "").toLowerCase();
+            return cpf.includes(busca) || nomeCurso.includes(busca);
+        });
+    }
+
+    contagem.textContent = `${lista.length} ${lista.length === 1 ? "registro" : "registros"}`;
+
+    if (lista.length === 0) {
+        wrapper.innerHTML = `<p class="placeholder">Todos os alunos que compraram seus cursos já assistiram pelo menos uma aula.</p>`;
+        return;
+    }
+
+    const linhas = lista.map(s => `
+        <tr>
+            <td>${s.cpf ?? "—"}</td>
+            <td>${s.nome_curso ?? "—"}</td>
+        </tr>
+    `).join("");
+
+    wrapper.innerHTML = `
+        <table class="tabela-inativos">
+            <thead><tr><th>CPF do aluno</th><th>Curso</th></tr></thead>
+            <tbody>${linhas}</tbody>
+        </table>
+    `;
+}
+
 function bindFiltros() {
     ["filtroCurso", "filtroMotivo", "filtroDiasMin", "filtroBusca"].forEach(id => {
         const el = document.getElementById(id);
@@ -371,15 +429,17 @@ async function inicializar() {
     }
 
     try {
-        const [cursos, inativos] = await Promise.all([
+        const [cursos, inativos, semAula] = await Promise.all([
             carregarCursosProfessor(),
-            carregarAlunosInativos()
+            carregarAlunosInativos(),
+            carregarAulasNaoAssistidas()
         ]);
 
         cursosProfessor = cursos;
         idsCursosProfessor = new Set(cursos.map(c => Number(c.id_curso)));
 
         inativosBase = (inativos ?? []).filter(i => idsCursosProfessor.has(Number(i.idCurso)));
+        semAulaBase = (semAula ?? []).filter(s => idsCursosProfessor.has(Number(s.idCurso)));
 
         popularDropdownCurso();
         popularDropdownMotivo();

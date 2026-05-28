@@ -205,6 +205,7 @@
                 <div class="kpi-card"><div class="label">Cursos afetados</div><div class="valor" id="kpiCursos">—</div><div class="sub" id="kpiCursosSub">de 0 lecionados</div></div>
                 <div class="kpi-card atencao"><div class="label">Média de dias inativo</div><div class="valor" id="kpiMedia">—</div><div class="sub">dias</div></div>
                 <div class="kpi-card alerta"><div class="label">Mais grave</div><div class="valor" id="kpiPior">—</div><div class="sub" id="kpiPiorSub">dias</div></div>
+                <div class="kpi-card alerta"><div class="label">Sem 1ª aula</div><div class="valor" id="kpiSemAula">—</div><div class="sub" id="kpiSemAulaSub">compraram e não começaram</div></div>
             </div>
 
             <div class="filtros">
@@ -255,6 +256,19 @@
                     <span class="contagem" id="contagemLista">—</span>
                 </div>
                 <div id="tabelaWrapper">
+                    <p class="placeholder">Carregando...</p>
+                </div>
+            </div>
+
+            <div class="tabela-section">
+                <div class="tabela-header">
+                    <h3>Compraram mas nunca assistiram nenhuma aula</h3>
+                    <span class="contagem" id="contagemSemAula">—</span>
+                </div>
+                <p style="opacity: 0.75; font-size: 0.85em; margin: 0 0 10px 0;">
+                    Alunos que compraram um dos seus cursos e ainda não assistiram nenhuma aula.
+                </p>
+                <div id="tabelaSemAulaWrapper">
                     <p class="placeholder">Carregando...</p>
                 </div>
             </div>
