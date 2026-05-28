@@ -36,6 +36,7 @@ public class AlunoRepository {
         public ConsultaPegarAlunoComAulasNaoAssistidas mapRow(ResultSet rs, int rowNum) throws SQLException {
             ConsultaPegarAlunoComAulasNaoAssistidas consultaPegarAlunoComAulasNaoAssistidas = new ConsultaPegarAlunoComAulasNaoAssistidas();
             consultaPegarAlunoComAulasNaoAssistidas.setCpf(rs.getString("cpf_aluno"));
+            consultaPegarAlunoComAulasNaoAssistidas.setNome_aluno(rs.getString("nome_aluno"));
             consultaPegarAlunoComAulasNaoAssistidas.setNome_curso(rs.getString("nome_curso"));
             consultaPegarAlunoComAulasNaoAssistidas.setIdCurso(rs.getLong("id_curso"));
             return consultaPegarAlunoComAulasNaoAssistidas;
@@ -128,8 +129,10 @@ public class AlunoRepository {
 //    Ranking de cursos com baixa ativação
     public List<ConsultaPegarAlunoComAulasNaoAssistidas> pegarAlunoComAulasNaoAssistidas() {
         String sql = """
-                SELECT a.cpf_aluno, c.nome AS nome_curso, c.id_curso
+                SELECT a.cpf_aluno, u.nome AS nome_aluno, c.nome AS nome_curso, c.id_curso
                 FROM aluno a
+                JOIN usuario u
+                ON a.cpf_aluno = u.cpf
                 JOIN compra co
                 ON a.cpf_aluno = co.cpf_aluno
                 JOIN curso c
