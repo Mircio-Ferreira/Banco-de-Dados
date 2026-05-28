@@ -670,7 +670,7 @@ public class UserService {
                 );
             }
 
-            if (aluno.getDiasInativo() == null || aluno.getDiasInativo() <= 30) {
+            if (aluno.getDiasInativo() == null || aluno.getDiasInativo() <= 1) {
                 throw new IllegalStateException(
                         "Foi encontrado um aluno com dias de inatividade inválido."
                 );

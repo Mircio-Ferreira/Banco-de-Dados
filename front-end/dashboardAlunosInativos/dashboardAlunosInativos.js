@@ -378,8 +378,9 @@ function renderTabelaSemAula() {
     if (busca) {
         lista = lista.filter(s => {
             const cpf = (s.cpf ?? "").toLowerCase();
+            const nomeAluno = (s.nome_aluno ?? "").toLowerCase();
             const nomeCurso = (s.nome_curso ?? "").toLowerCase();
-            return cpf.includes(busca) || nomeCurso.includes(busca);
+            return cpf.includes(busca) || nomeAluno.includes(busca) || nomeCurso.includes(busca);
         });
     }
 
@@ -392,14 +393,17 @@ function renderTabelaSemAula() {
 
     const linhas = lista.map(s => `
         <tr>
-            <td>${s.cpf ?? "—"}</td>
+            <td>
+                <div>${s.nome_aluno ?? "—"}</div>
+                <div style="font-size:0.78em; color:#64748b;">${s.cpf ?? ""}</div>
+            </td>
             <td>${s.nome_curso ?? "—"}</td>
         </tr>
     `).join("");
 
     wrapper.innerHTML = `
         <table class="tabela-inativos">
-            <thead><tr><th>CPF do aluno</th><th>Curso</th></tr></thead>
+            <thead><tr><th>Aluno</th><th>Curso</th></tr></thead>
             <tbody>${linhas}</tbody>
         </table>
     `;
