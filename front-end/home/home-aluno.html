@@ -113,53 +113,91 @@
         /* ===== Cards melhorados ===== */
         .card-melhor {
             position: relative;
-            width: 220px;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            width: 230px;
+            background: linear-gradient(180deg, #1e293b 0%, #0b1220 100%);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
             cursor: pointer;
-            transition: 0.2s;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
             flex-shrink: 0;
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
         }
         .card-melhor:hover {
-            transform: translateY(-4px);
+            transform: translateY(-6px);
             border-color: rgba(56, 189, 248, 0.45);
-            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15);
+            box-shadow: 0 14px 30px -10px rgba(56, 189, 248, 0.35);
         }
         .card-melhor .thumb-area {
             position: relative;
             aspect-ratio: 16 / 9;
-            background: linear-gradient(135deg, #1d4ed8, #4c1d95);
+            background:
+                radial-gradient(circle at 22% 25%, rgba(56, 189, 248, 0.55), transparent 55%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.5), transparent 55%),
+                linear-gradient(135deg, #1e3a8a, #312e81);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2em;
             color: #f1f5f9;
+            overflow: hidden;
+        }
+        .card-melhor .thumb-area::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 12px 12px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .card-melhor .thumb-area > span:first-child {
+            font-family: "Georgia", "Times New Roman", serif;
+            font-size: 3.2em;
+            font-weight: 700;
+            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+            z-index: 1;
         }
         .card-melhor .thumb-area .preco-tag {
             position: absolute;
-            top: 8px;
-            right: 8px;
+            top: 10px;
+            right: 10px;
             background: rgba(15, 23, 42, 0.85);
             color: #38bdf8;
             font-weight: bold;
-            font-size: 0.85em;
-            padding: 4px 10px;
+            font-size: 0.82em;
+            padding: 4px 12px;
             border-radius: 14px;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+            z-index: 2;
         }
         .card-melhor .thumb-area .preco-tag.gratis {
             color: #86efac;
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.18);
+        }
+        .card-melhor.adquirido .thumb-area::before {
+            content: "✓ NO ACERVO";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(34, 197, 94, 0.9);
+            color: #052e16;
+            font-size: 0.62em;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 12px;
+            z-index: 2;
+            letter-spacing: 0.6px;
         }
         .card-melhor .corpo {
-            padding: 12px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             flex: 1;
         }
         .card-melhor h3 {
@@ -167,26 +205,34 @@
             font-size: 0.95em;
             color: #f1f5f9;
             min-height: 2.4em;
-            line-height: 1.2;
+            line-height: 1.25;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         .card-melhor .cats {
             display: flex;
             gap: 4px;
             flex-wrap: wrap;
+            min-height: 1.4em;
         }
         .card-melhor .cat {
             font-size: 0.7em;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: rgba(99, 102, 241, 0.2);
+            padding: 3px 8px;
+            border-radius: 8px;
+            background: rgba(99, 102, 241, 0.18);
             color: #c7d2fe;
+            border: 1px solid rgba(99, 102, 241, 0.25);
         }
         .card-melhor .cta {
             margin-top: auto;
-            padding: 6px 0 0 0;
-            font-size: 0.8em;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.82em;
             color: #22c55e;
-            font-weight: bold;
+            font-weight: 600;
         }
         .card-melhor.adquirido .cta {
             color: #fbbf24;
