@@ -104,6 +104,16 @@ async function atualizarUsuario() {
         numero: document.getElementById("numero").value
     };
 
+    updatedUser.telefones = Array.from(
+        document.querySelectorAll("#telefoneList > div > span")
+    ).map(span => span.textContent);
+
+    if (user.tipoUsuario === "PROFESSOR") {
+        updatedUser.certificados = Array.from(
+            document.querySelectorAll("#certList > div > span")
+        ).map(span => span.textContent);
+    }
+
     const novaSenha = document.getElementById("password").value;
 
     if (novaSenha) {
